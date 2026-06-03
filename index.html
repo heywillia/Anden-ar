@@ -1659,19 +1659,8 @@ function getDestFinal(tren, dir) {
 }
 
 // ─────────────────────────────────────────────
-// NAVEGACIÓN
+// NAVEGACIÓN — irAHorarios y volverHome definidas al final (multi-línea)
 // ─────────────────────────────────────────────
-function irAHorarios(servicio) {
-  document.getElementById('screenHome').classList.remove('active');
-  document.getElementById('screenHorarios').classList.add('active');
-  window.scrollTo(0,0);
-}
-function volverHome() {
-  document.getElementById('screenHorarios').classList.remove('active');
-  document.getElementById('screenHome').classList.add('active');
-  renderFavs();
-  window.scrollTo(0,0);
-}
 
 // ─────────────────────────────────────────────
 // FAVORITOS
@@ -1832,37 +1821,9 @@ function onOrigenChange() {
   updateFavBtn(); render();
 }
 
-function poblarOrigen() {
-  const sel = document.getElementById('selOrigen');
-  const prev = sel.value;
-  sel.innerHTML = '';
-  const lista = direccion==='haciafinal' ? ESTACIONES : [...ESTACIONES].reverse();
-  lista.forEach((e,vi) => {
-    const ri = direccion==='haciafinal' ? vi : (21-vi);
-    const opt = document.createElement('option');
-    opt.value = ri; opt.textContent = e;
-    sel.appendChild(opt);
-  });
-  if (prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
-  origenIdx = parseInt(sel.value);
-  poblarDestino();
-}
+// poblarOrigen — ver definición al final del archivo (multi-línea)
 
-function poblarDestino() {
-  const sel = document.getElementById('selDestino');
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">— Sin destino —</option>';
-  if (direccion==='haciafinal') {
-    for (let i=origenIdx+1;i<22;i++) {
-      const o=document.createElement('option'); o.value=i; o.textContent=ESTACIONES[i]; sel.appendChild(o);
-    }
-  } else {
-    for (let i=origenIdx-1;i>=0;i--) {
-      const o=document.createElement('option'); o.value=i; o.textContent=ESTACIONES[i]; sel.appendChild(o);
-    }
-  }
-  if (prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
-}
+// poblarDestino — ver definición al final del archivo (multi-línea)
 
 // ─────────────────────────────────────────────
 // RANGO
@@ -1905,106 +1866,7 @@ function showMore() { mostrarTodos=true; render(); }
 // ─────────────────────────────────────────────
 // RENDER
 // ─────────────────────────────────────────────
-function render() {
-  origenIdx = parseInt(document.getElementById('selOrigen').value);
-  const destVal = document.getElementById('selDestino').value;
-  const destinoIdx = destVal ? parseInt(destVal) : -1;
-  const trenes = (tipoDia==='labsab')
-    ? (direccion==='haciafinal' ? LS_IDA : LS_VUELTA)
-    : (direccion==='haciafinal' ? DF_IDA : DF_VUELTA);
-  const now = nowMins();
-  const rango = getRangoMins();
-  const modoRango = rangoActivo && rango && (rango.desde!==null||rango.hasta!==null);
-
-  let resultados = [];
-  trenes.forEach(tren => {
-    const hOrigen = tren.h[origenIdx];
-    if (!hOrigen) return;
-    let mOrigen = toMins(hOrigen);
-    if (mOrigen<120 && now>1200) mOrigen+=1440;
-    if (modoRango) {
-      let rd=rango.desde, rh=rango.hasta;
-      if (rd!==null && rh!==null && rh<rd) rh+=1440;
-      if (rd!==null && mOrigen<rd) return;
-      if (rh!==null && mOrigen>rh) return;
-    } else {
-      if (mOrigen<now-1 || mOrigen>now+240) return;
-    }
-    const ramal = getRamal(tren);
-    const destFinal = getDestFinal(tren, direccion);
-    let etaStr=null, etaMins=null;
-    if (destinoIdx>=0) {
-      const hDest=tren.h[destinoIdx];
-      if (hDest) {
-        let mDest=toMins(hDest);
-        if (mDest<120 && mOrigen>1200) mDest+=1440;
-        etaStr=minsToStr(mDest);
-        etaMins=mDest-now;
-      }
-    }
-    resultados.push({tren,mOrigen,ramal,destFinal,etaStr,etaMins});
-  });
-  resultados.sort((a,b)=>a.mOrigen-b.mOrigen);
-
-  const lista=document.getElementById('trainsList');
-  const infoBar=document.getElementById('infoBar');
-  const showMoreBtn=document.getElementById('showMoreBtn');
-  document.getElementById('resultsTitle').textContent =
-    `${ESTACIONES[origenIdx]} ${direccion==='haciafinal'?'→ Final':'→ Retiro'}`;
-
-  if (modoRango && rango) {
-    const ds=rango.desde!==null?minsToStr(rango.desde):'inicio';
-    const hs=rango.hasta!==null?minsToStr(rango.hasta%1440):'fin';
-    infoBar.style.display='block';
-    infoBar.innerHTML=`<span class="badge-rango">RANGO</span> ${ds} → ${hs}${destinoIdx>=0?` · ETA → ${ESTACIONES[destinoIdx]}`:''}`;
-  } else if (destinoIdx>=0) {
-    infoBar.style.display='block';
-    infoBar.textContent=`🎯 ETA para ${ESTACIONES[destinoIdx]}`;
-  } else { infoBar.style.display='none'; }
-
-  document.getElementById('resultsCount').textContent = resultados.length ? `${resultados.length} trenes` : '';
-
-  if (!resultados.length) {
-    lista.innerHTML=`<div class="no-results"><strong>Sin trenes</strong>${modoRango?'Probá ampliar el rango.':'No hay servicios en las próximas 4 horas.'}</div>`;
-    showMoreBtn.style.display='none'; mostrarTodos=false; return;
-  }
-
-  const MAX = mostrarTodos ? resultados.length : (modoRango ? resultados.length : 6);
-  lista.innerHTML='';
-  resultados.slice(0,MAX).forEach((r,idx) => {
-    const mR=r.mOrigen-now;
-    const isNext=!modoRango&&idx===0;
-    const card=document.createElement('div');
-    card.className=`train-card ramal-${r.ramal}${isNext?' next-train':''}`;
-    let inL='';
-    if (!modoRango) {
-      if (mR<=0) inL=`<div class="train-in pronto">En estación</div>`;
-      else if (mR<60) inL=`<div class="train-in${mR<=5?' pronto':''}">en ${mR} min</div>`;
-      else { const h=Math.floor(mR/60),m=mR%60; inL=`<div class="train-in">en ${h}h${m>0?' '+m+'m':''}</div>`; }
-    }
-    let etaB='';
-    if (r.etaStr) {
-      const el=!modoRango&&r.etaMins>0?`en ${r.etaMins} min`:'';
-      etaB=`<div class="train-eta-block"><div class="eta-label">Llega</div><div class="eta-time">${r.etaStr}</div><div class="eta-mins">${el}</div></div>`;
-    }
-    card.innerHTML=`
-      ${isNext?'<div class="badge-next">PRÓXIMO</div>':''}
-      <div class="train-time-block"><div class="train-time">${minsToStr(r.mOrigen)}</div>${inL}</div>
-      <div class="train-info">
-        <div class="train-dest-label">${getRamalLabel(r.ramal,direccion)}</div>
-        <div class="train-dest">${direccion==='haciaretiro'?'destino':'hasta'} ${r.destFinal}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">Tren ${r.tren.n}</div>
-      </div>${etaB}`;
-    lista.appendChild(card);
-  });
-
-  if (!modoRango && !mostrarTodos && resultados.length>MAX) {
-    showMoreBtn.style.display='block';
-    showMoreBtn.textContent=`Ver ${resultados.length-MAX} más ↓`;
-  } else { showMoreBtn.style.display='none'; }
-  mostrarTodos=false;
-  updateFavBtn();
-}
+// render — ver definición al final del archivo (multi-línea)
 
 // ─────────────────────────────────────────────
 // RELOJ Y INIT
@@ -2026,14 +1888,7 @@ updateClocks();
 setInterval(updateClocks,1000);
 setInterval(render,60000);
 
-// Auto-detectar tipo de día
-(function detectDia() {
-  if (new Date().getDay()===0) setTipoDia('domfer');
-})();
-
-poblarOrigen();
-render();
-renderFavs();
+// (init movido al final del archivo, después de LINEAS_CONFIG)
 
 // ─────────────────────────────────────────────
 // NAVEGACIÓN GLOBAL (bottom nav)
@@ -2059,23 +1914,7 @@ function navTo(dest) {
   window.scrollTo(0,0);
 }
 
-// Override irAHorarios para ocultar nav correctamente
-function irAHorarios(servicio) {
-  Object.values(SCREENS).forEach(id => document.getElementById(id).classList.remove('active'));
-  document.getElementById('screenHorarios').classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  window.scrollTo(0,0);
-}
-
-// Override volverHome para restaurar nav
-function volverHome() {
-  document.getElementById('screenHorarios').classList.remove('active');
-  document.getElementById('screenHome').classList.add('active');
-  document.getElementById('nav-home').classList.add('active');
-  currentNav = 'home';
-  renderFavs();
-  window.scrollTo(0,0);
-}
+// irAHorarios y volverHome — ver definiciones al final del archivo
 
 // ─────────────────────────────────────────────
 // FEEDBACK — guardado local + envío por mailto
@@ -2215,18 +2054,20 @@ const LINEAS_CONFIG = {
 const BN_RAMAL_COLORS = { villarosa: '#34d399', boulogne: '#86efac' };
 const UR_RAMAL_COLORS = { lemos: '#60a5fa' };
 
-// Override irAHorarios para recibir linea
-const _origIrAHorarios = irAHorarios;
+// ─────────────────────────────────────────────
+// FUNCIONES MULTI-LÍNEA — definiciones únicas y definitivas
+// (reemplazan las versiones SM-only declaradas antes)
+// Regla: una función, una definición. Sin _orig*.
+// ─────────────────────────────────────────────
+
 function irAHorarios(linea) {
   lineaActual = linea || 'sm';
   Object.values(SCREENS).forEach(id => document.getElementById(id).classList.remove('active'));
   document.getElementById('screenHorarios').classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  // Actualizar header
   const cfg = LINEAS_CONFIG[lineaActual];
   document.querySelector('.header-title').textContent = cfg.nombre;
   document.querySelector('header').style.borderBottomColor = cfg.color;
-  // Resetear estado
   tipoDia = (new Date().getDay()===0) ? 'domfer' : 'labsab';
   direccion = 'haciafinal';
   rangoActivo = false;
@@ -2238,8 +2079,15 @@ function irAHorarios(linea) {
   window.scrollTo(0,0);
 }
 
-// Override poblarOrigen para usar estaciones de la línea actual
-const _origPoblarOrigen = poblarOrigen;
+function volverHome() {
+  document.getElementById('screenHorarios').classList.remove('active');
+  document.getElementById('screenHome').classList.add('active');
+  document.getElementById('nav-home').classList.add('active');
+  currentNav = 'home';
+  renderFavs();
+  window.scrollTo(0,0);
+}
+
 function poblarOrigen() {
   const cfg = LINEAS_CONFIG[lineaActual] || LINEAS_CONFIG.sm;
   const ests = cfg.estaciones();
@@ -2257,8 +2105,6 @@ function poblarOrigen() {
   poblarDestino();
 }
 
-// Override poblarDestino
-const _origPoblarDestino = poblarDestino;
 function poblarDestino() {
   const cfg = LINEAS_CONFIG[lineaActual] || LINEAS_CONFIG.sm;
   const ests = cfg.estaciones();
@@ -2277,8 +2123,6 @@ function poblarDestino() {
   if(prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
 }
 
-// Override render para ser linea-agnostico
-const _origRender = render;
 function render() {
   const cfg = LINEAS_CONFIG[lineaActual] || LINEAS_CONFIG.sm;
   const ests = cfg.estaciones();
@@ -2286,11 +2130,10 @@ function render() {
   const destVal = document.getElementById('selDestino').value;
   const destinoIdx = destVal ? parseInt(destVal) : -1;
 
-  // Tipo de dia BN tiene 3 turnos (lv/sab/df)
+  // BN distingue sábado
   let tdKey = tipoDia;
-  if (lineaActual==='bn') {
-    const dow = new Date().getDay();
-    if(tipoDia==='labsab') tdKey = dow===6 ? 'sab' : 'labsab';
+  if(lineaActual==='bn' && tipoDia==='labsab') {
+    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
   }
 
   const trenes = cfg.getData(tdKey, direccion);
@@ -2298,9 +2141,19 @@ function render() {
   const rango = getRangoMins();
   const modoRango = rangoActivo && rango && (rango.desde!==null||rango.hasta!==null);
 
+  // Para Urquiza (modelo offsets): h[] va de terminal-origen a terminal-destino.
+  // IDA:    h[0]=Lacroze … h[22]=Lemos  → índice absoluto == índice en h[]
+  // VUELTA: h[0]=Lemos   … h[22]=Lacroze → índice en h[] = (N-1) - índice_absoluto
+  function hIdx(idxAbsoluto) {
+    if(lineaActual === 'ur' && direccion === 'haciaretiro') {
+      return (ests.length - 1 - idxAbsoluto);
+    }
+    return idxAbsoluto;
+  }
+
   let resultados = [];
   trenes.forEach(tren => {
-    const hOrigen = tren.h[origenIdx];
+    const hOrigen = tren.h[hIdx(origenIdx)];
     if(!hOrigen) return;
     let mOrigen = toMins(hOrigen);
     if(mOrigen<120 && now>1200) mOrigen+=1440;
@@ -2316,7 +2169,7 @@ function render() {
     const destFinal = cfg.getDestFinal(tren, direccion);
     let etaStr=null, etaMins=null;
     if(destinoIdx>=0) {
-      const hDest=tren.h[destinoIdx];
+      const hDest = tren.h[hIdx(destinoIdx)];
       if(hDest) {
         let mDest=toMins(hDest);
         if(mDest<120&&mOrigen>1200) mDest+=1440;
@@ -2334,7 +2187,7 @@ function render() {
   const termFinal = direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta;
   document.getElementById('resultsTitle').textContent = `${ests[origenIdx]} → ${termFinal}`;
 
-  if(modoRango&&rango) {
+  if(modoRango && rango) {
     const ds=rango.desde!==null?minsToStr(rango.desde):'inicio';
     const hs=rango.hasta!==null?minsToStr(rango.hasta%1440):'fin';
     infoBar.style.display='block';
@@ -2351,18 +2204,14 @@ function render() {
     showMoreBtn.style.display='none'; mostrarTodos=false; return;
   }
 
-  const MAX = mostrarTodos?resultados.length:(modoRango?resultados.length:6);
-  lista.innerHTML='';
   const lineColor = cfg.color;
+  const MAX = mostrarTodos ? resultados.length : (modoRango ? resultados.length : 6);
+  lista.innerHTML='';
   resultados.slice(0,MAX).forEach((r,idx) => {
     const mR=r.mOrigen-now;
     const isNext=!modoRango&&idx===0;
     const card=document.createElement('div');
-    // Usar color de línea para el borde izquierdo
-    card.className=`train-card${isNext?' next-train':''}`;
-    card.style.setProperty('--line-color', lineColor);
-    card.style.borderLeft=`3px solid ${lineColor}`;
-    if(isNext) card.style.borderColor=lineColor;
+    card.className=`train-card ramal-${r.ramal}${isNext?' next-train':''}`;
     let inL='';
     if(!modoRango) {
       if(mR<=0) inL=`<div class="train-in pronto">En estación</div>`;
@@ -2372,14 +2221,13 @@ function render() {
     let etaB='';
     if(r.etaStr) {
       const el=!modoRango&&r.etaMins>0?`en ${r.etaMins} min`:'';
-      etaB=`<div class="train-eta-block"><div class="eta-label">Llega</div><div class="eta-time">${r.etaStr}</div><div class="eta-mins">${el}</div></div>`;
+      etaB=`<div class="train-eta-block"><div class="eta-label">Llega</div><div class="eta-time" style="color:${lineColor}">${r.etaStr}</div><div class="eta-mins">${el}</div></div>`;
     }
-    const labelStyle = `style="color:${lineColor}"`;
     card.innerHTML=`
       ${isNext?`<div class="badge-next" style="background:${lineColor};color:#0d0f14">PRÓXIMO</div>`:''}
       <div class="train-time-block"><div class="train-time">${minsToStr(r.mOrigen)}</div>${inL}</div>
       <div class="train-info">
-        <div class="train-dest-label" ${labelStyle}>${cfg.getRamalLabel(r.ramal,direccion)}</div>
+        <div class="train-dest-label" style="color:${lineColor}">${cfg.getRamalLabel(r.ramal, direccion)}</div>
         <div class="train-dest">${direccion==='haciaretiro'?'destino':'hasta'} ${r.destFinal}</div>
         <div style="font-size:10px;color:var(--muted);margin-top:2px">Tren ${r.tren.n}</div>
       </div>${etaB}`;
@@ -2393,6 +2241,14 @@ function render() {
   mostrarTodos=false;
   updateFavBtn();
 }
+
+// ─────────────────────────────────────────────
+// INIT — al final, después de LINEAS_CONFIG y SCREENS
+// ─────────────────────────────────────────────
+if (new Date().getDay()===0) tipoDia='domfer';
+poblarOrigen();
+render();
+renderFavs();
 
 </script>
 </body>
