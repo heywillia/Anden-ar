@@ -1,0 +1,42 @@
+name: Monitor Horarios PDF
+
+on:
+  # Corre todos los lunes a las 11:00 AM hora Argentina (UTC-3 = 14:00 UTC)
+  schedule:
+    - cron: "0 14 * * 1"
+
+  # También permite correrse manualmente desde la pestaña Actions en GitHub
+  workflow_dispatch:
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # No hay dependencias externas — solo stdlib de Python
+
+      - name: Restaurar hashes guardados
+        uses: actions/cache@v4
+        with:
+          path: hashes.json
+          key: hashes-horarios
+
+      - name: Correr monitor
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python monitor_horarios.py
+
+      - name: Guardar hashes actualizados
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: hashes.json
+          key: hashes-horarios-${{ github.run_id }}
