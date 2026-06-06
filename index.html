@@ -602,6 +602,41 @@ select:focus { border-color: var(--accent); }
   cursor: pointer; transition: all .15s;
 }
 .fb-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,.08); }
+
+/* ── FAQ ── */
+.faq-section { padding: 8px 16px 32px; }
+.faq-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; padding-top: 8px; }
+.faq-item { border-bottom: 1px solid rgba(255,255,255,.06); }
+.faq-q {
+  width: 100%; background: none; border: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; text-align: left;
+  color: var(--text); font-size: 14px; font-weight: 600; gap: 12px;
+}
+.faq-q:active { opacity: .7; }
+.faq-arrow { color: var(--muted); font-size: 16px; flex-shrink: 0; transition: transform .2s; }
+.faq-q.open .faq-arrow { transform: rotate(180deg); }
+.faq-a {
+  display: none; padding: 0 0 14px;
+  font-size: 13px; color: var(--muted); line-height: 1.65;
+}
+.faq-a.open { display: block; }
+.faq-link { color: var(--accent); text-decoration: none; display: inline-block; margin: 2px 0; }
+.faq-link:active { opacity: .7; }
+.faq-twitter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.faq-tw-card {
+  display: flex; flex-direction: column; gap: 4px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: background .15s;
+}
+.faq-tw-card:active { background: rgba(255,255,255,.09); }
+.faq-tw-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-bottom: 2px; }
+.faq-tw-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.faq-tw-handle { font-size: 11px; color: var(--muted); }
 .fb-notice {
   display: none;
   background: rgba(255,255,255,.04);
@@ -873,6 +908,90 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
       <div class="roca-ramal-card" onclick="irAHorarios('mitre_vc')">
         <div class="roca-ramal-name">Victoria – Capilla del Señor</div>
         <div class="roca-ramal-desc">10 estaciones · Todos los días ⚠️ obras</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-title">Preguntas frecuentes</div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Esta app es oficial?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">No. Andén.ar es un proyecto independiente, sin fines de lucro y sin publicidad. Los horarios provienen de los PDFs que publica cada operadora en sus sitios oficiales. No somos Trenes Argentinos, Metrovías ni ningún organismo del Estado.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Los horarios están actualizados?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Se actualizan cada vez que las operadoras publican un nuevo diagrama. Dado que los servicios pueden cambiar sin previo aviso, siempre es recomendable confirmar el cronograma vigente antes de viajar, especialmente en feriados o fechas especiales.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Qué hago si un horario no coincide con la cartelera?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Las operadoras suelen modificar servicios sin actualizar sus PDFs inmediatamente. Si la diferencia persiste varios días, usá el botón Comentar y contanos qué línea, estación y horario no coinciden. Eso nos ayuda a mantener los datos al día.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Funciona sin internet?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Sí. Una vez que abriste la app al menos una vez con conexión, funciona completamente offline. Ideal para consultar en el andén sin señal.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿La puedo agregar a la pantalla de inicio?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Sí, y es la forma recomendada de usarla.<br><br>
+        <b>iPhone / iPad:</b> abrí la app en Safari, tocá el botón Compartir (□↑) y elegí "Agregar a inicio".<br><br>
+        <b>Android:</b> abrí la app en Chrome, tocá los tres puntos (⋮) y elegí "Agregar a pantalla de inicio" o "Instalar app".<br><br>
+        Una vez instalada se abre como app nativa, sin barra del navegador.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Hay algún corte o modificación hoy?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Andén.ar no tiene información en tiempo real sobre cortes o cambios de servicio. Para eso, revisá las cuentas oficiales en X antes de salir:
+        <div class="faq-twitter-grid">
+          <a class="faq-tw-card" href="https://x.com/trenesarg" target="_blank">
+            <span class="faq-tw-dot" style="background:#e8c547"></span>
+            <span class="faq-tw-name">Trenes Arg.</span>
+            <span class="faq-tw-handle">@trenesarg</span>
+          </a>
+          <a class="faq-tw-card" href="https://x.com/infotrensanmar" target="_blank" style="--lc:#e8c547">
+            <span class="faq-tw-dot" style="background:#e8c547"></span>
+            <span class="faq-tw-name">San Martín</span>
+            <span class="faq-tw-handle">@infotrensanmar</span>
+          </a>
+          <a class="faq-tw-card" href="https://x.com/infotrenmitre" target="_blank">
+            <span class="faq-tw-dot" style="background:#f87171"></span>
+            <span class="faq-tw-name">Mitre</span>
+            <span class="faq-tw-handle">@infotrenmitre</span>
+          </a>
+          <a class="faq-tw-card" href="https://x.com/infotsarmiento" target="_blank">
+            <span class="faq-tw-dot" style="background:#a78bfa"></span>
+            <span class="faq-tw-name">Sarmiento</span>
+            <span class="faq-tw-handle">@infotsarmiento</span>
+          </a>
+          <a class="faq-tw-card" href="https://x.com/infotrenroca" target="_blank">
+            <span class="faq-tw-dot" style="background:#f97316"></span>
+            <span class="faq-tw-name">Roca</span>
+            <span class="faq-tw-handle">@infotrenroca</span>
+          </a>
+          <a class="faq-tw-card" href="https://x.com/infobelgranosur" target="_blank">
+            <span class="faq-tw-dot" style="background:#1d4ed8"></span>
+            <span class="faq-tw-name">Belgrano Sur</span>
+            <span class="faq-tw-handle">@infobelgranosur</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -2280,6 +2399,14 @@ function volverHome() {
 // FEEDBACK — guardado local + envío por mailto
 // ─────────────────────────────────────────────
 let fbChipSelected = '';
+
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+  if(!isOpen) { answer.classList.add('open'); btn.classList.add('open'); }
+}
 
 function selectChip(el) {
   document.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('selected'));
