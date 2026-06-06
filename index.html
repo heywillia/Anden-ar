@@ -602,6 +602,30 @@ select:focus { border-color: var(--accent); }
   cursor: pointer; transition: all .15s;
 }
 .fb-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,.08); }
+.fb-notice {
+  display: none;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-left: 3px solid #f97316;
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.fb-notice.visible { display: block; }
+.fb-notice strong { color: var(--text); display: block; margin-bottom: 6px; font-size: 14px; }
+.fb-notice-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.fb-notice-link {
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid rgba(232,197,71,.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
 textarea {
   width: 100%; background: var(--card); border: 1px solid var(--border);
   color: var(--text); font-family: 'DM Sans', sans-serif;
@@ -1163,6 +1187,18 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
       <div class="fb-chip" onclick="selectChip(this)">👍 Me gusta</div>
       <div class="fb-chip" onclick="selectChip(this)">Otro</div>
     </div>
+
+    <div class="fb-notice" id="fbNoticeError">
+      <strong>⚠️ Antes de reportar un error en horarios</strong>
+      Los horarios de Andén.ar están basados en los diagramas oficiales vigentes publicados por cada operadora. Si un tren aparece en la app pero no en cartelera —o al revés— puede deberse a modificaciones temporales del servicio que la operadora aún no publicó. Esto es frecuente y escapa a nuestro control.<br><br>
+      Si el error persiste varios días, contanos abajo con la línea, estación y horario exacto.
+      <div class="fb-notice-links">
+        <a class="fb-notice-link" href="https://www.argentina.gob.ar/transporte/horarios-de-trenes" target="_blank">🚆 Trenes Argentinos</a>
+        <a class="fb-notice-link" href="https://www.metrovias.com.ar/horarios" target="_blank">🚇 Metrovías (Subte)</a>
+        <a class="fb-notice-link" href="https://trenurbano.com.ar" target="_blank">🚆 Tren Urbano (Urquiza)</a>
+      </div>
+    </div>
+
     <div class="fb-field">
       <label class="fb-label" for="fbText">Tu comentario</label>
       <textarea id="fbText" rows="5" placeholder="Contanos lo que quieras. Qué línea querés que agreguemos, qué funciona mal, qué mejorarías..."></textarea>
@@ -2249,6 +2285,12 @@ function selectChip(el) {
   document.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   fbChipSelected = el.textContent.trim();
+  const notice = document.getElementById('fbNoticeError');
+  if(fbChipSelected.includes('Error en horarios')) {
+    notice.classList.add('visible');
+  } else {
+    notice.classList.remove('visible');
+  }
 }
 
 async function enviarFeedback() {
@@ -2314,6 +2356,7 @@ function nuevoFeedback() {
   document.getElementById('fbContact').value = '';
   document.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('selected'));
   fbChipSelected = '';
+  document.getElementById('fbNoticeError').classList.remove('visible');
   document.getElementById('fbForm').style.display = 'block';
   document.getElementById('fbSent').style.display = 'none';
 }
@@ -6904,12 +6947,14 @@ function render() {
       msgExtra = 'Probá ampliar el rango.';
     } else {
       // Buscar el próximo tren disponible más allá de las 4 horas
+      // Umbral madrugada: trenes antes de las 5:00 (300 min) cuando ya pasaron las 20:00 (1200 min)
+      // se tratan como "día siguiente" sumando 1440
       let proximoFuturo = null;
       trenes.forEach(tren => {
         const hOrigen = tren.h[hIdx(origenIdx)];
         if(!hOrigen) return;
         let mT = toMins(hOrigen);
-        if(mT < 120 && now > 1200) mT += 1440;
+        if(mT < 300 && now > 1200) mT += 1440;
         if(mT >= now - 1) {
           if(proximoFuturo === null || mT < proximoFuturo) proximoFuturo = mT;
         }
@@ -6931,7 +6976,7 @@ function render() {
           if(primeroDia === null || mT < primeroDia) primeroDia = mT;
         });
         if(primeroDia !== null) {
-          msgExtra = `Retoma a las <strong>${minsToStr(primeroDia)}</strong>`;
+          msgExtra = `Retoma mañana a las <strong>${minsToStr(primeroDia)}</strong>`;
         } else {
           msgExtra = 'No hay servicios disponibles para esta selección.';
         }
