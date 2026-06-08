@@ -11,6 +11,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Andén.ar">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230d0f14'/%3E%3Crect x='0' y='488' width='512' height='24' rx='4' fill='%23e8c547'/%3E%3Ctext x='256' y='310' font-family='Arial Black,sans-serif' font-weight='900' font-size='220' text-anchor='middle' fill='%23f0f2f7'%3EA%3C/text%3E%3Ctext x='256' y='420' font-family='Arial,sans-serif' font-weight='400' font-size='68' text-anchor='middle' fill='%23e8c547' letter-spacing='8'%3E.ar%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -337,6 +339,25 @@ header {
 }
 .fav-save-btn.saved { border-color: var(--accent); color: var(--accent); }
 .fav-save-btn:active { transform: scale(.9); }
+.share-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 5px 9px;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.share-btn:active { transform: scale(.9); background: rgba(255,255,255,.06); }
+/* Estado "no opera este día" */
+.no-opera { text-align: center; gap: 6px; }
+.no-opera-icon { font-size: 28px; display: block; margin-bottom: 4px; }
+/* Historial en Home */
+.hist-card { opacity: .85; }
+.hist-card:active { opacity: 1; }
+#histSectionTitle { color: var(--muted); font-size: 11px; }
 
 /* PANEL */
 .panel { padding: 16px 16px 0; flex-shrink: 0; }
@@ -414,7 +435,118 @@ select:focus { border-color: var(--accent); }
   position: relative;
   overflow: hidden;
   animation: slideIn .22s ease both;
+  transition: transform .15s ease, box-shadow .15s ease;
+  touch-action: pan-y;
+  user-select: none;
 }
+/* Swipe fav */
+.train-card-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.swipe-bg {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 80px;
+  background: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border-radius: 12px;
+  opacity: 0;
+  transition: opacity .1s;
+}
+.train-card-wrap.swiping .swipe-bg { opacity: 1; }
+/* Botón notificación en card */
+.notif-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 7px;
+  flex-shrink: 0;
+  transition: all .2s;
+  line-height: 1;
+}
+.notif-btn.active { border-color: var(--accent); color: var(--accent); }
+.notif-btn:active { transform: scale(.9); }
+/* Selector de tiempo de notificación */
+.notif-picker {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 50;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  animation: slideIn .15s ease both;
+}
+.notif-picker button {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.notif-picker button:active { background: var(--accent); color: #000; border-color: var(--accent); }
+/* Banner PWA */
+/* Snackbar de instalación PWA — aparece desde arriba, estilo Telegram/Chrome */
+#installBanner {
+  position: fixed;
+  top: -90px;
+  left: 12px; right: 12px;
+  background: var(--surface);
+  border: 1px solid rgba(232,197,71,0.25);
+  border-radius: 14px;
+  padding: 12px 14px;
+  z-index: 300;
+  box-shadow: 0 4px 24px rgba(0,0,0,.45);
+  transition: top .4s cubic-bezier(.34,1.4,.64,1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#installBanner.visible { top: 12px; }
+.install-snack-icon { font-size: 26px; flex-shrink: 0; }
+.install-snack-body { flex: 1; min-width: 0; }
+.install-snack-title { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.install-snack-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+/* iOS: sub muestra los pasos en tooltip pequeño */
+.install-snack-steps { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+.install-snack-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.install-btn-main {
+  background: var(--accent); color: #000;
+  border: none; border-radius: 8px;
+  padding: 7px 13px; font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+}
+.install-btn-close {
+  background: none; border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 10px;
+  color: var(--muted); font-size: 12px; cursor: pointer;
+}
+.install-progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px; background: var(--accent);
+  border-radius: 0 0 14px 14px;
+  width: 100%;
+  transform-origin: left;
+  transition: transform 6s linear;
+}
+#installBanner.visible .install-progress { transform: scaleX(0); }
 .train-card::before {
   content: '';
   position: absolute;
@@ -523,6 +655,132 @@ select:focus { border-color: var(--accent); }
   z-index: 999;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── ONBOARDING ─────────────────────────────────────────── */
+#onboardingScreen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 500;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 28px;
+  gap: 0;
+}
+.ob-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px; letter-spacing: 2px;
+  color: var(--text); margin-bottom: 4px;
+}
+.ob-logo span { color: var(--accent); }
+.ob-tagline {
+  font-size: 11px; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase;
+  margin-bottom: 40px;
+}
+.ob-steps { width: 100%; display: flex; flex-direction: column; gap: 24px; margin-bottom: 40px; }
+.ob-step { display: flex; align-items: flex-start; gap: 16px; }
+.ob-step-icon {
+  font-size: 28px; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 12px; flex-shrink: 0;
+}
+.ob-step-body {}
+.ob-step-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.ob-step-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.ob-cta {
+  width: 100%;
+  background: var(--accent); color: #000;
+  border: none; border-radius: 14px;
+  padding: 16px; font-size: 16px; font-weight: 700;
+  cursor: pointer; letter-spacing: .3px;
+}
+.ob-skip {
+  background: none; border: none;
+  color: var(--muted); font-size: 13px;
+  padding: 12px; cursor: pointer; margin-top: 4px;
+}
+
+/* ── SUGERENCIA PROACTIVA DE FAVORITO ───────────────────── */
+#favSuggest {
+  position: fixed;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 10px);
+  left: 16px; right: 16px;
+  background: var(--card);
+  border: 1px solid rgba(232,197,71,.3);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+  z-index: 250;
+  transform: translateY(16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all .3s cubic-bezier(.34,1.4,.64,1);
+}
+#favSuggest.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+.fav-suggest-text { flex: 1; font-size: 13px; color: var(--text); line-height: 1.3; }
+.fav-suggest-text strong { color: var(--accent); }
+.fav-suggest-yes {
+  background: var(--accent); color: #000;
+  border: none; border-radius: 8px;
+  padding: 8px 14px; font-size: 13px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+}
+.fav-suggest-no {
+  background: none; border: none;
+  color: var(--muted); font-size: 20px;
+  padding: 4px 6px; cursor: pointer; line-height: 1;
+}
+
+/* ── PRÓXIMO TREN — jerarquía visual ────────────────────── */
+.train-card.next-train {
+  border-color: rgba(232,197,71,.4);
+  background: rgba(232,197,71,.06);
+  padding: 16px 15px;
+}
+.train-card.next-train .train-time {
+  font-size: 38px;
+  color: var(--accent);
+}
+.train-card.next-train .train-eta-mins {
+  font-size: 13px; font-weight: 700;
+  color: var(--accent); margin-top: 2px;
+}
+.train-next-divider {
+  border: none; border-top: 1px solid var(--border);
+  margin: 8px 0 12px; opacity: .4;
+}
+
+/* ── BOTÓN REPORTAR HORARIO ─────────────────────────────── */
+.report-btn {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted); font-size: 12px;
+  padding: 9px 14px;
+  cursor: pointer; width: 100%; margin-top: 8px;
+  transition: all .2s;
+}
+.report-btn:active { border-color: #ef4444; color: #ef4444; }
+/* Station picker trigger */
+.station-picker-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+  padding: 11px 14px; color: var(--text); font-size: 14px;
+  cursor: pointer; text-align: left; transition: border-color .2s;
+}
+.station-picker-trigger:active { border-color: var(--accent); }
+.station-picker-arrow { color: var(--muted); font-size: 12px; }
+.station-list-item {
+  padding: 13px 16px; font-size: 15px; color: var(--text);
+  cursor: pointer; border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .15s;
+}
+.station-list-item:active { background: rgba(232,197,71,.08); }
+.station-list-item.selected { color: var(--accent); font-weight: 600; }
 
 /* ════════════════════════════════
    PANTALLA 3 — SERVICIOS / LÍNEAS
@@ -718,6 +976,44 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
 <!-- ══════════════════════════════════
      PANTALLA 1: HOME
 ══════════════════════════════════ -->
+<!-- ONBOARDING — solo primera vez -->
+<div id="onboardingScreen" style="display:none">
+  <div class="ob-logo">ANDÉN<span>.AR</span></div>
+  <div class="ob-tagline">Horarios de trenes · Buenos Aires</div>
+  <div class="ob-steps">
+    <div class="ob-step">
+      <div class="ob-step-icon">⚡</div>
+      <div class="ob-step-body">
+        <div class="ob-step-title">Sin conexión, igual funciona</div>
+        <div class="ob-step-desc">Todos los horarios están guardados en tu teléfono. En el andén, sin señal, igual ves el próximo tren.</div>
+      </div>
+    </div>
+    <div class="ob-step">
+      <div class="ob-step-icon">★</div>
+      <div class="ob-step-body">
+        <div class="ob-step-title">Tu tren en un tap</div>
+        <div class="ob-step-desc">Guardá tu viaje frecuente como favorito y accedé directo desde el inicio, sin buscar nada.</div>
+      </div>
+    </div>
+    <div class="ob-step">
+      <div class="ob-step-icon">🔔</div>
+      <div class="ob-step-body">
+        <div class="ob-step-title">Avisate antes de salir</div>
+        <div class="ob-step-desc">Tocá 🔔 en cualquier tren y te avisamos 10, 15 o 20 minutos antes de que salga.</div>
+      </div>
+    </div>
+  </div>
+  <button class="ob-cta" onclick="cerrarOnboarding()">Empezar</button>
+  <button class="ob-skip" onclick="cerrarOnboarding()">Saltear</button>
+</div>
+
+<!-- SUGERENCIA PROACTIVA DE FAVORITO -->
+<div id="favSuggest">
+  <div class="fav-suggest-text">¿Guardás <strong id="favSuggestLabel">este viaje</strong> como acceso rápido?</div>
+  <button class="fav-suggest-yes" onclick="aceptarFavSuggest()">★ Guardar</button>
+  <button class="fav-suggest-no" onclick="cerrarFavSuggest()">✕</button>
+</div>
+
 <div class="screen home-screen active" id="screenHome">
 
   <div class="home-header">
@@ -737,6 +1033,10 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   <div class="section-title" id="favsSectionTitle">Mis viajes frecuentes</div>
   <div class="favs-list" id="favsList"></div>
 
+  <!-- HISTORIAL RECIENTE -->
+  <div class="section-title" id="histSectionTitle" style="margin-top:4px">Recientes</div>
+  <div class="favs-list" id="historialList"></div>
+
   <!-- SERVICIOS -->
   <div class="section-title" style="margin-top:8px">Servicios disponibles</div>
   <div class="services-grid">
@@ -751,20 +1051,18 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     <div class="service-card available" onclick="irAHorarios('bn')" style="--accent-line:#34d399">
       <div class="service-badge badge-live">✓ activo</div>
       <div class="service-emoji">🚆</div>
-      <div class="service-name" style="color:#34d399">Belgrano Norte</div>
+      <div class="service-name">Belgrano Norte</div>
       <div class="service-desc">Retiro → Villa Rosa<br>Boulogne</div>
     </div>
 
-    <!-- Card Belgrano Sur agrupada -->
+    <!-- Card Belgrano Sur — expande sub-ramales -->
     <div class="service-card roca available" id="bsMainCard" onclick="toggleBsCard()" style="--accent-line:#1d4ed8">
       <div class="service-badge badge-live">✓ activo</div>
       <div class="service-emoji">🚆</div>
-      <div class="service-name" style="color:#1d4ed8">Belgrano Sur</div>
-      <div class="service-desc">G.Catán / Sáenz → Belgrano</div>
+      <div class="service-name">Belgrano Sur</div>
+      <div class="service-desc">G.Catán / Marcos Paz</div>
       <div class="roca-expand-hint" id="bsExpandHint">▾ elegir ramal</div>
     </div>
-
-    <!-- Sub-cards Belgrano Sur -->
     <div class="roca-ramales" id="bsRamales">
       <div class="roca-ramal-card" onclick="irAHorarios('bs_gc')">
         <span class="roca-ramal-dot" style="background:#1d4ed8">GC</span>
@@ -787,7 +1085,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     <div class="service-card available" onclick="irAHorarios('ur')" style="--accent-line:#60a5fa">
       <div class="service-badge badge-live">✓ activo</div>
       <div class="service-emoji">🚆</div>
-      <div class="service-name" style="color:#60a5fa">Urquiza</div>
+      <div class="service-name">Urquiza</div>
       <div class="service-desc">F. Lacroze → Gral. Lemos<br>23 estaciones</div>
     </div>
 
@@ -795,7 +1093,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     <div class="service-card roca available" id="rocaMainCard" onclick="toggleRocaCard()" style="--accent-line:#f97316">
       <div class="service-badge badge-live">✓ activo</div>
       <div class="service-emoji">🚂</div>
-      <div class="service-name" style="color:#f97316">Roca</div>
+      <div class="service-name">Roca</div>
       <div class="service-desc">Constitución → múltiples ramales</div>
       <div class="roca-expand-hint" id="rocaExpandHint">▾ elegir ramal</div>
     </div>
@@ -854,7 +1152,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         <span class="roca-ramal-dot" style="background:#f97316">UNI</span>
         <div class="roca-ramal-info">
           <div class="roca-ramal-nombre">Tren Universitario</div>
-          <div class="roca-ramal-desc">La Plata → Hptal. San Juan de Dios · 11 est.</div>
+          <div class="roca-ramal-desc">La Plata → Hptal.San Juan de Dios · 11 est.</div>
         </div>
         <span class="roca-ramal-arrow">→</span>
       </div>
@@ -864,7 +1162,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     <div class="service-card sr-card available" id="srMainCard" onclick="toggleSrCard()" style="--accent-line:#a78bfa">
       <div class="service-badge badge-live">✓ activo</div>
       <div class="service-emoji">🚆</div>
-      <div class="service-name" style="color:#a78bfa">Sarmiento</div>
+      <div class="service-name">Sarmiento</div>
       <div class="service-desc">Once → múltiples ramales</div>
       <div class="roca-expand-hint" id="srExpandHint">▾ elegir ramal</div>
     </div>
@@ -1073,6 +1371,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         <div class="header-sub">andén.ar</div>
       </div>
       <div class="live-time" id="liveTime"></div>
+      <button class="share-btn" id="shareBtn" onclick="compartirHorario()" title="Compartir horario">⬆</button>
       <button class="fav-save-btn" id="favSaveBtn" onclick="toggleFavorito()" title="Guardar como favorito">☆</button>
     </div>
   </header>
@@ -1098,7 +1397,11 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     </div>
     <div class="field-block">
       <div class="field-label">Estación de origen</div>
-      <select id="selOrigen" onchange="onOrigenChange()"></select>
+      <button class="station-picker-trigger" id="origenTrigger" onclick="abrirPickerOrigen()">
+        <span id="origenTriggerLabel">Seleccioná una estación</span>
+        <span class="station-picker-arrow">▾</span>
+      </button>
+      <select id="selOrigen" onchange="onOrigenChange()" style="display:none"></select>
     </div>
     <div class="field-block">
       <div class="field-label">Estación de destino <span style="color:var(--muted);font-size:10px;font-weight:400">(opcional — para ETA)</span></div>
@@ -1137,6 +1440,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   <div id="infoBar" class="info-bar" style="display:none"></div>
   <div class="trains-list" id="trainsList"></div>
   <button class="show-more-btn" id="showMoreBtn" onclick="showMore()" style="display:none">Ver más horarios ↓</button>
+  <button class="report-btn" onclick="reportarHorario()">⚑ Reportar horario incorrecto</button>
 
 </div>
 
@@ -1285,7 +1589,7 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         <div class="linea-sub-dot" style="background:#f97316">TH</div>
         <div class="linea-info">
           <div class="linea-nombre">Temperley – Haedo</div>
-          <div class="linea-tramo">11 estaciones · LV + SAB + Dom/Fer</div>
+          <div class="linea-tramo">11 estaciones · LV+SAB+Dom</div>
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
@@ -1309,23 +1613,23 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         <div class="linea-dot" style="background:#1d4ed8;color:#fff">BS</div>
         <div class="linea-info">
           <div class="linea-nombre">Belgrano Sur</div>
-          <div class="linea-tramo">Dr.A.Sáenz / G.Catán → M.C.Gral.Belgrano · Marcos Paz</div>
+          <div class="linea-tramo">G.Catán → Marcos Paz / Lozano</div>
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible sub-row" onclick="irAHorarios('bs_gc')" style="--lc:#1d4ed8">
-        <div class="linea-dot sub-dot" style="background:#1d4ed8;color:#fff">↳</div>
+      <div class="linea-row linea-sub disponible" onclick="irAHorarios('bs_gc')" style="--lc:#1d4ed8">
+        <div class="linea-sub-dot" style="background:#1d4ed8">GC</div>
         <div class="linea-info">
-          <div class="linea-nombre">G.Catán – Marcos Paz – Villars – Lozano</div>
-          <div class="linea-tramo">5 estaciones · LV + SAB + Dom/Fer</div>
+          <div class="linea-nombre">González Catán / Marcos Paz</div>
+          <div class="linea-tramo">G.Catán → Lozano · 5 est. · LV+SAB+Dom</div>
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible sub-row" onclick="irAHorarios('bs_sb')" style="--lc:#1d4ed8">
-        <div class="linea-dot sub-dot" style="background:#1d4ed8;color:#fff">↳</div>
+      <div class="linea-row linea-sub disponible" onclick="irAHorarios('bs_sb')" style="--lc:#1d4ed8">
+        <div class="linea-sub-dot" style="background:#1d4ed8">SB</div>
         <div class="linea-info">
-          <div class="linea-nombre">Sáenz – G.Catán – Tapiales – M.C.Gral.Belgrano</div>
-          <div class="linea-tramo">22 estaciones · Diagrama especial por obras</div>
+          <div class="linea-nombre">Sáenz – Tapiales – M.C.Gral.Belgrano</div>
+          <div class="linea-tramo">22 est. · Diagrama especial por obras</div>
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
@@ -2272,6 +2576,8 @@ function toggleFavorito() {
       state: { tipoDia, direccion, origenIdx,
         destinoIdx: document.getElementById('selDestino').value || '' } });
     showToast('⭐ Guardado como favorito');
+    // Preguntar por notificación proactiva si aún no la configuró
+    setTimeout(() => preguntarNotifProactiva(key), 800);
   }
   saveFavs(favs);
   updateFavBtn();
@@ -2326,6 +2632,7 @@ function abrirFavorito(idx) {
     document.getElementById('btnDomFer').classList.toggle('active', tipoDia==='domfer');
     document.getElementById('btnHaciaFinal').classList.toggle('active', direccion==='haciafinal');
     document.getElementById('btnHaciaRetiro').classList.toggle('active', direccion==='haciaretiro');
+    updateDirLabels();
     poblarOrigen();
     document.getElementById('selOrigen').value = origenIdx;
     poblarDestino();
@@ -2343,6 +2650,123 @@ function eliminarFav(idx) {
   saveFavs(favs);
   renderFavs();
   showToast('Favorito eliminado');
+}
+
+// ─────────────────────────────────────────────
+// DIRECCIÓN — labels dinámicos con terminales reales
+// ─────────────────────────────────────────────
+function updateDirLabels() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if (!cfg) return;
+  const btnFinal   = document.getElementById('btnHaciaFinal');
+  const btnRetiro  = document.getElementById('btnHaciaRetiro');
+  // Terminales: IDA va hacia terminalIda, VTA va hacia terminalVta
+  const labelIda = cfg.terminalIda  || 'Terminal final';
+  const labelVta = cfg.terminalVta  || 'Terminal inicial';
+  btnFinal.innerHTML  = `<span class="dir-icon">→</span>${labelIda}`;
+  btnRetiro.innerHTML = `<span class="dir-icon">←</span>${labelVta}`;
+}
+
+// ─────────────────────────────────────────────
+// HISTORIAL DE BÚSQUEDAS RECIENTES
+// ─────────────────────────────────────────────
+const HISTORIAL_KEY = 'anden_historial';
+const HISTORIAL_MAX = 5;
+
+function guardarHistorial() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if (!cfg) return;
+  const ests = cfg.estaciones();
+  const entrada = {
+    linea: lineaActual,
+    nombre: cfg.nombre,
+    color: cfg.color,
+    tipoDia,
+    direccion,
+    origenIdx,
+    origenNombre: ests[origenIdx] || '',
+    ts: Date.now(),
+  };
+  let hist = getHistorial();
+  // Deduplicar por linea+origen+dirección
+  hist = hist.filter(h => !(h.linea===entrada.linea && h.origenIdx===entrada.origenIdx && h.direccion===entrada.direccion));
+  hist.unshift(entrada);
+  hist = hist.slice(0, HISTORIAL_MAX);
+  try { localStorage.setItem(HISTORIAL_KEY, JSON.stringify(hist)); } catch(e) {}
+}
+
+function getHistorial() {
+  try { return JSON.parse(localStorage.getItem(HISTORIAL_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function abrirDesdeHistorial(h) {
+  irAHorarios(h.linea);
+  setTimeout(() => {
+    tipoDia   = h.tipoDia;
+    direccion = h.direccion;
+    document.getElementById('btnLabSab').classList.toggle('active', tipoDia==='labsab');
+    document.getElementById('btnDomFer').classList.toggle('active', tipoDia==='domfer');
+    document.getElementById('btnHaciaFinal').classList.toggle('active', direccion==='haciafinal');
+    document.getElementById('btnHaciaRetiro').classList.toggle('active', direccion==='haciaretiro');
+    updateDirLabels();
+    poblarOrigen();
+    document.getElementById('selOrigen').value = h.origenIdx;
+    origenIdx = h.origenIdx;
+    poblarDestino();
+    render();
+  }, 60);
+}
+
+function renderHistorial() {
+  const hist = getHistorial();
+  const cont = document.getElementById('historialList');
+  if (!cont) return;
+  if (!hist.length) {
+    cont.innerHTML = '<div class="fav-empty">Tus búsquedas recientes aparecerán acá</div>';
+    return;
+  }
+  cont.innerHTML = hist.map((h, i) => {
+    const dir = h.direccion === 'haciafinal' ? '→' : '←';
+    const cfg = LINEAS_CONFIG[h.linea];
+    const terminal = cfg ? (h.direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : '';
+    const lineNombre = h.nombre.replace(/🚆\s*|🚇\s*|🚂\s*/g,'');
+    return `<div class="fav-card hist-card" onclick="abrirDesdeHistorial(${JSON.stringify(h).replace(/"/g,'&quot;')})">
+      <div class="fav-line-dot" style="background:${h.color}"></div>
+      <div class="fav-info">
+        <div class="fav-linea">${lineNombre}</div>
+        <div class="fav-detalle">${h.origenNombre} ${dir} ${terminal}</div>
+      </div>
+      <span class="fav-go">→</span>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// COMPARTIR HORARIO
+// ─────────────────────────────────────────────
+function compartirHorario() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if (!cfg) return;
+  const ests = cfg.estaciones();
+  const origen = ests[origenIdx] || '';
+  const terminal = direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta;
+  // Agarrar el primer resultado visible (próximo tren)
+  const primer = document.querySelector('.train-card');
+  let textoTren = '';
+  if (primer) {
+    const hora = primer.querySelector('.train-time');
+    const eta  = primer.querySelector('.train-eta');
+    if (hora) textoTren = `\nPróximo: ${hora.textContent.trim()}`;
+    if (eta)  textoTren += ` · llega ${eta.textContent.trim()}`;
+  }
+  const lineNombre = cfg.nombre.replace(/🚆\s*|🚇\s*|🚂\s*/g,'').trim();
+  const texto = `🚉 ${lineNombre}\n${origen} → ${terminal}${textoTren}\n\nHorarios offline en andén.ar`;
+  if (navigator.share) {
+    navigator.share({ text: texto }).catch(() => {});
+  } else {
+    // Fallback: copiar al portapapeles
+    navigator.clipboard.writeText(texto).then(() => showToast('Horario copiado ✓')).catch(() => showToast('No se pudo compartir'));
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -2376,6 +2800,7 @@ function setDir(d) {
   direccion = d;
   document.getElementById('btnHaciaFinal').classList.toggle('active', d==='haciafinal');
   document.getElementById('btnHaciaRetiro').classList.toggle('active', d==='haciaretiro');
+  updateDirLabels();
   poblarOrigen(); updateFavBtn(); render();
 }
 function onOrigenChange() {
@@ -2449,7 +2874,12 @@ function updateClocks() {
 }
 updateClocks();
 setInterval(updateClocks,1000);
-setInterval(render,60000);
+// Render automático cada minuto — solo si el minuto actual cambió
+let _lastRenderMin = -1;
+setInterval(() => {
+  const m = nowMins();
+  if(m !== _lastRenderMin) { _lastRenderMin = m; render(); }
+}, 60000);
 
 // (init movido al final, después de LINEAS_CONFIG)
 
@@ -2483,7 +2913,14 @@ function volverHome() {
   document.getElementById('screenHome').classList.add('active');
   document.getElementById('nav-home').classList.add('active');
   currentNav = 'home';
+  cerrarFavSuggest();
   renderFavs();
+  renderHistorial();
+  const hist = getHistorial();
+  const title = document.getElementById('histSectionTitle');
+  const list  = document.getElementById('historialList');
+  if (title) title.style.display = hist.length ? '' : 'none';
+  if (list)  list.style.display  = hist.length ? '' : 'none';
   window.scrollTo(0,0);
 }
 
@@ -6381,13 +6818,12 @@ const MT_VC_TODOS_VTA = [
   {n:'2020',h:[[0,8],[0,0],[23,41],[23,35],[23,27],[23,20],[23,11],null,null,null]},
 ];
 
+
 // ══════════════════════════════════════════════════════════
 // BELGRANO SUR — Ramal González Catán / Marcos Paz / Villars / Lozano
 // Fuente: Trenes Argentinos — vigente 25/05/26
-// 5 estaciones:
 // h[0]=González Catán, h[1]=20 de Junio, h[2]=Marcos Paz, h[3]=Villars, h[4]=Lozano
-// IDA = González Catán → Lozano | VTA = Lozano → González Catán
-// null = no para o ramal corto (no llega a Villars/Lozano)
+// IDA = González Catán → Lozano
 // ══════════════════════════════════════════════════════════
 const BS_GC_LV_IDA = [
   {n:'5101',h:[[8,47],[9,7],[9,30],[10,0],null]},
@@ -6431,19 +6867,108 @@ const BS_GC_DF_VTA = [
 ];
 
 // ══════════════════════════════════════════════════════════
-// BELGRANO SUR — Ramal Dr. A. Sáenz / González Catán / Tapiales / M.C. Gral. Belgrano
+// ROCA — Temperley / Haedo — vigente 04/02/26
+// h[0]=Temperley … h[10]=Haedo
+// ══════════════════════════════════════════════════════════
+const ROCA_TH_LV_IDA = [
+  {n:'4507',h:[[5,0],[5,7],[5,14],[5,18],[5,31],[5,37],[5,50],[5,58],[6,7],[6,14],[6,20]]},
+  {n:'4511',h:[[8,20],[8,27],[8,34],[8,38],[8,51],[8,57],[9,10],[9,18],[9,27],[9,34],[9,40]]},
+  {n:'4515',h:[[11,36],[11,43],[11,50],[11,54],[12,7],[12,13],[12,26],[12,34],[12,43],[12,50],[12,56]]},
+  {n:'4519',h:[[15,8],[15,15],[15,22],[15,26],[15,39],[15,45],[15,58],[16,6],[16,15],[16,22],[16,28]]},
+  {n:'4523',h:[[18,20],[18,27],[18,34],[18,38],[18,51],[18,57],[19,10],[19,18],[19,27],[19,34],[19,40]]},
+];
+const ROCA_TH_LV_VTA = [
+  {n:'4508',h:[[8,0],[7,55],[7,47],[7,43],[7,32],[7,22],[7,11],[7,2],[6,54],[6,47],[6,40]]},
+  {n:'4512',h:[[11,20],[11,15],[11,7],[11,3],[10,52],[10,42],[10,31],[10,22],[10,14],[10,7],[10,0]]},
+  {n:'4516',h:[[14,55],[14,50],[14,42],[14,38],[14,27],[14,17],[14,6],[13,57],[13,49],[13,42],[13,35]]},
+  {n:'4520',h:[[18,0],[17,55],[17,47],[17,43],[17,32],[17,22],[17,11],[17,2],[16,54],[16,47],[16,40]]},
+  {n:'4524',h:[[21,20],[21,15],[21,7],[21,3],[20,52],[20,42],[20,31],[20,22],[20,14],[20,7],[20,0]]},
+];
+const ROCA_TH_SAB_IDA = [
+  {n:'4509',h:[[6,5],[6,12],[6,19],[6,23],[6,36],[6,42],[6,55],[7,3],[7,12],[7,19],[7,25]]},
+  {n:'4513',h:[[9,20],[9,27],[9,34],[9,38],[9,51],[9,57],[10,10],[10,18],[10,27],[10,34],[10,40]]},
+  {n:'4517',h:[[12,40],[12,47],[12,54],[12,58],[13,11],[13,17],[13,30],[13,38],[13,47],[13,54],[14,0]]},
+  {n:'4521',h:[[16,0],[16,7],[16,14],[16,18],[16,31],[16,37],[16,50],[16,58],[17,7],[17,14],[17,20]]},
+];
+const ROCA_TH_SAB_VTA = [
+  {n:'4510',h:[[9,5],[9,0],[8,52],[8,48],[8,37],[8,27],[8,16],[8,7],[7,59],[7,52],[7,45]]},
+  {n:'4514',h:[[12,20],[12,15],[12,7],[12,3],[11,52],[11,42],[11,31],[11,22],[11,14],[11,7],[11,0]]},
+  {n:'4518',h:[[15,40],[15,35],[15,27],[15,23],[15,12],[15,2],[14,51],[14,42],[14,34],[14,27],[14,20]]},
+  {n:'4522',h:[[19,0],[18,55],[18,47],[18,43],[18,32],[18,22],[18,11],[18,2],[17,54],[17,47],[17,40]]},
+];
+const ROCA_TH_DF_IDA = [
+  {n:'4509',h:[[6,40],[6,45],[6,54],[6,59],[7,13],[7,18],[7,29],[7,37],[7,45],[7,53],[8,0]]},
+  {n:'4513',h:[[10,0],[10,5],[10,14],[10,19],[10,33],[10,38],[10,49],[10,57],[11,5],[11,13],[11,20]]},
+  {n:'4517',h:[[13,20],[13,25],[13,34],[13,39],[13,53],[13,58],[14,9],[14,17],[14,25],[14,33],[14,40]]},
+  {n:'4521',h:[[16,40],[16,45],[16,54],[16,59],[17,13],[17,18],[17,29],[17,37],[17,45],[17,53],[18,0]]},
+];
+const ROCA_TH_DF_VTA = [
+  {n:'4510',h:[[9,40],[9,35],[9,27],[9,23],[9,12],[9,2],[8,51],[8,43],[8,35],[8,27],[8,20]]},
+  {n:'4514',h:[[13,0],[12,55],[12,47],[12,43],[12,32],[12,22],[12,11],[12,3],[11,55],[11,47],[11,40]]},
+  {n:'4518',h:[[16,20],[16,15],[16,7],[16,3],[15,52],[15,42],[15,31],[15,23],[15,15],[15,7],[15,0]]},
+  {n:'4522',h:[[19,40],[19,35],[19,27],[19,23],[19,12],[19,2],[18,51],[18,43],[18,35],[18,27],[18,20]]},
+];
+
+// ══════════════════════════════════════════════════════════
+// ROCA — Tren Universitario — vigente 15/07/24
+// h[0]=La Plata … h[10]=Hptal.San Juan de Dios
+// No opera domingos/feriados
+// ══════════════════════════════════════════════════════════
+const ROCA_UNI_LV_IDA = [
+  {n:'701',h:[[7,17],[7,20],[7,23],[7,27],[7,30],[7,34],[7,39],[7,43],[7,46],[7,50],[7,55]]},
+  {n:'703',h:[[9,3],[9,6],[9,9],[9,13],[9,16],[9,20],[9,25],[9,29],[9,32],[9,36],[9,41]]},
+  {n:'705',h:[[10,54],[10,57],[11,0],[11,4],[11,7],[11,11],[11,16],[11,20],[11,23],[11,27],[11,32]]},
+  {n:'707',h:[[12,38],[12,41],[12,44],[12,48],[12,51],[12,55],[13,0],[13,4],[13,7],[13,11],[13,16]]},
+  {n:'709',h:[[14,22],[14,25],[14,28],[14,32],[14,35],[14,39],[14,44],[14,48],[14,51],[14,55],[15,0]]},
+  {n:'711',h:[[16,6],[16,9],[16,12],[16,16],[16,19],[16,23],[16,28],[16,32],[16,35],[16,39],[16,44]]},
+  {n:'713',h:[[17,18],[17,21],[17,24],[17,28],[17,31],[17,35],[17,40],[17,44],[17,47],[17,51],[17,56]]},
+  {n:'715',h:[[19,42],[19,45],[19,48],[19,52],[19,55],[19,59],[20,4],[20,8],[20,11],[20,15],[20,20]]},
+  {n:'717',h:[[21,26],[21,29],[21,32],[21,36],[21,39],[21,43],[21,48],[21,52],[21,55],[21,59],[22,4]]},
+];
+const ROCA_UNI_LV_VTA = [
+  {n:'702',h:[[8,43],[8,40],[8,37],[8,32],[8,29],[8,24],[8,20],[8,16],[8,12],[8,9],[8,5]]},
+  {n:'704',h:[[10,29],[10,26],[10,23],[10,18],[10,15],[10,10],[10,6],[10,2],[9,58],[9,55],[9,51]]},
+  {n:'706',h:[[12,18],[12,15],[12,12],[12,7],[12,4],[11,59],[11,55],[11,51],[11,47],[11,44],[11,40]]},
+  {n:'708',h:[[14,2],[13,59],[13,56],[13,51],[13,48],[13,43],[13,39],[13,35],[13,31],[13,28],[13,24]]},
+  {n:'710',h:[[15,46],[15,43],[15,40],[15,35],[15,32],[15,27],[15,23],[15,19],[15,15],[15,12],[15,8]]},
+  {n:'712',h:[[17,32],[17,29],[17,26],[17,21],[17,18],[17,13],[17,9],[17,5],[17,1],[16,58],[16,54]]},
+  {n:'714',h:[[19,20],[19,17],[19,14],[19,9],[19,6],[19,1],[18,57],[18,53],[18,49],[18,46],[18,42]]},
+  {n:'716',h:[[21,6],[21,3],[21,0],[20,55],[20,52],[20,47],[20,43],[20,39],[20,35],[20,32],[20,28]]},
+  {n:'718',h:[[22,50],[22,47],[22,44],[22,39],[22,36],[22,31],[22,27],[22,23],[22,19],[22,16],[22,12]]},
+];
+const ROCA_UNI_SAB_IDA = [
+  {n:'701',h:[[7,25],[7,28],[7,31],[7,35],[7,38],[7,42],[7,47],[7,51],[7,54],[7,58],[8,3]]},
+  {n:'703',h:[[9,25],[9,28],[9,31],[9,35],[9,38],[9,42],[9,47],[9,51],[9,54],[9,58],[10,3]]},
+  {n:'705',h:[[11,25],[11,28],[11,31],[11,35],[11,38],[11,42],[11,47],[11,51],[11,54],[11,58],[12,3]]},
+  {n:'707',h:[[13,25],[13,28],[13,31],[13,35],[13,38],[13,42],[13,47],[13,51],[13,54],[13,58],[14,3]]},
+  {n:'709',h:[[15,25],[15,28],[15,31],[15,35],[15,38],[15,42],[15,47],[15,51],[15,54],[15,58],[16,3]]},
+  {n:'711',h:[[17,25],[17,28],[17,31],[17,35],[17,38],[17,42],[17,47],[17,51],[17,54],[17,58],[18,3]]},
+  {n:'713',h:[[19,25],[19,28],[19,31],[19,35],[19,38],[19,42],[19,47],[19,51],[19,54],[19,58],[20,3]]},
+];
+const ROCA_UNI_SAB_VTA = [
+  {n:'702',h:[[8,51],[8,48],[8,45],[8,40],[8,37],[8,32],[8,28],[8,24],[8,20],[8,17],[8,13]]},
+  {n:'704',h:[[10,51],[10,48],[10,45],[10,40],[10,37],[10,32],[10,28],[10,24],[10,20],[10,17],[10,13]]},
+  {n:'706',h:[[12,51],[12,48],[12,45],[12,40],[12,37],[12,32],[12,28],[12,24],[12,20],[12,17],[12,13]]},
+  {n:'708',h:[[14,51],[14,48],[14,45],[14,40],[14,37],[14,32],[14,28],[14,24],[14,20],[14,17],[14,13]]},
+  {n:'710',h:[[16,51],[16,48],[16,45],[16,40],[16,37],[16,32],[16,28],[16,24],[16,20],[16,17],[16,13]]},
+  {n:'712',h:[[18,51],[18,48],[18,45],[18,40],[18,37],[18,32],[18,28],[18,24],[18,20],[18,17],[18,13]]},
+  {n:'714',h:[[20,51],[20,48],[20,45],[20,40],[20,37],[20,32],[20,28],[20,24],[20,20],[20,17],[20,13]]},
+];
+
+// ══════════════════════════════════════════════════════════
+// BELGRANO SUR — Ramal Dr. A. Sáenz / G. Catán / Tapiales / M.C.Gral.Belgrano
 // Fuente: Trenes Argentinos — vigente 25/05/26 — DIAGRAMA ESPECIAL POR OBRAS
 // 22 estaciones:
 // h[0]=Dr.A.Sáenz(Viaducto), h[1]=Villa Soldati, h[2]=Pte.Illia, h[3]=Lugano,
-// h[4]=Villa Madero, h[5]=M.del Fournier, h[6]=Tapiales/Km12(Est.combinación IDA),
-// h[7]=Ing.Castello/Km12(Est.combinación IDA), h[8]=Querandi, h[9]=Laferrere,
+// h[4]=Villa Madero, h[5]=M.del Fournier, h[6]=Tapiales/Km12,
+// h[7]=Ing.Castello/Km12, h[8]=Querandi, h[9]=Laferrere,
 // h[10]=M.Eva Duarte, h[11]=Independencia, h[12]=González Catán,
 // h[13]=Aldo Bonzi, h[14]=Mª S.de Mendeville, h[15]=José Ingenieros,
 // h[16]=J.Villegas, h[17]=Isidro Casanova, h[18]=Rafael Castillo,
 // h[19]=Merio Gómez, h[20]=Libertad, h[21]=M.C.Gral.Belgrano
-// IDA = Dr.A.Sáenz → M.C.Gral.Belgrano | VTA = M.C.Gral.Belgrano → Dr.A.Sáenz
-// Trenes 3xxx: Sáenz↔González Catán (h[13..21]=null)
-// Trenes 4xxx: Tapiales↔Belgrano (h[0..5]=null, h[7..12]=null)
+// IDA = Dr.A.Sáenz → M.C.Gral.Belgrano
+// Trenes 3xxx: Sáenz↔G.Catán (h[13..21]=null en IDA)
+// Trenes 4xxx: Tapiales↔Belgrano (h[0..5]=null, h[7..12]=null en IDA)
 // ══════════════════════════════════════════════════════════
 const BS_SB_LV_IDA = [
   {n:'4201',h:[null,null,null,null,null,null,[3,13],null,null,null,null,null,null,[3,19],[3,23],[3,27],[3,30],[3,36],[3,42],[3,46],[3,52],[4,1]]},
@@ -6516,9 +7041,6 @@ const BS_SB_LV_IDA = [
   {n:'4379',h:[null,null,null,null,null,null,[22,5],null,null,null,null,null,null,[22,11],[22,15],[22,19],[22,22],[22,28],[22,34],[22,38],[22,44],[22,53]]},
   {n:'3183',h:[[22,5],[22,13],[22,15],[22,22],[22,26],[22,29],[22,36],[22,40],[22,44],[22,52],[22,56],[22,59],[23,5],null,null,null,null,null,null,null,null,null]},
 ];
-// VTA LV: Marineros→Sáenz — h[0]=Sáenz(mayor), h[21]=Belgrano(menor)
-// Orden columnas VTA: MarinerosGralBelgrano,Libertad,MerioGomez,RafaelCastillo,IsidCasanova,JVillegas,JoseIngenieros,MariaSMendeville,AldoBonzi,GCatan,Independencia,MEvaDuarte,Laferrere,Querandi,IngCastello,Tapiales,MdelFournier,VillaMadero,Lugano,PteIllia,VillaSoldati,Saenz
-// En h[] invertimos: h[0]=Sáenz, h[21]=Belgrano
 const BS_SB_LV_VTA = [
   {n:'3206',h:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[4,5],[4,9],[4,13],[4,17],[4,24],[4,27],[4,35]]},
   {n:'3008',h:[null,null,null,null,null,null,null,null,null,[4,8],[4,14],[4,18],[4,22],[4,30],[4,34],[4,38],[4,42],[4,46],[4,50],[4,57],[5,0],[5,8]]},
@@ -6583,15 +7105,12 @@ const BS_SB_LV_VTA = [
   {n:'3162',h:[null,null,null,null,null,null,null,null,null,[19,45],[19,51],[19,55],[19,59],[20,7],[20,11],[20,15],[20,19],[20,23],[20,27],[20,34],[20,37],[20,45]]},
   {n:'4366',h:[[20,50],[20,49],[20,48],[20,45],[20,42],[20,38],[20,37],null,null,null,null,null,null,null,null,[20,56],null,null,null,null,null,null]},
   {n:'3166',h:[null,null,null,null,null,null,null,null,null,[20,15],[20,21],[20,25],[20,29],[20,37],[20,41],[20,45],[20,49],[20,53],[20,57],[21,4],[21,7],[21,15]]},
-  {n:'4368',h:[[20,50],[20,49],[20,48],[20,45],[20,43],[20,40],[20,38],null,null,null,null,null,null,null,null,[20,56],null,null,null,null,null,null]},
-  {n:'3170',h:[null,null,null,null,null,null,null,null,null,[20,45],[20,51],[20,55],[20,59],[21,7],[21,11],[21,15],[21,19],[21,23],[21,27],[21,34],[21,37],[21,45]]},
   {n:'4374',h:[[21,36],[21,35],[21,34],[21,31],[21,28],[21,25],[21,24],null,null,null,null,null,null,null,null,[21,42],null,null,null,null,null,null]},
   {n:'3176',h:[null,null,null,null,null,null,null,null,null,[21,18],[21,24],[21,28],[21,32],[21,40],[21,44],[21,48],[21,52],[21,56],[22,0],[22,7],[22,10],[22,18]]},
   {n:'4382',h:[[22,24],[22,23],[22,22],[22,19],[22,17],[22,14],[22,12],null,null,null,null,null,null,null,null,[22,30],null,null,null,null,null,null]},
   {n:'3184',h:[null,null,null,null,null,null,null,null,null,[22,15],[22,21],[22,25],[22,29],[22,37],[22,41],[22,45],[22,49],[22,53],[22,57],[23,4],[23,7],[23,15]]},
   {n:'4386',h:[[23,3],[23,2],[23,1],[22,58],[22,56],[22,53],[22,52],null,null,null,null,null,null,null,null,[23,9],null,null,null,null,null,null]},
 ];
-// SAB IDA — extraído de pág 3 bs_sb
 const BS_SB_SAB_IDA = [
   {n:'4501',h:[null,null,null,null,null,null,[3,13],null,null,null,null,null,null,[3,19],[3,23],[3,27],[3,30],[3,36],[3,42],[3,46],[3,52],[4,1]]},
   {n:'3503',h:[null,null,null,null,null,null,[3,30],[3,34],[3,39],[3,47],[3,51],[3,54],[4,0],null,null,null,null,null,null,null,null,null]},
@@ -6625,7 +7144,6 @@ const BS_SB_SAB_IDA = [
   {n:'3375',h:[[10,55],[11,3],[11,6],[11,13],[11,17],[11,20],[11,26],[11,30],[11,34],[11,42],[11,46],[11,49],[11,55],null,null,null,null,null,null,null,null,null]},
   {n:'4579',h:[null,null,null,null,null,null,[11,56],null,null,null,null,null,null,[12,2],[12,6],[12,10],[12,13],[12,19],[12,25],[12,29],[12,35],[12,44]]},
   {n:'3379',h:[[11,21],[11,29],[11,32],[11,39],[11,43],[11,46],[11,52],[11,56],[12,0],[12,8],[12,12],[12,15],[12,21],null,null,null,null,null,null,null,null,null]},
-  {n:'3383',h:[null,null,null,null,null,null,[12,0],null,null,null,null,null,null,[12,6],[12,10],[12,14],[12,17],[12,23],[12,29],[12,33],[12,39],[12,48]]},
   {n:'4585',h:[null,null,null,null,null,null,[12,41],null,null,null,null,null,null,[12,47],[12,51],[12,55],[12,58],[13,4],[13,10],[13,14],[13,20],[13,29]]},
   {n:'3389',h:[[12,25],[12,33],[12,36],[12,43],[12,47],[12,50],[12,56],[13,0],[13,4],[13,12],[13,16],[13,19],[13,25],null,null,null,null,null,null,null,null,null]},
   {n:'4593',h:[null,null,null,null,null,null,[13,19],null,null,null,null,null,null,[13,25],[13,29],[13,33],[13,36],[13,42],[13,48],[13,52],[13,58],[14,7]]},
@@ -6660,7 +7178,6 @@ const BS_SB_SAB_IDA = [
   {n:'3475',h:[[21,30],[21,38],[21,41],[21,48],[21,52],[21,55],[22,1],[22,5],[22,9],[22,17],[22,21],[22,24],[22,30],null,null,null,null,null,null,null,null,null]},
   {n:'3479',h:[[22,5],[22,13],[22,16],[22,23],[22,27],[22,30],[22,36],[22,40],[22,44],[22,52],[22,56],[22,59],[23,5],null,null,null,null,null,null,null,null,null]},
 ];
-// SAB VTA — pág 4 bs_sb
 const BS_SB_SAB_VTA = [
   {n:'3506',h:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[4,5],[4,9],[4,13],[4,17],[4,24],[4,27],[4,35]]},
   {n:'3308',h:[null,null,null,null,null,null,null,null,null,[4,12],[4,18],[4,22],[4,26],[4,34],[4,38],[4,42],[4,46],[4,50],[4,54],[5,1],[5,4],[5,12]]},
@@ -6725,14 +7242,11 @@ const BS_SB_SAB_VTA = [
   {n:'3464',h:[null,null,null,null,null,null,null,null,null,[20,20],[20,30],[20,34],[20,38],[20,46],[20,50],[20,54],[20,58],[21,2],[21,6],[21,13],[21,16],[21,24]]},
   {n:'4668',h:[[21,25],[21,24],[21,23],[21,20],[21,17],[21,13],[21,12],null,null,null,null,null,null,null,null,[21,31],null,null,null,null,null,null]},
   {n:'3466',h:[null,null,null,null,null,null,null,null,null,[20,53],[20,59],[21,3],[21,7],[21,15],[21,19],[21,23],[21,27],[21,31],[21,35],[21,42],[21,45],[21,53]]},
-  {n:'4670',h:[[21,25],[21,24],[21,23],[21,20],[21,18],[21,15],[21,14],null,null,null,null,null,null,null,null,[21,31],null,null,null,null,null,null]},
-  {n:'3472',h:[null,null,null,null,null,null,null,null,null,[21,28],[21,37],[21,41],[21,43],[21,51],[21,55],[21,59],[22,3],[22,7],[22,11],[22,18],[22,21],[22,29]]},
   {n:'4676',h:[[22,10],[22,9],[22,8],[22,5],[22,3],[22,0],[21,58],null,null,null,null,null,null,null,null,[22,16],null,null,null,null,null,null]},
   {n:'3478',h:[null,null,null,null,null,null,null,null,null,[21,52],[21,58],[22,2],[22,6],[22,14],[22,18],[22,22],[22,26],[22,30],[22,34],[22,41],[22,44],[22,52]]},
   {n:'3480',h:[null,null,null,null,null,null,null,null,null,[22,15],[22,21],[22,25],[22,29],[22,37],[22,41],[22,45],[22,49],[22,53],[22,57],[23,4],[23,7],[23,15]]},
   {n:'4682',h:[[22,50],[22,49],[22,48],[22,45],[22,43],[22,40],[22,38],null,null,null,null,null,null,null,null,[22,56],null,null,null,null,null,null]},
 ];
-// DF IDA — pág 5 bs_sb (Domingos y feriados)
 const BS_SB_DF_IDA = [
   {n:'4801',h:[null,null,null,null,null,null,[4,5],null,null,null,null,null,null,[4,11],[4,15],[4,19],[4,22],[4,28],[4,34],[4,38],[4,44],[4,53]]},
   {n:'3803',h:[null,null,null,null,null,null,[4,14],[4,18],[4,23],[4,31],[4,35],[4,38],[4,44],null,null,null,null,null,null,null,null,null]},
@@ -6742,32 +7256,26 @@ const BS_SB_DF_IDA = [
   {n:'4813',h:[null,null,null,null,null,null,[6,7],null,null,null,null,null,null,[6,13],[6,17],[6,21],[6,24],[6,30],[6,36],[6,40],[6,46],[6,55]]},
   {n:'3615',h:[[5,45],[5,53],[5,55],[6,2],[6,6],[6,9],[6,16],[6,20],[6,24],[6,32],[6,36],[6,39],[6,45],null,null,null,null,null,null,null,null,null]},
   {n:'3617',h:[[6,15],[6,23],[6,25],[6,32],[6,36],[6,39],[6,46],[6,50],[6,54],[7,2],[7,6],[7,9],[7,15],null,null,null,null,null,null,null,null,null]},
-  {n:'4821',h:[null,null,null,null,null,null,[6,45],[6,49],[6,53],[7,1],[7,5],[7,8],[7,15],[7,12],[7,16],[7,20],[7,23],[7,29],[7,35],[7,39],[7,45],[7,54]]},
+  {n:'4821',h:[null,null,null,null,null,null,[6,45],null,null,null,null,null,null,[7,12],[7,16],[7,20],[7,23],[7,29],[7,35],[7,39],[7,45],[7,54]]},
   {n:'3619',h:[[6,45],[6,53],[6,55],[7,2],[7,6],[7,9],[7,16],[7,20],[7,24],[7,32],[7,36],[7,39],[7,45],null,null,null,null,null,null,null,null,null]},
   {n:'3621',h:[[7,15],[7,23],[7,25],[7,32],[7,36],[7,39],[7,46],[7,50],[7,54],[8,2],[8,6],[8,9],[8,15],null,null,null,null,null,null,null,null,null]},
   {n:'4825',h:[null,null,null,null,null,null,[8,5],null,null,null,null,null,null,[8,11],[8,15],[8,19],[8,22],[8,28],[8,34],[8,38],[8,44],[8,53]]},
-  {n:'3623',h:[[7,15],[7,23],[7,25],[7,32],[7,36],[7,39],[7,46],[7,50],[7,54],[8,2],[8,6],[8,9],[8,15],null,null,null,null,null,null,null,null,null]},
   {n:'3627',h:[[7,46],[7,54],[7,56],[8,3],[8,7],[8,10],[8,18],[8,21],[8,25],[8,33],[8,37],[8,40],[8,46],null,null,null,null,null,null,null,null,null]},
-  {n:'4829',h:[null,null,null,null,null,null,[8,15],[8,18],[8,21],[8,25],[8,33],[8,37],[8,40],null,null,null,null,null,null,null,null,null]},
   {n:'3629',h:[[8,15],[8,23],[8,25],[8,32],[8,36],[8,39],[8,46],[8,50],[8,54],[9,2],[9,6],[9,9],[9,15],null,null,null,null,null,null,null,null,null]},
   {n:'4831',h:[null,null,null,null,null,null,[9,5],null,null,null,null,null,null,[9,11],[9,15],[9,19],[9,22],[9,28],[9,34],[9,38],[9,44],[9,53]]},
   {n:'3633',h:[[8,42],[8,50],[8,52],[8,59],[9,3],[9,6],[9,13],[9,17],[9,21],[9,29],[9,33],[9,36],[9,42],null,null,null,null,null,null,null,null,null]},
-  {n:'3635',h:[null,null,null,null,null,null,[9,13],[9,17],[9,21],[9,29],[9,33],[9,36],[9,42],null,null,null,null,null,null,null,null,null]},
+  {n:'3635',h:[[9,9],[9,23],[9,25],[9,32],[9,36],[9,39],[9,46],[9,50],[9,54],[10,2],[10,6],[10,9],[10,15],null,null,null,null,null,null,null,null,null]},
   {n:'4837',h:[null,null,null,null,null,null,[10,5],null,null,null,null,null,null,[10,11],[10,15],[10,19],[10,22],[10,28],[10,34],[10,38],[10,44],[10,53]]},
   {n:'3639',h:[[9,45],[9,53],[9,55],[10,2],[10,6],[10,9],[10,16],[10,20],[10,24],[10,32],[10,36],[10,39],[10,45],null,null,null,null,null,null,null,null,null]},
   {n:'3641',h:[[10,15],[10,23],[10,25],[10,32],[10,36],[10,39],[10,46],[10,50],[10,54],[11,2],[11,6],[11,9],[11,15],null,null,null,null,null,null,null,null,null]},
   {n:'4843',h:[null,null,null,null,null,null,[11,5],null,null,null,null,null,null,[11,11],[11,15],[11,19],[11,22],[11,28],[11,34],[11,38],[11,44],[11,53]]},
   {n:'3645',h:[[11,11],[11,19],[11,21],[11,28],[11,32],[11,35],[11,42],[11,46],[11,50],[11,58],[12,2],[12,5],[12,11],null,null,null,null,null,null,null,null,null]},
-  {n:'3647',h:[[11,11],[11,19],[11,21],[11,28],[11,32],[11,35],[11,42],[11,46],[11,50],[11,58],[12,2],[12,5],[12,11],null,null,null,null,null,null,null,null,null]},
   {n:'4849',h:[null,null,null,null,null,null,[12,5],null,null,null,null,null,null,[12,11],[12,15],[12,19],[12,22],[12,28],[12,34],[12,38],[12,44],[12,53]]},
   {n:'3651',h:[[12,15],[12,23],[12,25],[12,32],[12,36],[12,39],[12,46],[12,50],[12,54],[13,2],[13,6],[13,9],[13,15],null,null,null,null,null,null,null,null,null]},
-  {n:'3653',h:[[12,15],[12,23],[12,25],[12,32],[12,36],[12,39],[12,46],[12,50],[12,54],[13,2],[13,6],[13,9],[13,15],null,null,null,null,null,null,null,null,null]},
   {n:'4855',h:[null,null,null,null,null,null,[13,5],null,null,null,null,null,null,[13,11],[13,15],[13,19],[13,22],[13,28],[13,34],[13,38],[13,44],[13,53]]},
   {n:'3657',h:[[13,15],[13,23],[13,25],[13,32],[13,36],[13,39],[13,46],[13,50],[13,54],[14,2],[14,6],[14,9],[14,15],null,null,null,null,null,null,null,null,null]},
-  {n:'3659',h:[[13,15],[13,23],[13,25],[13,32],[13,36],[13,39],[13,46],[13,50],[13,54],[14,2],[14,6],[14,9],[14,15],null,null,null,null,null,null,null,null,null]},
   {n:'4861',h:[null,null,null,null,null,null,[14,5],null,null,null,null,null,null,[14,11],[14,15],[14,19],[14,22],[14,28],[14,34],[14,38],[14,44],[14,53]]},
   {n:'3663',h:[[14,15],[14,23],[14,25],[14,32],[14,36],[14,39],[14,46],[14,50],[14,54],[15,2],[15,6],[15,9],[15,15],null,null,null,null,null,null,null,null,null]},
-  {n:'3665',h:[[14,15],[14,23],[14,25],[14,32],[14,36],[14,39],[14,46],[14,50],[14,54],[15,2],[15,6],[15,9],[15,15],null,null,null,null,null,null,null,null,null]},
   {n:'4867',h:[null,null,null,null,null,null,[15,5],null,null,null,null,null,null,[15,11],[15,15],[15,19],[15,22],[15,28],[15,34],[15,38],[15,44],[15,53]]},
   {n:'3671',h:[[15,15],[15,23],[15,25],[15,32],[15,36],[15,39],[15,46],[15,50],[15,54],[16,2],[16,6],[16,9],[16,15],null,null,null,null,null,null,null,null,null]},
   {n:'3677',h:[[16,15],[16,23],[16,25],[16,32],[16,36],[16,39],[16,46],[16,50],[16,54],[17,2],[17,6],[17,9],[17,15],null,null,null,null,null,null,null,null,null]},
@@ -6789,7 +7297,6 @@ const BS_SB_DF_IDA = [
   {n:'4909',h:[null,null,null,null,null,null,[22,8],null,null,null,null,null,null,[22,14],[22,18],[22,22],[22,25],[22,31],[22,37],[22,41],[22,47],[22,56]]},
   {n:'3711',h:[[22,10],[22,18],[22,20],[22,27],[22,31],[22,34],[22,41],[22,45],[22,49],[22,57],[23,1],[23,4],[23,10],null,null,null,null,null,null,null,null,null]},
 ];
-// DF VTA — pág 6 bs_sb
 const BS_SB_DF_VTA = [
   {n:'3804',h:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[4,30],[4,34],[4,38],[4,42],[4,49],[4,52],[5,0]]},
   {n:'3806',h:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[4,55],[4,59],[5,3],[5,7],[5,14],[5,17],[5,25]]},
@@ -6801,8 +7308,6 @@ const BS_SB_DF_VTA = [
   {n:'3618',h:[null,null,null,null,null,null,null,null,null,[6,32],[6,38],[6,42],[6,46],[6,54],[6,58],[7,2],[7,6],[7,10],[7,14],[7,21],[7,24],[7,32]]},
   {n:'3620',h:[null,null,null,null,null,null,null,null,null,[7,0],[7,6],[7,10],[7,14],[7,22],[7,26],[7,30],[7,34],[7,38],[7,42],[7,49],[7,52],[8,0]]},
   {n:'4822',h:[[7,47],[7,46],[7,45],[7,42],[7,40],[7,37],[7,35],null,null,null,null,null,null,null,null,[7,53],null,null,null,null,null,null]},
-  {n:'3622',h:[null,null,null,null,null,null,null,null,null,[7,16],[7,20],[7,24],[7,22],[7,30],[7,35],[7,39],[7,43],[7,47],[7,51],[7,58],[8,1],[8,9]]},
-  {n:'4826',h:[[8,30],[8,29],[8,28],[8,25],[8,22],[8,18],[8,17],null,null,null,null,null,null,null,null,[8,36],null,null,null,null,null,null]},
   {n:'3624',h:[null,null,null,null,null,null,null,null,null,[8,5],[8,11],[8,15],[8,19],[8,27],[8,31],[8,35],[8,39],[8,43],[8,47],[8,54],[8,57],[9,5]]},
   {n:'3626',h:[null,null,null,null,null,null,null,null,null,[8,30],[8,36],[8,40],[8,44],[8,52],[8,56],[9,0],[9,4],[9,8],[9,12],[9,19],[9,22],[9,30]]},
   {n:'4828',h:[[9,5],[9,4],[9,3],[9,0],[8,58],[8,55],[8,54],null,null,null,null,null,null,null,null,[9,11],null,null,null,null,null,null]},
@@ -6816,7 +7321,6 @@ const BS_SB_DF_VTA = [
   {n:'3644',h:[null,null,null,null,null,null,null,null,null,[11,0],[11,6],[11,10],[11,14],[11,22],[11,26],[11,30],[11,34],[11,38],[11,42],[11,49],[11,52],[12,0]]},
   {n:'3648',h:[null,null,null,null,null,null,null,null,null,[11,30],[11,36],[11,40],[11,44],[11,52],[11,56],[12,0],[12,4],[12,8],[12,12],[12,19],[12,22],[12,30]]},
   {n:'4852',h:[[12,47],[12,46],[12,45],[12,42],[12,40],[12,37],[12,35],null,null,null,null,null,null,null,null,[12,53],null,null,null,null,null,null]},
-  {n:'3650',h:[null,null,null,null,null,null,null,null,null,[12,3],[12,7],[12,11],[12,19],[12,23],[12,27],[12,31],[12,35],[12,39],[12,43],[12,50],[12,53],[13,1]]},
   {n:'3654',h:[null,null,null,null,null,null,null,null,null,[13,0],[13,6],[13,10],[13,14],[13,22],[13,26],[13,30],[13,34],[13,38],[13,42],[13,49],[13,52],[14,0]]},
   {n:'4858',h:[[13,47],[13,46],[13,45],[13,42],[13,40],[13,37],[13,35],null,null,null,null,null,null,null,null,[13,53],null,null,null,null,null,null]},
   {n:'3660',h:[null,null,null,null,null,null,null,null,null,[13,36],[13,40],[13,44],[13,52],[13,56],[14,0],[14,4],[14,8],[14,12],[14,16],[14,23],[14,26],[14,34]]},
@@ -6843,109 +7347,13 @@ const BS_SB_DF_VTA = [
   {n:'3704',h:[null,null,null,null,null,null,null,null,null,[20,57],[21,3],[21,7],[21,11],[21,19],[21,23],[21,27],[21,31],[21,35],[21,39],[21,46],[21,49],[21,57]]},
   {n:'4906',h:[[21,47],[21,46],[21,45],[21,42],[21,40],[21,37],[21,35],null,null,null,null,null,null,null,null,[21,53],null,null,null,null,null,null]},
   {n:'3708',h:[null,null,null,null,null,null,null,null,null,[21,34],[21,40],[21,44],[21,48],[21,56],[22,0],[22,4],[22,8],[22,12],[22,16],[22,23],[22,26],[22,34]]},
-  {n:'3710',h:[[22,34],[22,33],[22,32],[22,29],[22,27],[22,24],[22,22],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
+  {n:'3710',h:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
   {n:'4912',h:[[22,50],[22,49],[22,48],[22,45],[22,43],[22,40],[22,38],null,null,null,null,null,null,null,null,[22,56],null,null,null,null,null,null]},
   {n:'3714',h:[null,null,null,null,null,null,null,null,null,[22,10],[22,16],[22,20],[22,24],[22,32],[22,36],[22,40],[22,44],[22,48],[22,52],[22,59],[23,2],[23,10]]},
 ];
 
 // ══════════════════════════════════════════════════════════
-// ROCA — Temperley / Haedo
-// Fuente: Trenes Argentinos — vigente 04/02/26
-// 11 estaciones:
-// h[0]=Temperley, h[1]=Hptal.Español, h[2]=Santa Catalina, h[3]=Juan XXIII,
-// h[4]=Km 34, h[5]=P.P.Turner, h[6]=De Elía, h[7]=Tablada, h[8]=San Justo,
-// h[9]=Ing.S.Brian, h[10]=Haedo
-// IDA = Temperley → Haedo | VTA = Haedo → Temperley
-// ══════════════════════════════════════════════════════════
-const ROCA_TH_LV_IDA = [
-  {n:'4507',h:[[5,0],[5,7],[5,14],[5,18],[5,31],[5,37],[5,50],[5,58],[6,7],[6,14],[6,20]]},
-  {n:'4511',h:[[8,20],[8,27],[8,34],[8,38],[8,51],[8,57],[9,10],[9,18],[9,27],[9,34],[9,40]]},
-  {n:'4515',h:[[11,36],[11,43],[11,50],[11,54],[12,7],[12,13],[12,26],[12,34],[12,43],[12,50],[12,56]]},
-  {n:'4519',h:[[15,8],[15,15],[15,22],[15,26],[15,39],[15,45],[15,58],[16,6],[16,15],[16,22],[16,28]]},
-  {n:'4523',h:[[18,20],[18,27],[18,34],[18,38],[18,51],[18,57],[19,10],[19,18],[19,27],[19,34],[19,40]]},
-];
-const ROCA_TH_LV_VTA = [
-  {n:'4508',h:[[8,0],[7,55],[7,47],[7,43],[7,32],[7,22],[7,11],[7,2],[6,54],[6,47],[6,40]]},
-  {n:'4512',h:[[11,20],[11,15],[11,7],[11,3],[10,52],[10,42],[10,31],[10,22],[10,14],[10,7],[10,0]]},
-  {n:'4516',h:[[14,55],[14,50],[14,42],[14,38],[14,27],[14,17],[14,6],[13,57],[13,49],[13,42],[13,35]]},
-  {n:'4520',h:[[18,0],[17,55],[17,47],[17,43],[17,32],[17,22],[17,11],[17,2],[16,54],[16,47],[16,40]]},
-  {n:'4524',h:[[21,20],[21,15],[21,7],[21,3],[20,52],[20,42],[20,31],[20,22],[20,14],[20,7],[20,0]]},
-];
-const ROCA_TH_SAB_IDA = [
-  {n:'4509',h:[[6,5],[6,12],[6,19],[6,23],[6,36],[6,42],[6,55],[7,3],[7,12],[7,19],[7,25]]},
-  {n:'4513',h:[[9,20],[9,27],[9,34],[9,38],[9,51],[9,57],[10,10],[10,18],[10,27],[10,34],[10,40]]},
-  {n:'4517',h:[[12,40],[12,47],[12,54],[12,58],[13,11],[13,17],[13,30],[13,38],[13,47],[13,54],[14,0]]},
-  {n:'4521',h:[[16,0],[16,7],[16,14],[16,18],[16,31],[16,37],[16,50],[16,58],[17,7],[17,14],[17,20]]},
-];
-const ROCA_TH_SAB_VTA = [
-  {n:'4510',h:[[9,5],[9,0],[8,52],[8,48],[8,37],[8,27],[8,16],[8,7],[7,59],[7,52],[7,45]]},
-  {n:'4514',h:[[12,20],[12,15],[12,7],[12,3],[11,52],[11,42],[11,31],[11,22],[11,14],[11,7],[11,0]]},
-  {n:'4518',h:[[15,40],[15,35],[15,27],[15,23],[15,12],[15,2],[14,51],[14,42],[14,34],[14,27],[14,20]]},
-  {n:'4522',h:[[19,0],[18,55],[18,47],[18,43],[18,32],[18,22],[18,11],[18,2],[17,54],[17,47],[17,40]]},
-];
-const ROCA_TH_DF_IDA = [
-  {n:'4509',h:[[6,40],[6,45],[6,54],[6,59],[7,13],[7,18],[7,29],[7,37],[7,45],[7,53],[8,0]]},
-  {n:'4513',h:[[10,0],[10,5],[10,14],[10,19],[10,33],[10,38],[10,49],[10,57],[11,5],[11,13],[11,20]]},
-  {n:'4517',h:[[13,20],[13,25],[13,34],[13,39],[13,53],[13,58],[14,9],[14,17],[14,25],[14,33],[14,40]]},
-  {n:'4521',h:[[16,40],[16,45],[16,54],[16,59],[17,13],[17,18],[17,29],[17,37],[17,45],[17,53],[18,0]]},
-];
-const ROCA_TH_DF_VTA = [
-  {n:'4510',h:[[9,40],[9,35],[9,27],[9,23],[9,12],[9,2],[8,51],[8,43],[8,35],[8,27],[8,20]]},
-  {n:'4514',h:[[13,0],[12,55],[12,47],[12,43],[12,32],[12,22],[12,11],[12,3],[11,55],[11,47],[11,40]]},
-  {n:'4518',h:[[16,20],[16,15],[16,7],[16,3],[15,52],[15,42],[15,31],[15,23],[15,15],[15,7],[15,0]]},
-  {n:'4522',h:[[19,40],[19,35],[19,27],[19,23],[19,12],[19,2],[18,51],[18,43],[18,35],[18,27],[18,20]]},
-];
-
-// ══════════════════════════════════════════════════════════
-// ROCA — Tren Universitario (La Plata / Hptal.San Juan de Dios)
-// Fuente: Trenes Argentinos — vigente 15/07/24 (sin cambios confirmados)
-// 11 estaciones:
-// h[0]=La Plata, h[1]=Arquitectura, h[2]=Informática, h[3]=Medicina,
-// h[4]=Periodismo, h[5]=Diagonal 73, h[6]=Policlínico, h[7]=Avenida 7,
-// h[8]=Circunvalación, h[9]=Meridiano V, h[10]=Hptal.San Juan de Dios
-// IDA = La Plata → Hptal.San Juan de Dios
-// No opera domingos/feriados (no figuran en el PDF)
-// ══════════════════════════════════════════════════════════
-const ROCA_UNI_LV_IDA = [
-  {n:'701',h:[[7,17],[7,20],[7,23],[7,27],[7,30],[7,34],[7,39],[7,43],[7,46],[7,50],[7,55]]},
-  {n:'703',h:[[9,3],[9,6],[9,9],[9,13],[9,16],[9,20],[9,25],[9,29],[9,32],[9,36],[9,41]]},
-  {n:'705',h:[[10,54],[10,57],[11,0],[11,4],[11,7],[11,11],[11,16],[11,20],[11,23],[11,27],[11,32]]},
-  {n:'707',h:[[12,38],[12,41],[12,44],[12,48],[12,51],[12,55],[13,0],[13,4],[13,7],[13,11],[13,16]]},
-  {n:'709',h:[[14,22],[14,25],[14,28],[14,32],[14,35],[14,39],[14,44],[14,48],[14,51],[14,55],[15,0]]},
-  {n:'711',h:[[16,6],[16,9],[16,12],[16,16],[16,19],[16,23],[16,28],[16,32],[16,35],[16,39],[16,44]]},
-  {n:'713',h:[[17,18],[17,21],[17,24],[17,28],[17,31],[17,35],[17,40],[17,44],[17,47],[17,51],[17,56]]},
-  {n:'715',h:[[19,42],[19,45],[19,48],[19,52],[19,55],[19,59],[20,4],[20,8],[20,11],[20,15],[20,20]]},
-  {n:'717',h:[[21,26],[21,29],[21,32],[21,36],[21,39],[21,43],[21,48],[21,52],[21,55],[21,59],[22,4]]},
-];
-const ROCA_UNI_LV_VTA = [
-  {n:'702',h:[[8,43],[8,40],[8,37],[8,32],[8,29],[8,24],[8,20],[8,16],[8,12],[8,9],[8,5]]},
-  {n:'704',h:[[10,29],[10,26],[10,23],[10,18],[10,15],[10,10],[10,6],[10,2],[9,58],[9,55],[9,51]]},
-  {n:'706',h:[[12,18],[12,15],[12,12],[12,7],[12,4],[11,59],[11,55],[11,51],[11,47],[11,44],[11,40]]},
-  {n:'708',h:[[14,2],[13,59],[13,56],[13,51],[13,48],[13,43],[13,39],[13,35],[13,31],[13,28],[13,24]]},
-  {n:'710',h:[[15,46],[15,43],[15,40],[15,35],[15,32],[15,27],[15,23],[15,19],[15,15],[15,12],[15,8]]},
-  {n:'712',h:[[17,32],[17,29],[17,26],[17,21],[17,18],[17,13],[17,9],[17,5],[17,1],[16,58],[16,54]]},
-  {n:'714',h:[[19,20],[19,17],[19,14],[19,9],[19,6],[19,1],[18,57],[18,53],[18,49],[18,46],[18,42]]},
-  {n:'716',h:[[21,6],[21,3],[21,0],[20,55],[20,52],[20,47],[20,43],[20,39],[20,35],[20,32],[20,28]]},
-  {n:'718',h:[[22,50],[22,47],[22,44],[22,39],[22,36],[22,31],[22,27],[22,23],[22,19],[22,16],[22,12]]},
-];
-const ROCA_UNI_SAB_IDA = [
-  {n:'701',h:[[7,25],[7,28],[7,31],[7,35],[7,38],[7,42],[7,47],[7,51],[7,54],[7,58],[8,3]]},
-  {n:'703',h:[[9,25],[9,28],[9,31],[9,35],[9,38],[9,42],[9,47],[9,51],[9,54],[9,58],[10,3]]},
-  {n:'705',h:[[11,25],[11,28],[11,31],[11,35],[11,38],[11,42],[11,47],[11,51],[11,54],[11,58],[12,3]]},
-  {n:'707',h:[[13,25],[13,28],[13,31],[13,35],[13,38],[13,42],[13,47],[13,51],[13,54],[13,58],[14,3]]},
-  {n:'709',h:[[15,25],[15,28],[15,31],[15,35],[15,38],[15,42],[15,47],[15,51],[15,54],[15,58],[16,3]]},
-  {n:'711',h:[[17,25],[17,28],[17,31],[17,35],[17,38],[17,42],[17,47],[17,51],[17,54],[17,58],[18,3]]},
-  {n:'713',h:[[19,25],[19,28],[19,31],[19,35],[19,38],[19,42],[19,47],[19,51],[19,54],[19,58],[20,3]]},
-];
-const ROCA_UNI_SAB_VTA = [
-  {n:'702',h:[[8,51],[8,48],[8,45],[8,40],[8,37],[8,32],[8,28],[8,24],[8,20],[8,17],[8,13]]},
-  {n:'704',h:[[10,51],[10,48],[10,45],[10,40],[10,37],[10,32],[10,28],[10,24],[10,20],[10,17],[10,13]]},
-  {n:'706',h:[[12,51],[12,48],[12,45],[12,40],[12,37],[12,32],[12,28],[12,24],[12,20],[12,17],[12,13]]},
-  {n:'708',h:[[14,51],[14,48],[14,45],[14,40],[14,37],[14,32],[14,28],[14,24],[14,20],[14,17],[14,13]]},
-  {n:'710',h:[[16,51],[16,48],[16,45],[16,40],[16,37],[16,32],[16,28],[16,24],[16,20],[16,17],[16,13]]},
-  {n:'712',h:[[18,51],[18,48],[18,45],[18,40],[18,37],[18,32],[18,28],[18,24],[18,20],[18,17],[18,13]]},
-  {n:'714',h:[[20,51],[20,48],[20,45],[20,40],[20,37],[20,32],[20,28],[20,24],[20,20],[20,17],[20,13]]},
-];
+// SUBTES — modelo dinámico (inicio + frecuencia + último)
 // Fuente: Emova — vigente 2026
 // Cada línea define: inicio por tipoDia, freq por tipoDia, último por dirección/tipoDia
 // Los trenes se generan en runtime con subteGenerar()
@@ -7423,7 +7831,7 @@ const LINEAS_CONFIG = {
   },
 
   // ══════════════════════════════════════════
-  // BELGRANO SUR — González Catán / Marcos Paz / Villars / Lozano
+  // BELGRANO SUR — González Catán / Marcos Paz
   // ══════════════════════════════════════════
   bs_gc: {
     nombre: '🚆 Belgrano Sur – G.Catán/Marcos Paz',
@@ -7431,26 +7839,27 @@ const LINEAS_CONFIG = {
     estaciones() { return ['González Catán','20 de Junio','Marcos Paz','Villars','Lozano']; },
     getData(tipoDia, dir) {
       const d = new Date().getDay();
-      const td = (tipoDia === 'labsab') ? (d === 6 ? 'sab' : 'labsab') : tipoDia;
-      if (td === 'labsab') return dir === 'haciafinal' ? BS_GC_LV_IDA : BS_GC_LV_VTA;
-      if (td === 'sab')    return dir === 'haciafinal' ? BS_GC_SAB_IDA : BS_GC_SAB_VTA;
-      return dir === 'haciafinal' ? BS_GC_DF_IDA : BS_GC_DF_VTA;
+      const td = tipoDia==='labsab' ? (d===6?'sab':'labsab') : tipoDia;
+      if(td==='labsab') return dir==='haciafinal' ? BS_GC_LV_IDA : BS_GC_LV_VTA;
+      if(td==='sab')    return dir==='haciafinal' ? BS_GC_SAB_IDA : BS_GC_SAB_VTA;
+      return dir==='haciafinal' ? BS_GC_DF_IDA : BS_GC_DF_VTA;
     },
     getRamal(tren) { return tren.h[3] ? 'villars' : 'mpazcorto'; },
     getRamalLabel(r, dir) {
-      if (dir === 'haciaretiro') return r === 'villars' ? 'viene de Lozano/Villars' : 'viene de Marcos Paz';
-      return r === 'villars' ? 'Hasta Villars/Lozano' : 'Hasta Marcos Paz';
+      if(dir==='haciaretiro') return r==='villars' ? 'viene de Lozano/Villars' : 'viene de Marcos Paz';
+      return r==='villars' ? 'Hasta Villars/Lozano' : 'Hasta Marcos Paz';
     },
     getDestFinal(tren, dir) {
-      if (dir === 'haciaretiro') return 'González Catán';
+      if(dir==='haciaretiro') return 'González Catán';
       return tren.h[4] ? 'Lozano' : (tren.h[3] ? 'Villars' : 'Marcos Paz');
     },
     terminalIda: 'Lozano',
     terminalVta: 'González Catán',
   },
 
+
   // ══════════════════════════════════════════
-  // BELGRANO SUR — Sáenz / González Catán / Tapiales / M.C. Gral. Belgrano
+  // BELGRANO SUR — Sáenz / G.Catán / Tapiales / M.C.Gral.Belgrano
   // DIAGRAMA ESPECIAL POR OBRAS — vigente 25/05/26
   // ══════════════════════════════════════════
   bs_sb: {
@@ -7466,18 +7875,18 @@ const LINEAS_CONFIG = {
     },
     getData(tipoDia, dir) {
       const d = new Date().getDay();
-      const td = (tipoDia === 'labsab') ? (d === 6 ? 'sab' : 'labsab') : tipoDia;
-      if (td === 'labsab') return dir === 'haciafinal' ? BS_SB_LV_IDA : BS_SB_LV_VTA;
-      if (td === 'sab')    return dir === 'haciafinal' ? BS_SB_SAB_IDA : BS_SB_SAB_VTA;
-      return dir === 'haciafinal' ? BS_SB_DF_IDA : BS_SB_DF_VTA;
+      const td = tipoDia==='labsab' ? (d===6?'sab':'labsab') : tipoDia;
+      if(td==='labsab') return dir==='haciafinal' ? BS_SB_LV_IDA : BS_SB_LV_VTA;
+      if(td==='sab')    return dir==='haciafinal' ? BS_SB_SAB_IDA : BS_SB_SAB_VTA;
+      return dir==='haciafinal' ? BS_SB_DF_IDA : BS_SB_DF_VTA;
     },
     getRamal(tren) { return tren.h[21] !== null ? 'belgrano' : 'gcatan'; },
     getRamalLabel(r, dir) {
-      if (dir === 'haciaretiro') return r === 'belgrano' ? 'viene de M.C.Gral.Belgrano' : 'viene de G.Catán';
-      return r === 'belgrano' ? 'Hasta M.C.Gral.Belgrano' : 'Hasta González Catán';
+      if(dir==='haciaretiro') return r==='belgrano' ? 'viene de M.C.Gral.Belgrano' : 'viene de G.Catán';
+      return r==='belgrano' ? 'Hasta M.C.Gral.Belgrano' : 'Hasta González Catán';
     },
     getDestFinal(tren, dir) {
-      if (dir === 'haciaretiro') return tren.h[0] !== null ? 'Dr.A.Sáenz' : 'Tapiales';
+      if(dir==='haciaretiro') return tren.h[0] !== null ? 'Dr.A.Sáenz' : 'Tapiales';
       return tren.h[21] !== null ? 'M.C.Gral.Belgrano' : 'González Catán';
     },
     terminalIda: 'M.C.Gral.Belgrano',
@@ -7493,21 +7902,20 @@ const LINEAS_CONFIG = {
     estaciones() { return ['Temperley','Hptal.Español','Santa Catalina','Juan XXIII','Km 34','P.P.Turner','De Elía','Tablada','San Justo','Ing.S.Brian','Haedo']; },
     getData(tipoDia, dir) {
       const d = new Date().getDay();
-      const td = (tipoDia === 'labsab') ? (d === 6 ? 'sab' : 'labsab') : tipoDia;
-      if (td === 'labsab') return dir === 'haciafinal' ? ROCA_TH_LV_IDA : ROCA_TH_LV_VTA;
-      if (td === 'sab')    return dir === 'haciafinal' ? ROCA_TH_SAB_IDA : ROCA_TH_SAB_VTA;
-      return dir === 'haciafinal' ? ROCA_TH_DF_IDA : ROCA_TH_DF_VTA;
+      const td = tipoDia==='labsab' ? (d===6?'sab':'labsab') : tipoDia;
+      if(td==='labsab') return dir==='haciafinal' ? ROCA_TH_LV_IDA : ROCA_TH_LV_VTA;
+      if(td==='sab')    return dir==='haciafinal' ? ROCA_TH_SAB_IDA : ROCA_TH_SAB_VTA;
+      return dir==='haciafinal' ? ROCA_TH_DF_IDA : ROCA_TH_DF_VTA;
     },
     getRamal() { return 'haedo'; },
-    getRamalLabel(r, dir) { return dir === 'haciaretiro' ? 'viene de Haedo' : 'Hasta Haedo'; },
-    getDestFinal(tren, dir) { return dir === 'haciaretiro' ? 'Temperley' : 'Haedo'; },
+    getRamalLabel(r, dir) { return dir==='haciaretiro' ? 'viene de Haedo' : 'Hasta Haedo'; },
+    getDestFinal(tren, dir) { return dir==='haciaretiro' ? 'Temperley' : 'Haedo'; },
     terminalIda: 'Haedo',
     terminalVta: 'Temperley',
   },
 
   // ══════════════════════════════════════════
-  // ROCA — Tren Universitario (La Plata – Hptal.San Juan de Dios)
-  // No opera domingos/feriados
+  // ROCA — Tren Universitario
   // ══════════════════════════════════════════
   roca_uni: {
     nombre: '🚆 Roca – Tren Universitario',
@@ -7518,14 +7926,14 @@ const LINEAS_CONFIG = {
     },
     getData(tipoDia, dir) {
       const d = new Date().getDay();
-      const td = (tipoDia === 'labsab') ? (d === 6 ? 'sab' : 'labsab') : tipoDia;
-      if (td === 'labsab') return dir === 'haciafinal' ? ROCA_UNI_LV_IDA : ROCA_UNI_LV_VTA;
-      if (td === 'sab')    return dir === 'haciafinal' ? ROCA_UNI_SAB_IDA : ROCA_UNI_SAB_VTA;
-      return []; // No opera domingos/feriados
+      const td = tipoDia==='labsab' ? (d===6?'sab':'labsab') : tipoDia;
+      if(td==='labsab') return dir==='haciafinal' ? ROCA_UNI_LV_IDA : ROCA_UNI_LV_VTA;
+      if(td==='sab')    return dir==='haciafinal' ? ROCA_UNI_SAB_IDA : ROCA_UNI_SAB_VTA;
+      return [];
     },
     getRamal() { return 'sjd'; },
-    getRamalLabel(r, dir) { return dir === 'haciaretiro' ? 'viene de Hptal.SJD' : 'Hasta Hptal. San Juan de Dios'; },
-    getDestFinal(tren, dir) { return dir === 'haciaretiro' ? 'La Plata' : 'Hptal.San Juan de Dios'; },
+    getRamalLabel(r, dir) { return dir==='haciaretiro' ? 'viene de Hptal.SJD' : 'Hasta Hptal.San Juan de Dios'; },
+    getDestFinal(tren, dir) { return dir==='haciaretiro' ? 'La Plata' : 'Hptal.San Juan de Dios'; },
     terminalIda: 'Hptal.San Juan de Dios',
     terminalVta: 'La Plata',
   },
@@ -7604,16 +8012,12 @@ function toggleBsCard() {
   const hint    = document.getElementById('bsExpandHint');
   const card    = document.getElementById('bsMainCard');
   const isOpen  = ramales.classList.contains('open');
-  if (isOpen) {
-    ramales.classList.remove('open');
-    hint.classList.remove('open');
-    hint.textContent = '▾ elegir ramal';
-    card.style.borderColor = '';
+  if(isOpen) {
+    ramales.classList.remove('open'); hint.classList.remove('open');
+    hint.textContent='▾ elegir ramal'; card.style.borderColor='';
   } else {
-    ramales.classList.add('open');
-    hint.classList.add('open');
-    hint.textContent = '▴ cerrar';
-    card.style.borderColor = '#1d4ed8';
+    ramales.classList.add('open'); hint.classList.add('open');
+    hint.textContent='▴ cerrar'; card.style.borderColor='#1d4ed8';
   }
 }
 
@@ -7703,6 +8107,7 @@ function irAHorarios(linea) {
   document.getElementById('rangoPanel').classList.remove('visible');
   document.getElementById('rangoToggleBtn').classList.remove('activo');
   document.getElementById('rangoToggleLabel').textContent = 'Filtrar por rango horario';
+  updateDirLabels();
   poblarOrigen();
   render();
   window.scrollTo(0,0);
@@ -7722,6 +8127,8 @@ function poblarOrigen() {
   });
   if(prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
   origenIdx = parseInt(sel.value);
+  // Actualizar el trigger del bottom sheet
+  actualizarTriggerOrigen();
   poblarDestino();
 }
 
@@ -7746,50 +8153,60 @@ function poblarDestino() {
 function render() {
   const cfg = LINEAS_CONFIG[lineaActual] || LINEAS_CONFIG.sm;
   const ests = cfg.estaciones();
-  origenIdx = parseInt(document.getElementById('selOrigen').value);
-  const destVal = document.getElementById('selDestino').value;
+
+  // Fix perf: referencias DOM cacheadas en esta ejecución
+  const selOrigen  = document.getElementById('selOrigen');
+  const selDestino = document.getElementById('selDestino');
+  const listaEl    = document.getElementById('trainsList');
+  const showMoreBtn= document.getElementById('showMoreBtn');
+
+  origenIdx = parseInt(selOrigen.value);
+  const destVal = selDestino.value;
   const destinoIdx = destVal ? parseInt(destVal) : -1;
+
+  // Fix perf: un solo new Date() compartido por toda la función
+  const _now = new Date();
+  const _dow = _now.getDay();
 
   // BN distingue sábado
   let tdKey = tipoDia;
   if(lineaActual==='bn' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Roca LP también distingue sábado
   if(lineaActual==='roca_lp' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Roca GK también distingue sábado
   if(lineaActual==='roca_gk' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Sarmiento Once-Moreno distingue sábado
   if(lineaActual==='sm_om' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Roca Ezeiza/Cañuelas distingue sábado
   if(lineaActual==='roca_ez' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Roca Bosques vía Quilmes distingue sábado
   if(lineaActual==='roca_bq' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Urquiza distingue sábado
   if(lineaActual==='ur' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Mitre RJB distingue sábado
   if(lineaActual==='mitre_rjb' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
   // Mitre VZ distingue sábado
   if(lineaActual==='mitre_vz' && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
-  // Belgrano Sur y Roca TH distinguen sábado
   if(['bs_gc','bs_sb','roca_th','roca_uni'].includes(lineaActual) && tipoDia==='labsab') {
-    tdKey = new Date().getDay()===6 ? 'sab' : 'labsab';
+    tdKey = _dow===6 ? 'sab' : 'labsab';
   }
 
   const trenes = cfg.getData(tdKey, direccion);
@@ -7835,9 +8252,7 @@ function render() {
   });
   resultados.sort((a,b)=>a.mOrigen-b.mOrigen);
 
-  const lista=document.getElementById('trainsList');
   const infoBar=document.getElementById('infoBar');
-  const showMoreBtn=document.getElementById('showMoreBtn');
   const termFinal = direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta;
   document.getElementById('resultsTitle').textContent = `${ests[origenIdx]} → ${termFinal}`;
 
@@ -7857,10 +8272,14 @@ function render() {
     let msgExtra = '';
     if(modoRango) {
       msgExtra = 'Probá ampliar el rango.';
+    } else if(!trenes.length) {
+      // Array vacío = línea no opera este tipo de día
+      const diaLabel = tipoDia==='domfer' ? 'domingos ni feriados' : tipoDia==='sab' ? 'sábados' : 'días hábiles';
+      msgExtra = `Esta línea no opera los ${diaLabel}.`;
+      listaEl.innerHTML=`<div class="no-results no-opera"><span class="no-opera-icon">🚫</span><strong>Sin servicio</strong><span class="no-results-msg">${msgExtra}</span></div>`;
+      showMoreBtn.style.display='none'; mostrarTodos=false; return;
     } else {
       // Buscar el próximo tren disponible más allá de las 4 horas
-      // Umbral madrugada: trenes antes de las 5:00 (300 min) cuando ya pasaron las 20:00 (1200 min)
-      // se tratan como "día siguiente" sumando 1440
       let proximoFuturo = null;
       trenes.forEach(tren => {
         const hOrigen = tren.h[hIdx(origenIdx)];
@@ -7879,7 +8298,6 @@ function render() {
         const enCuanto = horas > 0 ? `en ${horas}h ${minRest}min` : `en ${minRest} min`;
         msgExtra = `Próximo tren a las <strong>${horaStr}</strong> <span class="no-results-eta">(${enCuanto})</span>`;
       } else {
-        // No hay más trenes hoy — buscar el primero del array (madrugada = inicio del día siguiente)
         let primeroDia = null;
         trenes.forEach(tren => {
           const hOrigen = tren.h[hIdx(origenIdx)];
@@ -7890,17 +8308,17 @@ function render() {
         if(primeroDia !== null) {
           msgExtra = `Retoma mañana a las <strong>${minsToStr(primeroDia)}</strong>`;
         } else {
-          msgExtra = 'No hay servicios disponibles para esta selección.';
+          msgExtra = 'No hay servicios desde esta estación.';
         }
       }
     }
-    lista.innerHTML=`<div class="no-results"><strong>Sin trenes ahora</strong><span class="no-results-msg">${msgExtra}</span></div>`;
+    listaEl.innerHTML=`<div class="no-results"><strong>Sin trenes ahora</strong><span class="no-results-msg">${msgExtra}</span></div>`;
     showMoreBtn.style.display='none'; mostrarTodos=false; return;
   }
 
   const lineColor = cfg.color;
   const MAX = mostrarTodos ? resultados.length : (modoRango ? resultados.length : 6);
-  lista.innerHTML='';
+  listaEl.innerHTML='';
   resultados.slice(0,MAX).forEach((r,idx) => {
     const mR=r.mOrigen-now;
     const isNext=!modoRango&&idx===0;
@@ -7919,14 +8337,34 @@ function render() {
     }
     card.innerHTML=`
       ${isNext?`<div class="badge-next" style="background:${lineColor};color:#0d0f14">PRÓXIMO</div>`:''}
-      <div class="train-time-block"><div class="train-time">${minsToStr(r.mOrigen)}</div>${inL}</div>
+      <div class="train-time-block"><div class="train-time">${minsToStr(r.mOrigen)}</div>${isNext?`<div class="train-eta-mins">${etaMinsLabel(mR)}</div>`:''} ${inL}</div>
       <div class="train-info">
         <div class="train-dest-label" style="color:${lineColor}">${cfg.getRamalLabel(r.ramal, direccion)}</div>
         <div class="train-dest">${direccion==='haciaretiro'?'destino':'hasta'} ${r.destFinal}</div>
         <div style="font-size:10px;color:var(--muted);margin-top:2px">Tren ${r.tren.n}</div>
       </div>${etaB}`;
-    lista.appendChild(card);
+    // Botón notificación
+    const notifBtn = document.createElement('button');
+    const tid = notifTrenId(lineaActual, origenIdx, direccion, r.tren.n);
+    const notifs = getNotifs();
+    notifBtn.className = 'notif-btn' + (notifs[tid] ? ' active' : '');
+    notifBtn.textContent = notifs[tid] ? '🔕' : '🔔';
+    notifBtn.title = notifs[tid] ? 'Cancelar aviso' : 'Avisarme antes';
+    notifBtn.onclick = (e) => { e.stopPropagation(); toggleNotifTren(r.tren.n, r.mOrigen, notifBtn, card); };
+    card.appendChild(notifBtn);
+    // Envolver en wrap para swipe
+    const wrap = document.createElement('div');
+    wrap.className = 'train-card-wrap';
+    const swipeBg = document.createElement('div');
+    swipeBg.className = 'swipe-bg';
+    swipeBg.textContent = '★';
+    wrap.appendChild(swipeBg);
+    wrap.appendChild(card);
+    listaEl.appendChild(wrap);
+    initSwipeFav(wrap, card);
   });
+
+  mostrarHintSwipeSiEsNecesario();
 
   if(!modoRango&&!mostrarTodos&&resultados.length>MAX) {
     showMoreBtn.style.display='block';
@@ -7934,16 +8372,694 @@ function render() {
   } else { showMoreBtn.style.display='none'; }
   mostrarTodos=false;
   updateFavBtn();
+  // Guardar en historial cada vez que se renderizan resultados reales
+  guardarHistorial();
+  trackBusqueda();
 }
 
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// FEATURE B — SWIPE DERECHO PARA GUARDAR FAVORITO
+// ─────────────────────────────────────────────
+function initSwipeFav(wrap, card) {
+  let startX = 0, startY = 0, dx = 0;
+  let swiping = false;
+  const bg = wrap.querySelector('.swipe-bg');
+
+  card.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    dx = 0; swiping = false;
+  }, { passive: true });
+
+  card.addEventListener('touchmove', e => {
+    dx = e.touches[0].clientX - startX;
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    // Solo swipe horizontal derecho, no conflictar con scroll vertical
+    if(dx > 10 && dy < 30) {
+      swiping = true;
+      wrap.classList.add('swiping');
+      const clamped = Math.min(dx, 100);
+      card.style.transform = `translateX(${clamped}px)`;
+      if(bg) bg.style.opacity = Math.min(clamped / 80, 1);
+    }
+  }, { passive: true });
+
+  card.addEventListener('touchend', () => {
+    if(swiping && dx > 80) {
+      // Confirmar: guardar favorito
+      card.style.transform = '';
+      wrap.classList.remove('swiping');
+      if(bg) bg.style.opacity = '';
+      // Feedback visual rápido
+      card.style.background = 'rgba(34,197,94,.15)';
+      setTimeout(() => { card.style.background = ''; }, 600);
+      // Mostrar hint una sola vez
+      if(!localStorage.getItem('anden_swipe_hint_shown')) {
+        localStorage.setItem('anden_swipe_hint_shown','1');
+      }
+      toggleFavorito();
+    } else {
+      // Reset sin guardar
+      card.style.transform = '';
+      wrap.classList.remove('swiping');
+      if(bg) bg.style.opacity = '';
+    }
+    swiping = false; dx = 0;
+  });
+}
+
+// Hint swipe — primera vez, debajo del primer resultado
+function mostrarHintSwipeSiEsNecesario() {
+  if(localStorage.getItem('anden_swipe_hint_shown')) return;
+  const existing = document.getElementById('swipeHint');
+  if(existing) existing.remove();
+  const hint = document.createElement('div');
+  hint.id = 'swipeHint';
+  hint.style.cssText = 'text-align:center;font-size:11px;color:var(--muted);padding:4px 0 8px;animation:slideIn .3s ease both';
+  hint.textContent = '← deslizá una card a la derecha para guardar como favorito →';
+  const lista = document.getElementById('trainsList');
+  if(lista && lista.children.length > 0) {
+    lista.insertBefore(hint, lista.children[1] || null);
+  }
+}
+
+// ─────────────────────────────────────────────
+// FEATURE C — SNACKBAR DE INSTALACIÓN PWA
+// Reglas: 3ra visita mínimo · máx 2 apariciones · 14 días entre apariciones
+// · se va solo a los 6s · "no" 2 veces → nunca más
+// ─────────────────────────────────────────────
+let deferredInstallPrompt = null;
+let _bannerTimer = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function getInstallStats() {
+  try { return JSON.parse(localStorage.getItem('anden_install') || '{}'); } catch(e) { return {}; }
+}
+function saveInstallStats(s) {
+  try { localStorage.setItem('anden_install', JSON.stringify(s)); } catch(e) {}
+}
+
+function initInstallBanner() {
+  // Ya instalada como PWA standalone → nunca mostrar
+  const standalone = window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true;
+  if(standalone) return;
+
+  const stats   = getInstallStats();
+  const visits  = (stats.visits || 0) + 1;
+  saveInstallStats({ ...stats, visits });
+
+  // ── Reglas de negocio ──────────────────────
+  if(visits < 3) return;                                          // mínimo 3ra visita
+  if((stats.shown || 0) >= 2) return;                            // máx 2 apariciones totales
+  if((stats.rechazos || 0) >= 2) return;                         // rechazó 2 veces → nunca más
+  if(stats.instalado) return;                                     // ya instaló
+  const ahora = Date.now();
+  const DIAS14 = 14 * 24 * 60 * 60 * 1000;
+  if(stats.ultimaVez && (ahora - stats.ultimaVez) < DIAS14) return; // 14 días de silencio
+
+  // ── Detectar plataforma ────────────────────
+  const isIos     = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const isSafari  = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  const esIos     = isIos && isSafari;
+
+  if(!esIos && !deferredInstallPrompt) return; // Android sin prompt capturado → no mostrar
+
+  const banner  = document.getElementById('installBanner');
+  const btnMain = document.getElementById('installBtnMain');
+  const stepsEl = document.getElementById('installStepsIos');
+  const subEl   = document.getElementById('installBannerSub');
+
+  if(esIos) {
+    if(stepsEl) stepsEl.style.display = 'block';
+    if(subEl)   subEl.style.display   = 'none';
+    if(btnMain) btnMain.style.display  = 'none';
+  }
+
+  // Aparecer a los 3 segundos (usuario tuvo tiempo de ver la app)
+  setTimeout(() => {
+    banner.classList.add('visible');
+    saveInstallStats({
+      ...getInstallStats(),
+      shown:    (stats.shown || 0) + 1,
+      ultimaVez: ahora,
+    });
+
+    // Barra de progreso y auto-dismiss a los 6 segundos
+    const progress = document.getElementById('installProgress');
+    if(progress) {
+      // El CSS transition ya hace el scaleX(0) en 6s cuando .visible está
+      // Al llegar a 0 cerramos silenciosamente (sin contar como rechazo)
+      _bannerTimer = setTimeout(() => cerrarBanner(false), 6000);
+    }
+  }, 3000);
+}
+
+function doInstall() {
+  if(_bannerTimer) clearTimeout(_bannerTimer);
+  if(!deferredInstallPrompt) { cerrarBanner(false); return; }
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.then(choice => {
+    if(choice.outcome === 'accepted') {
+      saveInstallStats({ ...getInstallStats(), instalado: true });
+      showToast('✓ Andén.ar instalada');
+    }
+    deferredInstallPrompt = null;
+    cerrarBanner(false);
+  });
+}
+
+function cerrarBanner(contarRechazo = false) {
+  if(_bannerTimer) { clearTimeout(_bannerTimer); _bannerTimer = null; }
+  const banner = document.getElementById('installBanner');
+  if(banner) banner.classList.remove('visible');
+  if(contarRechazo) {
+    const s = getInstallStats();
+    saveInstallStats({ ...s, rechazos: (s.rechazos || 0) + 1 });
+  }
+}
+
+// ─────────────────────────────────────────────
+// FEATURE A — NOTIFICACIONES LOCALES
+// ─────────────────────────────────────────────
+const NOTIF_KEY = 'anden_notifs';
+let notifTimers = {};  // trenId → timerId
+
+function getNotifs() {
+  try { return JSON.parse(localStorage.getItem(NOTIF_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveNotifs(n) {
+  try { localStorage.setItem(NOTIF_KEY, JSON.stringify(n)); } catch(e) {}
+}
+
+async function pedirPermisoNotificaciones() {
+  if(!('Notification' in window)) return false;
+  if(Notification.permission === 'granted') return true;
+  if(Notification.permission === 'denied') {
+    showToast('Activá las notificaciones en ajustes del navegador');
+    return false;
+  }
+  const result = await Notification.requestPermission();
+  return result === 'granted';
+}
+
+function notifTrenId(lineaActual, origenIdx, direccion, trenN) {
+  return `${lineaActual}_${origenIdx}_${direccion}_${trenN}`;
+}
+
+async function toggleNotifTren(trenN, mOrigen, btnEl, pickerParent) {
+  const tid = notifTrenId(lineaActual, origenIdx, direccion, trenN);
+  const notifs = getNotifs();
+
+  // Si ya está programada → cancelar
+  if(notifs[tid]) {
+    if(notifTimers[tid]) { clearTimeout(notifTimers[tid]); delete notifTimers[tid]; }
+    delete notifs[tid];
+    saveNotifs(notifs);
+    if(btnEl) { btnEl.textContent='🔔'; btnEl.classList.remove('active'); btnEl.title='Avisarme antes'; }
+    showToast('Recordatorio cancelado');
+    return;
+  }
+
+  // Mostrar picker de tiempo
+  const existing = pickerParent.querySelector('.notif-picker');
+  if(existing) { existing.remove(); return; }
+
+  const picker = document.createElement('div');
+  picker.className = 'notif-picker';
+  [10,15,20,30].forEach(min => {
+    const btn = document.createElement('button');
+    btn.textContent = `${min} min antes`;
+    btn.onclick = async () => {
+      picker.remove();
+      const ok = await pedirPermisoNotificaciones();
+      if(!ok) return;
+      programarNotif(tid, trenN, mOrigen, min, btnEl, notifs);
+    };
+    picker.appendChild(btn);
+  });
+  // Cerrar al tocar fuera
+  setTimeout(() => document.addEventListener('touchstart', function h(e) {
+    if(!picker.contains(e.target)) { picker.remove(); document.removeEventListener('touchstart',h); }
+  }), 100);
+  pickerParent.appendChild(picker);
+}
+
+function programarNotif(tid, trenN, mOrigen, minAntes, btnEl, notifs) {
+  const now = nowMins();
+  // mOrigen puede ser >1440 si es madrugada del día siguiente
+  const msHastaTren = (mOrigen - now) * 60 * 1000;
+  const msHastaNotif = msHastaTren - minAntes * 60 * 1000;
+
+  if(msHastaNotif <= 0) {
+    showToast('El tren sale muy pronto para ese aviso');
+    return;
+  }
+
+  const cfg = LINEAS_CONFIG[lineaActual];
+  const ests = cfg ? cfg.estaciones() : [];
+  const origen = ests[origenIdx] || '';
+  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : '';
+  const horaStr = minsToStr(mOrigen % 1440);
+
+  const timerId = setTimeout(() => {
+    new Notification(`🚉 Tren ${trenN} en ${minAntes} min`, {
+      body: `${origen} → ${terminal} · Sale a las ${horaStr}`,
+      icon: '/favicon.ico',
+      tag: tid,
+    });
+    // Limpiar después de disparar
+    const n = getNotifs(); delete n[tid]; saveNotifs(n);
+    delete notifTimers[tid];
+    if(btnEl) { btnEl.textContent='🔔'; btnEl.classList.remove('active'); }
+  }, msHastaNotif);
+
+  notifTimers[tid] = timerId;
+  notifs[tid] = { trenN, mOrigen, minAntes, ts: Date.now() };
+  saveNotifs(notifs);
+
+  if(btnEl) { btnEl.textContent='🔕'; btnEl.classList.add('active'); btnEl.title='Cancelar aviso'; }
+  const enMin = Math.round(msHastaNotif / 60000);
+  showToast(`🔔 Aviso en ${enMin} min`);
+}
+
+// Restaurar notificaciones activas al cargar (en caso de recarga)
+function restaurarNotifs() {
+  const notifs = getNotifs();
+  const now = nowMins();
+  const validas = {};
+  Object.entries(notifs).forEach(([tid, data]) => {
+    const msHastaNotif = (data.mOrigen - now) * 60 * 1000 - data.minAntes * 60 * 1000;
+    if(msHastaNotif > 0) {
+      validas[tid] = data;
+    }
+  });
+  saveNotifs(validas);
+}
+
+// ─────────────────────────────────────────────
+// FEATURE 1 — ONBOARDING (solo primera vez)
+// ─────────────────────────────────────────────
+function initOnboarding() {
+  if(localStorage.getItem('anden_ob_done')) return;
+  const el = document.getElementById('onboardingScreen');
+  if(el) el.style.display = 'flex';
+}
+
+function cerrarOnboarding() {
+  const el = document.getElementById('onboardingScreen');
+  if(el) {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity .3s';
+    setTimeout(() => { el.style.display = 'none'; el.style.opacity = ''; }, 300);
+  }
+  localStorage.setItem('anden_ob_done', '1');
+}
+
+// ─────────────────────────────────────────────
+// FEATURE 2 — SUGERENCIA PROACTIVA DE FAVORITO
+// ─────────────────────────────────────────────
+const BUSQ_KEY = 'anden_busq';
+let _favSuggestTimer = null;
+
+function getBusquedas() {
+  try { return JSON.parse(localStorage.getItem(BUSQ_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function trackBusqueda() {
+  if(isFavSaved()) return;
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if(!cfg) return;
+
+  const key = `${lineaActual}_${origenIdx}_${direccion}`;
+  const busq = getBusquedas();
+  busq[key] = (busq[key] || 0) + 1;
+  try { localStorage.setItem(BUSQ_KEY, JSON.stringify(busq)); } catch(e) {}
+
+  const veces = busq[key];
+
+  if(veces === 2) {
+    // Primera sugerencia
+    mostrarFavSuggest();
+  } else if(veces === 4) {
+    // Segunda y última sugerencia
+    mostrarFavSuggest();
+  } else if(veces === 6) {
+    // A partir de acá solo recordatorio con el ★
+    showToast('Tocá ★ para guardar este viaje como favorito');
+    // Resetear contador para no volver a mostrar nada
+    busq[key] = 0;
+    try { localStorage.setItem(BUSQ_KEY, JSON.stringify(busq)); } catch(e) {}
+  }
+}
+
+function mostrarFavSuggest() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if(!cfg) return;
+  const ests = cfg.estaciones();
+  const label = document.getElementById('favSuggestLabel');
+
+  // Usar el destino real del usuario si eligió uno, sino la terminal de la línea
+  const selDestino = document.getElementById('selDestino');
+  const destIdx = selDestino ? parseInt(selDestino.value) : NaN;
+  let destLabel;
+  if(!isNaN(destIdx) && destIdx >= 0 && ests[destIdx]) {
+    destLabel = ests[destIdx];
+  } else {
+    destLabel = direccion === 'haciafinal' ? cfg.terminalIda : cfg.terminalVta;
+  }
+
+  if(label) label.textContent = `${ests[origenIdx] || ''} → ${destLabel}`;
+
+  const el = document.getElementById('favSuggest');
+  if(el) el.classList.add('visible');
+
+  if(_favSuggestTimer) clearTimeout(_favSuggestTimer);
+  _favSuggestTimer = setTimeout(() => cerrarFavSuggest(), 8000);
+}
+
+function cerrarFavSuggest() {
+  if(_favSuggestTimer) { clearTimeout(_favSuggestTimer); _favSuggestTimer = null; }
+  const el = document.getElementById('favSuggest');
+  if(el) el.classList.remove('visible');
+}
+
+function aceptarFavSuggest() {
+  cerrarFavSuggest();
+  // Limpiar el contador de esta búsqueda para no volver a sugerir
+  const key = `${lineaActual}_${origenIdx}_${direccion}`;
+  const busq = getBusquedas();
+  delete busq[key];
+  try { localStorage.setItem(BUSQ_KEY, JSON.stringify(busq)); } catch(e) {}
+  toggleFavorito();
+}
+
+// ─────────────────────────────────────────────
+// FEATURE 3 — JERARQUÍA VISUAL PRÓXIMO TREN
+// Se aplica en render() — aquí solo el helper de ETA en minutos
+// ─────────────────────────────────────────────
+function etaMinsLabel(mins) {
+  if(mins <= 0) return 'ahora';
+  if(mins === 1) return 'en 1 min';
+  if(mins < 60) return `en ${mins} min`;
+  const h = Math.floor(mins/60), m = mins%60;
+  return m > 0 ? `en ${h}h ${m}min` : `en ${h}h`;
+}
+
+// ─────────────────────────────────────────────
+// FEATURE 4 — REPORTAR HORARIO INCORRECTO
+// ─────────────────────────────────────────────
+function reportarHorario() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if(!cfg) return;
+  const ests = cfg.estaciones();
+  const linea   = cfg.nombre.replace(/🚆\s*|🚇\s*|🚂\s*/g,'').trim();
+  const estacion = ests[origenIdx] || '';
+  const dir     = direccion === 'haciafinal' ? `→ ${cfg.terminalIda}` : `← ${cfg.terminalVta}`;
+  const dia     = tipoDia === 'labsab' ? 'Lunes-Sábado' : 'Dom/Feriado';
+
+  const asunto = encodeURIComponent(`[Andén.ar] Horario incorrecto — ${linea}`);
+  const cuerpo = encodeURIComponent(
+    `Línea: ${linea}\nEstación: ${estacion}\nDirección: ${dir}\nTipo de día: ${dia}\n\n` +
+    `Describí el error:\n\n`
+  );
+  window.location.href = `mailto:info.anden.ar@gmail.com?subject=${asunto}&body=${cuerpo}`;
+}
+
+// ─────────────────────────────────────────────
+// FASE 2 — BOTTOM SHEET SELECTOR DE ESTACIONES
+// ─────────────────────────────────────────────
+let _pickerEstaciones = [];
+
+function abrirPickerOrigen() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if(!cfg) return;
+  _pickerEstaciones = cfg.estaciones();
+
+  const overlay = document.getElementById('stationPickerOverlay');
+  const sheet   = document.getElementById('stationPickerSheet');
+  const search  = document.getElementById('stationSearch');
+
+  overlay.style.display = 'block';
+  sheet.style.display   = 'flex';
+  // Force reflow para que la transición funcione
+  overlay.offsetHeight;
+  overlay.style.opacity = '1';
+  sheet.style.transform = 'translateY(0)';
+
+  search.value = '';
+  renderPickerItems(_pickerEstaciones);
+  setTimeout(() => search.focus(), 350);
+}
+
+function cerrarPickerOrigen() {
+  const overlay = document.getElementById('stationPickerOverlay');
+  const sheet   = document.getElementById('stationPickerSheet');
+  overlay.style.opacity = '0';
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    sheet.style.display   = 'none';
+  }, 300);
+}
+
+function filtrarEstaciones(q) {
+  const filtradas = q.trim() === ''
+    ? _pickerEstaciones
+    : _pickerEstaciones.filter(e => e.toLowerCase().includes(q.toLowerCase()));
+  renderPickerItems(filtradas);
+}
+
+function renderPickerItems(lista) {
+  const cont = document.getElementById('stationList');
+  cont.innerHTML = '';
+  lista.forEach(nombre => {
+    const idx = _pickerEstaciones.indexOf(nombre);
+    const div = document.createElement('div');
+    div.className = 'station-list-item' + (idx === origenIdx ? ' selected' : '');
+    div.textContent = nombre;
+    div.onclick = () => seleccionarEstacion(idx, nombre);
+    cont.appendChild(div);
+  });
+}
+
+function seleccionarEstacion(idx, nombre) {
+  const selOrigen = document.getElementById('selOrigen');
+  selOrigen.value = idx;
+  origenIdx = idx;
+  // Actualizar el trigger
+  const trigger = document.getElementById('origenTriggerLabel');
+  if(trigger) trigger.textContent = nombre;
+  cerrarPickerOrigen();
+  poblarDestino();
+  updateFavBtn();
+  render();
+}
+
+function actualizarTriggerOrigen() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if(!cfg) return;
+  const ests = cfg.estaciones();
+  const trigger = document.getElementById('origenTriggerLabel');
+  if(trigger) trigger.textContent = ests[origenIdx] || 'Seleccioná una estación';
+}
+
+// ─────────────────────────────────────────────
+// FASE 1 — NOTIFICACIÓN PROACTIVA DEL FAVORITO
+// Cuando guardás un favorito, pregunta una sola vez si querés aviso automático.
+// En cada apertura de la app, si hay un favorito con notif activa,
+// programa automáticamente el próximo tren de ese favorito.
+// ─────────────────────────────────────────────
+const NOTIF_FAV_KEY = 'anden_notif_fav';
+
+function getNotifFavConfig() {
+  try { return JSON.parse(localStorage.getItem(NOTIF_FAV_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveNotifFavConfig(cfg) {
+  try { localStorage.setItem(NOTIF_FAV_KEY, JSON.stringify(cfg)); } catch(e) {}
+}
+
+function preguntarNotifProactiva(favKey) {
+  const cfg = getNotifFavConfig();
+  if(cfg[favKey]) return;
+  if(!('Notification' in window)) return;
+  if(Notification.permission === 'denied') return;
+
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:16px;right:16px;background:var(--card);border:1px solid rgba(232,197,71,.35);border-radius:14px;padding:14px;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideIn .3s ease both';
+
+  const titulo = document.createElement('div');
+  titulo.style.cssText = 'font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px';
+  titulo.textContent = '🔔 ¿Querés que te avisemos antes de tu tren?';
+  toast.appendChild(titulo);
+
+  const sub = document.createElement('div');
+  sub.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:12px';
+  sub.textContent = 'Te avisamos automáticamente cuando abrís la app cerca de tu horario habitual.';
+  toast.appendChild(sub);
+
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:6px;flex-wrap:wrap';
+
+  [10,15,20].forEach(min => {
+    const b = document.createElement('button');
+    b.style.cssText = 'flex:1;background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer';
+    b.textContent = min + ' min antes';
+    b.addEventListener('click', () => activarNotifFav(favKey, min, toast));
+    btns.appendChild(b);
+  });
+
+  const noBtn = document.createElement('button');
+  noBtn.style.cssText = 'background:none;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);cursor:pointer';
+  noBtn.textContent = 'Ahora no';
+  noBtn.addEventListener('click', () => toast.remove());
+  btns.appendChild(noBtn);
+
+  toast.appendChild(btns);
+  document.body.appendChild(toast);
+
+  const updCfg = getNotifFavConfig();
+  updCfg[favKey] = { preguntado: true, activo: false, minAntes: 0 };
+  saveNotifFavConfig(updCfg);
+
+  setTimeout(() => { if(toast.parentNode) toast.remove(); }, 12000);
+}
+
+function cerrarToastNotif(btn) {
+  const toast = btn.closest('[style*="position:fixed"]') || btn.parentNode.parentNode;
+  if(toast) toast.remove();
+}
+
+async function activarNotifFav(favKey, minAntes, toastEl) {
+  const ok = await pedirPermisoNotificaciones();
+  if(toastEl && toastEl.parentNode) toastEl.remove();
+  if(!ok) return;
+  const cfg = getNotifFavConfig();
+  cfg[favKey] = { preguntado: true, activo: true, minAntes };
+  saveNotifFavConfig(cfg);
+  showToast('🔔 Te avisamos ' + minAntes + ' min antes');
+}
+
+function programarNotifProactivaFav() {
+  const cfg = getNotifFavConfig();
+  const favs = getFavs();
+  if(!favs.length) return;
+  if(Notification.permission !== 'granted') return;
+
+  const now = nowMins();
+
+  favs.forEach(fav => {
+    const favCfg = cfg[fav.key];
+    if(!favCfg || !favCfg.activo) return;
+
+    const linea = fav.state ? fav.key.split('_')[0] : null;
+    if(!linea) return;
+    const lineaCfg = LINEAS_CONFIG[linea];
+    if(!lineaCfg) return;
+
+    const estado = fav.state;
+    // Obtener los trenes del día actual
+    const dow = new Date().getDay();
+    const td = dow === 0 ? 'domfer' : (dow === 6 ? 'sab' : 'labsab');
+    const trenes = lineaCfg.getData(td, estado.direccion || 'haciafinal');
+    if(!trenes || !trenes.length) return;
+
+    const origenI = parseInt(estado.origenIdx) || 0;
+
+    // Encontrar el próximo tren
+    let proximoMin = null;
+    trenes.forEach(tren => {
+      const hOr = tren.h[origenI];
+      if(!hOr) return;
+      let mT = hOr[0]*60 + hOr[1];
+      if(mT < 300 && now > 1200) mT += 1440;
+      if(mT >= now) {
+        if(proximoMin === null || mT < proximoMin) proximoMin = mT;
+      }
+    });
+
+    if(proximoMin === null) return;
+
+    const msHastaNotif = (proximoMin - now - favCfg.minAntes) * 60 * 1000;
+    if(msHastaNotif <= 0 || msHastaNotif > 4 * 60 * 60 * 1000) return; // Solo si es en <4h
+
+    const tid = `fav_${fav.key}`;
+    // No duplicar si ya hay un timer activo para este fav
+    if(notifTimers[tid]) return;
+
+    const ests = lineaCfg.estaciones();
+    const origen = ests[origenI] || '';
+    const terminal = estado.direccion === 'haciafinal' ? lineaCfg.terminalIda : lineaCfg.terminalVta;
+    const horaStr = `${String(proximoMin%1440 < 0 ? 0 : Math.floor((proximoMin%1440)/60)).padStart(2,'0')}:${String((proximoMin%1440)%60).padStart(2,'0')}`;
+
+    notifTimers[tid] = setTimeout(() => {
+      new Notification(`🚉 Tu tren en ${favCfg.minAntes} min`, {
+        body: `${origen} → ${terminal} · Sale a las ${horaStr}`,
+        icon: '/favicon.ico', tag: tid,
+      });
+      delete notifTimers[tid];
+    }, msHastaNotif);
+  });
+}
+
 // INIT — al final, después de LINEAS_CONFIG y SCREENS
 // ─────────────────────────────────────────────
 if (new Date().getDay()===0) tipoDia='domfer';
 poblarOrigen();
 render();
 renderFavs();
+renderHistorial();
+// Ocultar sección historial si no hay entradas
+(function() {
+  const hist = getHistorial();
+  const title = document.getElementById('histSectionTitle');
+  if (title) title.style.display = hist.length ? '' : 'none';
+  const list = document.getElementById('historialList');
+  if (list) list.style.display = hist.length ? '' : 'none';
+})();
+// Notificaciones: limpiar vencidas al iniciar
+restaurarNotifs();
+// Notificación proactiva de favorito
+programarNotifProactivaFav();
+// Banner PWA
+initInstallBanner();
+// Onboarding primera vez
+initOnboarding();
 
 </script>
+<!-- Banner instalación PWA -->
+<div id="installBanner" role="alert" aria-live="polite">
+  <span class="install-snack-icon">🚉</span>
+  <div class="install-snack-body">
+    <div class="install-snack-title">Instalá Andén.ar</div>
+    <div class="install-snack-sub" id="installBannerSub">Offline · directo desde tu inicio</div>
+    <div class="install-snack-steps" id="installStepsIos" style="display:none">
+      Safari ⬆ → "Agregar al inicio" → Agregar
+    </div>
+  </div>
+  <div class="install-snack-btns">
+    <button class="install-btn-main" id="installBtnMain" onclick="doInstall()">Instalar</button>
+    <button class="install-btn-close" onclick="cerrarBanner(true)" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="install-progress" id="installProgress"></div>
+</div>
+
+<!-- Bottom sheet selector de estaciones -->
+<div id="stationPickerOverlay" onclick="cerrarPickerOrigen()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:450;opacity:0;transition:opacity .25s"></div>
+<div id="stationPickerSheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:451;padding-bottom:env(safe-area-inset-bottom,0px);max-height:75vh;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)">
+  <div style="padding:16px 16px 8px;border-bottom:1px solid var(--border)">
+    <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
+    <input id="stationSearch" type="text" placeholder="Buscar estación..." autocomplete="off"
+      style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none"
+      oninput="filtrarEstaciones(this.value)">
+  </div>
+  <div id="stationList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+</div>
+
 </body>
 </html>
