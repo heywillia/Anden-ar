@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!--
+  © 2026 Andén.ar — Todos los derechos reservados.
+  Código fuente protegido. Prohibida su reproducción,
+  distribución o uso comercial sin autorización expresa.
+  Contacto: info.anden.ar@gmail.com
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Andén.ar — Los próximos trenes del AMBA, sin vueltas</title>
+<meta name="description" content="PWA gratuita de horarios de trenes del AMBA. Sin publicidad, sin cuenta, sin internet. Sabés cuándo sale el próximo tren.">
+<meta property="og:title" content="Andén.ar — Los próximos trenes del AMBA, sin vueltas">
+<meta property="og:description" content="Sin publicidad, sin cuenta, funciona offline. Elegís la línea, elegís la estación, sabés cuándo sale el próximo tren.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://heywillia.github.io/Anden-ar/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Andén.ar">
+<meta name="twitter:description" content="Horarios de trenes del AMBA. Offline. Sin cuenta. Sin publicidad.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --negro: #0a0a0a;
+  --negro2: #111111;
+  --negro3: #1a1a1a;
+  --hueso: #f2ede3;
+  --hueso2: #e8e2d5;
+  --gris: #555;
+  --gris2: #888;
+  --amarillo: #e8c547;
+  --amarillo2: #f0d060;
+  --rojo: #d94f3d;
+  --verde: #3a9960;
+
+  /* colores líneas */
+  --sm-color: #e8c547;
+  --bn-color: #c0392b;
+  --ur-color: #8e44ad;
+  --roca-color: #2980b9;
+  --mitre-color: #16a085;
+  --sarmiento-color: #e67e22;
+  --bs-color: #7f8c8d;
+  --subte-color: #ecf0f1;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--negro);
+  color: var(--hueso);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CURSOR CUSTOM */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--amarillo);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  top: 0; left: 0;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s ease, height 0.2s ease, background 0.2s ease;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(232,197,71,0.4);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  top: 0; left: 0;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  will-change: transform;
+}
+body:hover .cursor { opacity: 1; }
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.5;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+  transition: background 0.4s ease, backdrop-filter 0.4s ease, padding 0.3s ease;
+}
+nav.scrolled {
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 14px 40px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  color: var(--hueso);
+}
+.nav-logo span { color: var(--amarillo); }
+.nav-cta {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+  cursor: none;
+}
+.nav-cta:hover { background: var(--amarillo2); transform: translateY(-1px); }
+
+/* SECCIONES GENERALES */
+section { position: relative; overflow: hidden; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+/* ─── HERO ─────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  background: var(--negro);
+  position: relative;
+}
+
+/* fondo: línea de tren horizontal */
+.hero-rail {
+  position: absolute;
+  bottom: 80px; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgba(232,197,71,0.15) 20%, rgba(232,197,71,0.15) 80%, transparent);
+}
+.hero-rail::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: 0; right: 0;
+  height: 2px;
+  background: inherit;
+}
+/* durmientes */
+.hero-rail::after {
+  content: '';
+  position: absolute;
+  top: -20px; bottom: -20px; left: 5%;
+  right: 5%;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(232,197,71,0.06) 0px,
+    rgba(232,197,71,0.06) 12px,
+    transparent 12px,
+    transparent 48px
+  );
+}
+
+/* luces del tren acercándose */
+.train-light {
+  position: absolute;
+  bottom: 60px;
+  left: -200px;
+  width: 120px;
+  height: 20px;
+  background: radial-gradient(ellipse at right, rgba(255,255,200,0.7) 0%, rgba(255,220,80,0.3) 40%, transparent 80%);
+  border-radius: 50%;
+  animation: trainApproach 8s ease-in-out infinite;
+}
+.train-light-2 {
+  position: absolute;
+  bottom: 56px;
+  left: -200px;
+  width: 60px;
+  height: 12px;
+  background: radial-gradient(ellipse at right, rgba(255,255,255,0.9) 0%, rgba(255,240,120,0.4) 50%, transparent 80%);
+  border-radius: 50%;
+  animation: trainApproach 8s ease-in-out infinite;
+  animation-delay: 0.1s;
+}
+@keyframes trainApproach {
+  0% { left: -200px; opacity: 0; transform: scaleX(0.5); }
+  10% { opacity: 1; }
+  70% { left: 110vw; opacity: 0.8; transform: scaleX(1.2); }
+  100% { left: 110vw; opacity: 0; }
+}
+
+/* luz ambiental del tren */
+.train-glow {
+  position: absolute;
+  bottom: 0; left: -300px;
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse, rgba(255,220,60,0.04) 0%, transparent 70%);
+  animation: glowMove 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glowMove {
+  0% { left: -300px; }
+  70% { left: 120vw; }
+  100% { left: 120vw; }
+}
+
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  padding: 120px 0 100px;
+}
+
+.hero-text { position: relative; z-index: 2; }
+
+.hero-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(72px, 8vw, 120px);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  color: var(--hueso);
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+.hero-title .accent { color: var(--amarillo); }
+.hero-title .dot { color: var(--amarillo); font-size: 0.7em; }
+
+.hero-subtitle {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--gris2);
+  margin: 24px 0 40px;
+  max-width: 420px;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+.hero-subtitle strong { color: var(--hueso); font-weight: 400; }
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
+  cursor: none;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-primary:hover { background: var(--amarillo2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,197,71,0.25); }
+
+.btn-secondary {
+  color: var(--gris2);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+  cursor: none;
+}
+.btn-secondary:hover { color: var(--hueso); border-color: var(--hueso); }
+
+.hero-badges {
+  margin-top: 36px;
+  display: flex;
+  gap: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1s forwards;
+}
+.badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--verde);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* MOCKUP DEL TELÉFONO */
+.hero-phone {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  animation: fadeLeft 1s 0.5s forwards;
+  display: flex;
+  justify-content: center;
+}
+
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.phone-frame {
+  width: 260px;
+  background: var(--negro3);
+  border-radius: 36px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  padding: 12px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.8),
+    0 60px 120px rgba(0,0,0,0.8),
+    0 0 80px rgba(232,197,71,0.04),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  position: relative;
+}
+.phone-frame::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: 50%; transform: translateX(-50%);
+  width: 80px; height: 24px;
+  background: var(--negro3);
+  border-radius: 0 0 14px 14px;
+  border: 1.5px solid rgba(255,255,255,0.06);
+  border-top: none;
+  z-index: 2;
+}
+
+.phone-screen {
+  background: #0e0e0e;
+  border-radius: 26px;
+  overflow: hidden;
+  height: 480px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.phone-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+}
+.phone-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+.phone-signal {
+  display: flex; gap: 3px; align-items: flex-end;
+}
+.phone-signal span {
+  background: rgba(255,255,255,0.3);
+  border-radius: 1px;
+  width: 3px;
+}
+.phone-signal span:nth-child(1) { height: 4px; }
+.phone-signal span:nth-child(2) { height: 7px; }
+.phone-signal span:nth-child(3) { height: 10px; background: rgba(255,255,255,0.7); }
+
+.phone-header {
+  background: linear-gradient(135deg, rgba(232,197,71,0.12) 0%, rgba(232,197,71,0.03) 100%);
+  border: 1px solid rgba(232,197,71,0.15);
+  border-radius: 14px;
+  padding: 14px;
+}
+.phone-linea {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 4px;
+}
+.phone-ruta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hueso);
+}
+.phone-ruta span { color: var(--gris2); font-weight: 300; }
+
+.phone-proximo {
+  background: var(--amarillo);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.proximo-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.5);
+  margin-bottom: 4px;
+}
+.proximo-hora {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px;
+  line-height: 1;
+  color: var(--negro);
+  letter-spacing: 0.02em;
+}
+.proximo-eta {
+  text-align: right;
+}
+.eta-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  line-height: 1;
+  color: var(--negro);
+}
+.eta-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: rgba(0,0,0,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.phone-cards { display: flex; flex-direction: column; gap: 8px; }
+.phone-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-hora {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px;
+  color: var(--hueso);
+}
+.card-info { text-align: right; }
+.card-dest {
+  font-size: 11px;
+  color: var(--gris2);
+  font-weight: 300;
+}
+.card-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--gris);
+  margin-top: 2px;
+}
+
+/* glow alrededor del teléfono */
+.phone-glow {
+  position: absolute;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(232,197,71,0.08) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+/* ─── HISTORIA ──────────────────────────────── */
+#historia {
+  padding: 160px 0;
+  background: var(--negro);
+}
+
+.historia-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: start;
+}
+
+.historia-sticky {
+  position: sticky;
+  top: 100px;
+}
+
+.historia-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 24px;
+}
+
+.historia-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 5vw, 72px);
+  line-height: 0.95;
+  color: var(--hueso);
+  margin-bottom: 32px;
+}
+
+.historia-intro {
+  font-size: 17px;
+  color: var(--gris2);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.historia-intro strong {
+  color: var(--hueso);
+  font-weight: 400;
+}
+
+/* escenas de storytelling */
+.escenas { display: flex; flex-direction: column; gap: 80px; }
+
+.escena {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.escena.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.escena-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--gris);
+  margin-bottom: 16px;
+}
+
+.escena-scene {
+  background: var(--negro3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.escena-scene::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.escena-scene.problema::before { background: linear-gradient(to right, var(--rojo), transparent); }
+.escena-scene.decision::before { background: linear-gradient(to right, var(--amarillo), transparent); }
+.escena-scene.solucion::before { background: linear-gradient(to right, var(--verde), transparent); }
+
+/* ilustración escena: andén */
+.escena-ilustracion {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.escena-texto {
+  font-size: 16px;
+  color: var(--gris2);
+  line-height: 1.8;
+  font-weight: 300;
+}
+.escena-texto strong {
+  color: var(--hueso);
+  font-weight: 400;
+}
+.escena-texto em {
+  color: var(--amarillo);
+  font-style: normal;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+}
+
+/* quote destacada */
+.quote-block {
+  border-left: 2px solid var(--amarillo);
+  padding: 20px 24px;
+  background: rgba(232,197,71,0.04);
+  border-radius: 0 8px 8px 0;
+  margin: 20px 0;
+}
+.quote-text {
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--hueso);
+  line-height: 1.6;
+  font-style: italic;
+}
+.quote-attr {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--gris2);
+  margin-top: 12px;
+  text-transform: uppercase;
+}
+
+/* ─── CÓMO FUNCIONA ─────────────────────────── */
+#como {
+  padding: 160px 0;
+  background: var(--negro2);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.como-header {
+  text-align: center;
+  margin-bottom: 100px;
+}
+.section-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amarillo);
+  margin-bottom: 20px;
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 6vw, 80px);
+  line-height: 0.95;
+  color: var(--hueso);
+}
+
+.pasos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  position: relative;
+}
+
+/* línea conectora entre pasos */
+.pasos::before {
+  content: '';
+  position: absolute;
+  top: 52px; left: calc(16.66% + 20px); right: calc(16.66% + 20px);
+  height: 1px;
+  background: linear-gradient(to right, rgba(232,197,71,0.3), rgba(232,197,71,0.1), rgba(232,197,71,0.3));
+}
+
+.paso {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.paso.visible { opacity: 1; transform: translateY(0); }
+.paso:nth-child(2) { transition-delay: 0.15s; }
+.paso:nth-child(3) { transition-delay: 0.3s; }
+
+.paso-num-wrap {
+  width: 44px; height: 44px;
+  background: var(--negro);
+  border: 1px solid rgba(232,197,71,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  position: relative;
+  z-index: 1;
+}
+.paso-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--amarillo);
+}
+
+.paso-ilustracion {
+  background: var(--negro3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.paso-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--hueso);
+  letter-spacing: 0.03em;
+  margin-bottom: 10px;
+}
+
+.paso-desc {
+  font-size: 14px;
+  color: var(--gris2);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ─── SUPERPODERES ──────────────────────────── */
+#superpoderes {
+  padding: 160px 0;
+  background: var(--negro);
+}
+
+.super-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.super-item {
+  background: var(--negro2);
+  padding: 48px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.super-item:hover { background: var(--negro3); }
+
+.super-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.super-item:nth-child(1)::before { background: var(--amarillo); }
+.super-item:nth-child(2)::before { background: var(--verde); }
+.super-item:nth-child(3)::before { background: var(--rojo); }
+.super-item:hover::before { transform: scaleX(1); }
+
+.super-icon {
+  font-size: 40px;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.super-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  color: var(--hueso);
+  letter-spacing: 0.03em;
+  margin-bottom: 12px;
+}
+
+.super-desc {
+  font-size: 15px;
+  color: var(--gris2);
+  line-height: 1.7;
+  font-weight: 300;
+}
+.super-desc strong { color: var(--hueso); font-weight: 400; }
+
+.super-stat {
+  margin-top: 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--gris);
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ─── LÍNEAS ─────────────────────────────────── */
+#lineas {
+  padding: 160px 0;
+  background: var(--negro2);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.lineas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+}
+
+.lineas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.linea-card {
+  background: var(--negro3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+}
+.linea-card.visible { opacity: 1; transform: translateY(0); }
+.linea-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px) !important; }
+
+.linea-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-bottom: 16px;
+}
+
+.linea-nombre {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  color: var(--hueso);
+  letter-spacing: 0.03em;
+  margin-bottom: 4px;
+}
+
+.linea-ramales {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--gris2);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+}
+
+.linea-stat {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--gris);
+}
+
+/* banda de color lateral */
+.linea-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20px; bottom: 20px;
+  width: 2px;
+  border-radius: 2px;
+  opacity: 0.6;
+}
+
+/* ─── CTA FINAL ─────────────────────────────── */
+#cta {
+  padding: 160px 0;
+  background: var(--negro);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#cta::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(232,197,71,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* grid de fondo decorativo */
+#cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.cta-inner { position: relative; z-index: 1; }
+
+.cta-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gris2);
+  margin-bottom: 24px;
+}
+
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 8vw, 110px);
+  line-height: 0.92;
+  color: var(--hueso);
+  margin-bottom: 32px;
+}
+.cta-title .line2 { color: var(--amarillo); }
+
+.cta-sub {
+  font-size: 17px;
+  color: var(--gris2);
+  font-weight: 300;
+  margin-bottom: 48px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-xl {
+  background: var(--amarillo);
+  color: var(--negro);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 20px 44px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
+  cursor: none;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-xl:hover { background: var(--amarillo2); transform: translateY(-3px); box-shadow: 0 20px 60px rgba(232,197,71,0.3); }
+
+.cta-features {
+  margin-top: 60px;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.cta-feature {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gris);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cta-feature::before {
+  content: '✓';
+  color: var(--verde);
+  font-size: 12px;
+}
+
+/* ─── FOOTER ─────────────────────────────────── */
+footer {
+  padding: 40px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--gris);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  color: var(--hueso);
+  letter-spacing: 0.05em;
+}
+.footer-logo span { color: var(--amarillo); }
+footer a { color: var(--gris); text-decoration: none; transition: color 0.2s; }
+footer a:hover { color: var(--hueso); }
+
+/* ANIMACIONES */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── SVGs / ILUSTRACIONES ───────────────────── */
+.ilus-anden {
+  width: 100%;
+  height: auto;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+
+  nav { padding: 16px 20px; }
+  .nav-cta { display: none; }
+
+  .container { padding: 0 20px; }
+
+  .hero-inner { grid-template-columns: 1fr; gap: 48px; padding: 100px 0 60px; }
+  .hero-phone { order: -1; }
+  .phone-frame { width: 220px; }
+  .phone-screen { height: 400px; }
+  .hero-badges { flex-wrap: wrap; gap: 16px; }
+
+  .historia-inner { grid-template-columns: 1fr; gap: 60px; }
+  .historia-sticky { position: static; }
+
+  .pasos { grid-template-columns: 1fr; }
+  .pasos::before { display: none; }
+
+  .super-grid { grid-template-columns: 1fr; gap: 2px; }
+
+  .lineas-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .lineas-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .cta-buttons { flex-direction: column; align-items: center; }
+  .cta-features { gap: 20px; }
+
+  footer { flex-direction: column; text-align: center; }
+}
+
+@media (max-width: 420px) {
+  .lineas-grid { grid-template-columns: 1fr; }
+  .hero-title { font-size: 64px; }
+}
+
+/* scrollbar custom */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--negro); }
+::-webkit-scrollbar-thumb { background: rgba(232,197,71,0.3); border-radius: 2px; }
+
+/* will-change para GPU layers */
+.hero-phone, .phone-glow, .train-light, .train-light-2, .train-glow { will-change: transform; }
+.escena, .paso, .linea-card { will-change: opacity, transform; }
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+  .cursor, .cursor-ring { display: none; }
+  body { cursor: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR CUSTOM -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Andén<span>.ar</span></div>
+  <a href="https://heywillia.github.io/Anden-ar/" class="nav-cta" target="_blank">Abrir app →</a>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-rail"></div>
+  <div class="train-light"></div>
+  <div class="train-light-2"></div>
+  <div class="train-glow"></div>
+
+  <div class="container">
+    <div class="hero-inner">
+
+      <div class="hero-text">
+        <div class="hero-kicker">Trenes del AMBA · Sin vueltas · 2026</div>
+        <h1 class="hero-title">
+          Andén<span class="dot">.</span><span class="accent">ar</span>
+        </h1>
+        <p class="hero-subtitle">
+          Los próximos trenes del AMBA,
+          <strong>en tres toques.</strong><br>
+          Sin internet. Sin cuenta.<br>Sin publicidad.
+        </p>
+        <div class="hero-actions">
+          <a href="https://heywillia.github.io/Anden-ar/" class="btn-primary" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Abrir la app
+          </a>
+          <a href="#como" class="btn-secondary">Cómo funciona</a>
+        </div>
+        <div class="hero-badges">
+          <div class="badge">Offline</div>
+          <div class="badge">Sin costo</div>
+          <div class="badge">Sin tracking</div>
+        </div>
+      </div>
+
+      <!-- MOCKUP TELÉFONO -->
+      <div class="hero-phone">
+        <div class="phone-glow"></div>
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="phone-topbar">
+              <span class="phone-time">14:03</span>
+              <div class="phone-signal">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+            <div class="phone-header">
+              <div class="phone-linea">🚆 Tu línea</div>
+              <div class="phone-ruta">Tu estación <span>→ Destino</span></div>
+            </div>
+            <div class="phone-proximo">
+              <div>
+                <div class="proximo-label">Próximo tren</div>
+                <div class="proximo-hora">14:17</div>
+              </div>
+              <div class="proximo-eta">
+                <div class="eta-num">14</div>
+                <div class="eta-label">min</div>
+              </div>
+            </div>
+            <div class="phone-cards">
+              <div class="phone-card">
+                <div class="card-hora">14:48</div>
+                <div class="card-info">
+                  <div class="card-dest">→ Pilar</div>
+                  <div class="card-num">#3217</div>
+                </div>
+              </div>
+              <div class="phone-card">
+                <div class="card-hora">15:22</div>
+                <div class="card-info">
+                  <div class="card-dest">→ J.C. Paz</div>
+                  <div class="card-num">#3219</div>
+                </div>
+              </div>
+              <div class="phone-card" style="opacity:0.4;">
+                <div class="card-hora">15:55</div>
+                <div class="card-info">
+                  <div class="card-dest">→ Pilar</div>
+                  <div class="card-num">#3221</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── HISTORIA ──────────────────────────────── -->
+<section id="historia">
+  <div class="container">
+    <div class="historia-inner">
+
+      <div class="historia-sticky">
+        <div class="historia-kicker">La historia detrás</div>
+        <h2 class="historia-title">Por qué<br>la hice</h2>
+        <p class="historia-intro">
+          No nació de una startup ni de un hackathon.<br>
+          Nació de <strong>un andén cualquiera</strong>, de cualquier línea,
+          y de la frustración de no poder leer bien los horarios
+          cuando más los necesitaba.
+        </p>
+      </div>
+
+      <div class="escenas">
+
+        <!-- ESCENA 1: El problema -->
+        <div class="escena">
+          <div class="escena-num">01 — El problema</div>
+          <div class="escena-scene problema">
+            <!-- Ilustración: pantalla de Google Maps confusa -->
+            <svg class="ilus-anden" viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg">
+              <!-- fondo -->
+              <rect width="380" height="180" fill="#111" rx="8"/>
+              <!-- mockup mapa confuso -->
+              <rect x="20" y="20" width="340" height="140" rx="6" fill="#1a1a1a"/>
+              <!-- barras de info confusas -->
+              <rect x="36" y="36" width="180" height="8" rx="2" fill="#333"/>
+              <rect x="36" y="52" width="120" height="6" rx="2" fill="#2a2a2a"/>
+              <rect x="36" y="68" width="200" height="6" rx="2" fill="#2a2a2a"/>
+              <!-- íconos confusos -->
+              <circle cx="300" cy="70" r="20" fill="#222" stroke="#333"/>
+              <text x="300" y="75" text-anchor="middle" fill="#555" font-size="14">?</text>
+              <!-- líneas de datos ilegibles -->
+              <rect x="36" y="90" width="60" height="5" rx="2" fill="#d94f3d" opacity="0.4"/>
+              <rect x="104" y="90" width="80" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="192" y="90" width="40" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="240" y="90" width="70" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="36" y="104" width="50" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="94" y="104" width="90" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="192" y="104" width="55" height="5" rx="2" fill="#d94f3d" opacity="0.3"/>
+              <rect x="36" y="118" width="70" height="5" rx="2" fill="#2a2a2a"/>
+              <rect x="114" y="118" width="50" height="5" rx="2" fill="#2a2a2a"/>
+              <!-- overlay de confusión -->
+              <rect x="20" y="20" width="340" height="140" rx="6" fill="url(#confGrad)"/>
+              <defs>
+                <linearGradient id="confGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#111" stop-opacity="0"/>
+                  <stop offset="1" stop-color="#111" stop-opacity="0.7"/>
+                </linearGradient>
+              </defs>
+              <!-- texto overlay -->
+              <text x="190" y="148" text-anchor="middle" fill="#d94f3d" font-size="10" font-family="monospace" opacity="0.8">Información confusa. Difícil de leer.</text>
+            </svg>
+          </div>
+          <p class="escena-texto">
+            ¿No te pasó que <strong>tenías que tomar el tren</strong> y cuando buscabas los horarios
+            la información era confusa, incompleta, o directamente no entendías a qué estación
+            iba cada servicio? Aplicaciones que no están pensadas para el andén.
+            Datos que no se leen en la pantalla del celular con el sol de frente.
+            <em>Información que llega tarde.</em>
+          </p>
+        </div>
+
+        <!-- ESCENA 2: La decisión -->
+        <div class="escena">
+          <div class="escena-num">02 — La decisión</div>
+          <div class="quote-block">
+            <p class="quote-text">"Si yo siempre sé más o menos dónde voy a estar y a qué hora, ¿por qué no puedo saber al instante cuánto falta el próximo tren?"</p>
+            <div class="quote-attr">— La pregunta que lo empezó todo</div>
+          </div>
+          <p class="escena-texto">
+            Así nació Andén.ar. No como proyecto de empresa,
+            sino como <strong>la app que yo necesitaba</strong> todos los días.
+            Una sola pantalla: elegís la línea, elegís la estación,
+            y ya sabés los próximos servicios. <em>Sin vueltas.</em>
+          </p>
+        </div>
+
+        <!-- ESCENA 3: La solución -->
+        <div class="escena">
+          <div class="escena-num">03 — La solución</div>
+          <div class="escena-scene solucion">
+            <svg class="ilus-anden" viewBox="0 0 380 180" xmlns="http://www.w3.org/2000/svg">
+              <!-- andén nocturno -->
+              <rect width="380" height="180" fill="#0a0a0a" rx="8"/>
+              <!-- piso del andén -->
+              <rect x="0" y="130" width="380" height="50" fill="#111"/>
+              <!-- línea del andén -->
+              <rect x="0" y="128" width="380" height="2" fill="#222"/>
+              <!-- columnas de la estación -->
+              <rect x="40" y="50" width="6" height="80" fill="#1a1a1a"/>
+              <rect x="120" y="40" width="6" height="90" fill="#1a1a1a"/>
+              <rect x="200" y="50" width="6" height="80" fill="#1a1a1a"/>
+              <rect x="280" y="40" width="6" height="90" fill="#1a1a1a"/>
+              <rect x="340" y="50" width="6" height="80" fill="#1a1a1a"/>
+              <!-- techo de la estación -->
+              <rect x="0" y="44" width="380" height="10" fill="#161616"/>
+              <!-- luces del techo -->
+              <ellipse cx="43" cy="52" rx="20" ry="8" fill="rgba(255,220,80,0.08)"/>
+              <ellipse cx="123" cy="52" rx="20" ry="8" fill="rgba(255,220,80,0.08)"/>
+              <ellipse cx="203" cy="52" rx="20" ry="8" fill="rgba(255,220,80,0.08)"/>
+              <ellipse cx="283" cy="52" rx="20" ry="8" fill="rgba(255,220,80,0.08)"/>
+              <ellipse cx="343" cy="52" rx="20" ry="8" fill="rgba(255,220,80,0.08)"/>
+              <!-- tren acercándose (luces) -->
+              <ellipse cx="-10" cy="108" rx="40" ry="15" fill="rgba(255,235,100,0.15)"/>
+              <ellipse cx="-10" cy="108" rx="15" ry="8" fill="rgba(255,255,200,0.5)"/>
+              <!-- rails -->
+              <rect x="0" y="126" width="380" height="2" fill="#1e1e1e"/>
+              <rect x="0" y="120" width="380" height="2" fill="#1e1e1e"/>
+              <!-- persona en el andén (silueta) -->
+              <ellipse cx="200" cy="118" rx="8" ry="3" fill="#0a0a0a" opacity="0.6"/>
+              <rect x="196" y="90" width="8" height="28" rx="4" fill="#222"/>
+              <circle cx="200" cy="84" r="7" fill="#222"/>
+              <!-- teléfono en la mano -->
+              <rect x="205" y="100" width="12" height="18" rx="2" fill="#e8c547" opacity="0.9"/>
+              <rect x="207" y="102" width="8" height="14" rx="1" fill="#0a0a0a"/>
+              <rect x="208" y="104" width="6" height="2" rx="1" fill="#e8c547" opacity="0.6"/>
+              <rect x="208" y="108" width="6" height="1.5" rx="1" fill="#333"/>
+              <rect x="208" y="111" width="6" height="1.5" rx="1" fill="#333"/>
+              <!-- badge 14 min -->
+              <rect x="218" y="95" width="44" height="18" rx="9" fill="#e8c547"/>
+              <text x="240" y="107" text-anchor="middle" fill="#0a0a0a" font-size="9" font-family="monospace" font-weight="600">14 min</text>
+              <!-- etiqueta andén -->
+              <rect x="140" y="56" width="100" height="18" rx="3" fill="#1a1a1a" stroke="#2a2a2a"/>
+              <text x="190" y="68" text-anchor="middle" fill="#888" font-size="8" font-family="monospace" letter-spacing="1">TU ESTACIÓN</text>
+            </svg>
+          </div>
+          <p class="escena-texto">
+            <strong>Tu estación. Tu horario.</strong> El próximo tren sale en 14 minutos.
+            Después otro en 45. Y otro en 1h 20. Sin conexión a internet.
+            <em>Tres toques desde la pantalla de inicio.</em> Eso es Andén.ar.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CÓMO FUNCIONA ─────────────────────────── -->
+<section id="como">
+  <div class="container">
+    <div class="como-header">
+      <div class="section-kicker">Paso a paso</div>
+      <h2 class="section-title">Tres toques,<br>listo.</h2>
+    </div>
+
+    <div class="pasos">
+
+      <!-- Paso 1 -->
+      <div class="paso">
+        <div class="paso-num-wrap"><span class="paso-num">01</span></div>
+        <div class="paso-ilustracion">
+          <svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <rect width="240" height="120" fill="#0e0e0e" rx="8"/>
+            <!-- grilla de líneas -->
+            <text x="16" y="20" fill="#888" font-size="8" font-family="monospace" letter-spacing="1">ELEGÍ LA LÍNEA</text>
+            <!-- tarjetas de líneas -->
+            <rect x="12" y="28" width="100" height="34" rx="6" fill="#1a1a1a" stroke="rgba(232,197,71,0.4)" stroke-width="1.5"/>
+            <circle cx="26" cy="45" r="6" fill="#e8c547"/>
+            <text x="38" y="42" fill="#f2ede3" font-size="9" font-family="sans-serif">San Martín</text>
+            <text x="38" y="53" fill="#555" font-size="7" font-family="monospace">JC Paz · Pilar</text>
+            <rect x="120" y="28" width="108" height="34" rx="6" fill="#1a1a1a"/>
+            <circle cx="134" cy="45" r="6" fill="#c0392b"/>
+            <text x="146" y="42" fill="#f2ede3" font-size="9" font-family="sans-serif">Belgrano N.</text>
+            <text x="146" y="53" fill="#555" font-size="7" font-family="monospace">Villa Rosa</text>
+            <rect x="12" y="70" width="100" height="34" rx="6" fill="#1a1a1a"/>
+            <circle cx="26" cy="87" r="6" fill="#2980b9"/>
+            <text x="38" y="84" fill="#f2ede3" font-size="9" font-family="sans-serif">Roca</text>
+            <text x="38" y="95" fill="#555" font-size="7" font-family="monospace">La Plata · Glew</text>
+            <rect x="120" y="70" width="108" height="34" rx="6" fill="#1a1a1a"/>
+            <circle cx="134" cy="87" r="6" fill="#16a085"/>
+            <text x="146" y="84" fill="#f2ede3" font-size="9" font-family="sans-serif">Mitre</text>
+            <text x="146" y="95" fill="#555" font-size="7" font-family="monospace">Tigre · Zárate</text>
+            <!-- dedo tocando -->
+            <circle cx="62" cy="45" r="14" fill="rgba(232,197,71,0.1)" stroke="rgba(232,197,71,0.3)" stroke-width="1"/>
+          </svg>
+        </div>
+        <h3 class="paso-titulo">Elegí la línea</h3>
+        <p class="paso-desc">25 líneas y ramales del AMBA en una sola pantalla. San Martín, Mitre, Roca, Sarmiento, Belgrano, Urquiza y todas las líneas de Subte.</p>
+      </div>
+
+      <!-- Paso 2 -->
+      <div class="paso">
+        <div class="paso-num-wrap"><span class="paso-num">02</span></div>
+        <div class="paso-ilustracion">
+          <svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <rect width="240" height="120" fill="#0e0e0e" rx="8"/>
+            <text x="16" y="20" fill="#888" font-size="8" font-family="monospace" letter-spacing="1">ELEGÍ TU ESTACIÓN</text>
+            <!-- bottom sheet de estaciones -->
+            <rect x="0" y="30" width="240" height="90" rx="8" fill="#1a1a1a"/>
+            <rect x="90" y="36" width="60" height="3" rx="2" fill="#333"/>
+            <!-- barra de búsqueda -->
+            <rect x="12" y="46" width="216" height="22" rx="6" fill="#111" stroke="#2a2a2a"/>
+            <text x="26" y="61" fill="#444" font-size="9" font-family="monospace">Buscar estación...</text>
+            <!-- lista de estaciones -->
+            <rect x="12" y="76" width="216" height="16" rx="4" fill="#e8c547" opacity="0.12"/>
+            <text x="24" y="88" fill="#e8c547" font-size="9" font-family="sans-serif" font-weight="500">Tu estación</text>
+            <rect x="12" y="96" width="216" height="16" rx="4" fill="none"/>
+            <text x="24" y="108" fill="#666" font-size="9" font-family="sans-serif">Palermo</text>
+          </svg>
+        </div>
+        <h3 class="paso-titulo">Elegí tu estación</h3>
+        <p class="paso-desc">Un selector con búsqueda. Encontrás tu estación en segundos. Sin scroll infinito ni menús anidados. Directo.</p>
+      </div>
+
+      <!-- Paso 3 -->
+      <div class="paso">
+        <div class="paso-num-wrap"><span class="paso-num">03</span></div>
+        <div class="paso-ilustracion">
+          <svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" width="100%">
+            <rect width="240" height="120" fill="#0e0e0e" rx="8"/>
+            <text x="16" y="20" fill="#888" font-size="8" font-family="monospace" letter-spacing="1">SABÉS EL PRÓXIMO</text>
+            <!-- card próximo tren -->
+            <rect x="12" y="28" width="216" height="50" rx="8" fill="#e8c547"/>
+            <text x="24" y="42" fill="rgba(0,0,0,0.5)" font-size="7" font-family="monospace" letter-spacing="1">PRÓXIMO TREN</text>
+            <text x="24" y="66" fill="#0a0a0a" font-size="32" font-family="'Bebas Neue', serif" letter-spacing="1">14:17</text>
+            <text x="188" y="58" fill="#0a0a0a" font-size="28" font-family="'Bebas Neue', serif" text-anchor="middle">14</text>
+            <text x="188" y="70" fill="rgba(0,0,0,0.5)" font-size="7" font-family="monospace" text-anchor="middle" letter-spacing="1">MIN</text>
+            <!-- próximas cards -->
+            <rect x="12" y="84" width="100" height="28" rx="6" fill="#1a1a1a"/>
+            <text x="24" y="96" fill="#f2ede3" font-size="11" font-family="monospace">14:48</text>
+            <text x="24" y="107" fill="#555" font-size="7" font-family="sans-serif">→ Pilar</text>
+            <rect x="120" y="84" width="108" height="28" rx="6" fill="#1a1a1a"/>
+            <text x="132" y="96" fill="#f2ede3" font-size="11" font-family="monospace">15:22</text>
+            <text x="132" y="107" fill="#555" font-size="7" font-family="sans-serif">→ JC Paz</text>
+          </svg>
+        </div>
+        <h3 class="paso-titulo">Sabés al instante</h3>
+        <p class="paso-desc">El próximo tren, cuántos minutos faltan, y los siguientes. Sin publicidad en el medio. Sin carga. Sin cuenta. La info que necesitás, ahí nomás.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── SUPERPODERES ──────────────────────────── -->
+<section id="superpoderes">
+  <div class="container">
+    <div class="como-header" style="margin-bottom:60px;">
+      <div class="section-kicker">Diseñada para el andén real</div>
+      <h2 class="section-title">Sin excusas.</h2>
+    </div>
+    <div class="super-grid">
+      <div class="super-item">
+        <span class="super-icon">📡</span>
+        <h3 class="super-titulo">100% Offline</h3>
+        <p class="super-desc">
+          Los horarios viven <strong>dentro de la app</strong>.
+          No necesitás señal, WiFi, ni datos móviles.
+          Funciona igual en el subsuelo que en el andén más remoto.
+        </p>
+        <div class="super-stat">Sin peticiones a servidores · Sin spinner · Sin "Reintentando…"</div>
+      </div>
+      <div class="super-item">
+        <span class="super-icon">⭐</span>
+        <h3 class="super-titulo">Favoritos inteligentes</h3>
+        <p class="super-desc">
+          Guardás tu viaje habitual y lo abrís con un toque desde la pantalla de inicio.
+          <strong>La app te avisa sola</strong> 10, 15 o 20 minutos antes del próximo tren.
+        </p>
+        <div class="super-stat">Notificaciones locales · Sin servidor · Sin costo</div>
+      </div>
+      <div class="super-item">
+        <span class="super-icon">🔔</span>
+        <h3 class="super-titulo">Alertas por tren</h3>
+        <p class="super-desc">
+          ¿Querés que te avise antes de un tren en particular?
+          Tocás el 🔔 en cualquier card y elegís cuántos minutos antes.
+          <strong>Sin registro. Sin permiso extra.</strong>
+        </p>
+        <div class="super-stat">Funciona con Web Notifications · Local · Privado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LÍNEAS DISPONIBLES ────────────────────── -->
+<section id="lineas">
+  <div class="container">
+    <div class="lineas-header">
+      <div>
+        <div class="section-kicker">Cobertura actual</div>
+        <h2 class="section-title" style="font-size: clamp(36px, 4vw, 56px);">25 líneas<br>del AMBA</h2>
+      </div>
+      <p style="color: var(--gris2); font-size: 14px; max-width: 260px; line-height: 1.7; font-weight: 300;">
+        Trenes de superficie + todas las líneas de Subte. Se agregan ramales y actualizaciones de forma continua.
+      </p>
+    </div>
+
+    <div class="lineas-grid">
+      <div class="linea-card" style="--lc: var(--sm-color)">
+        <style>.linea-card:nth-child(1)::before { background: var(--sm-color); }</style>
+        <div class="linea-dot" style="background: var(--sm-color)"></div>
+        <div class="linea-nombre">San Martín</div>
+        <div class="linea-ramales">JC Paz · Pilar · Dr. Cabred</div>
+        <div class="linea-stat">3 ramales · LV + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(2)::before { background: var(--bn-color); }</style>
+        <div class="linea-dot" style="background: var(--bn-color)"></div>
+        <div class="linea-nombre">Belgrano Norte</div>
+        <div class="linea-ramales">Boulogne · Villa Rosa</div>
+        <div class="linea-stat">2 ramales · LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(3)::before { background: var(--ur-color); }</style>
+        <div class="linea-dot" style="background: var(--ur-color)"></div>
+        <div class="linea-nombre">Urquiza</div>
+        <div class="linea-ramales">Gral. Lemos</div>
+        <div class="linea-stat">LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(4)::before { background: var(--roca-color); }</style>
+        <div class="linea-dot" style="background: var(--roca-color)"></div>
+        <div class="linea-nombre">Roca</div>
+        <div class="linea-ramales">La Plata · Glew/Korn · Ezeiza<br>Bosques · TH · Universitario</div>
+        <div class="linea-stat">7 ramales · LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(5)::before { background: var(--sarmiento-color); }</style>
+        <div class="linea-dot" style="background: var(--sarmiento-color)"></div>
+        <div class="linea-nombre">Sarmiento</div>
+        <div class="linea-ramales">Once/Moreno · Merlo/Mercedes<br>Merlo/Lobos</div>
+        <div class="linea-stat">3 ramales · LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(6)::before { background: var(--mitre-color); }</style>
+        <div class="linea-dot" style="background: var(--mitre-color)"></div>
+        <div class="linea-nombre">Mitre</div>
+        <div class="linea-ramales">Retiro/Tigre · Retiro/JL Suárez<br>Villa Ballester/Zárate · Victoria/Capilla</div>
+        <div class="linea-stat">4 ramales · LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(7)::before { background: var(--bs-color); }</style>
+        <div class="linea-dot" style="background: var(--bs-color)"></div>
+        <div class="linea-nombre">Belgrano Sur</div>
+        <div class="linea-ramales">González Catán · Marcos Paz<br>Sáenz / Tapiales</div>
+        <div class="linea-stat">2 ramales · LV + SAB + DF</div>
+      </div>
+      <div class="linea-card">
+        <style>.linea-card:nth-child(8)::before { background: #ecf0f1; }</style>
+        <div class="linea-dot" style="background: linear-gradient(135deg, #e8c547, #c0392b, #2980b9, #16a085, #8e44ad, #e67e22); width: 24px; height: 10px; border-radius: 2px;"></div>
+        <div class="linea-nombre">Subte</div>
+        <div class="linea-ramales">Líneas A · B · C · D · E · H</div>
+        <div class="linea-stat">6 líneas · Dinámico por frecuencia</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA FINAL ─────────────────────────────── -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-eyebrow">Listo para usar · Gratis para siempre</div>
+      <h2 class="cta-title">
+        Tu próximo tren<br>
+        <span class="line2">te está esperando.</span>
+      </h2>
+      <p class="cta-sub">
+        Sin descarga. Sin cuenta. Lo abrís desde el navegador y lo instalás en tu pantalla de inicio.
+      </p>
+      <div class="cta-buttons">
+        <a href="https://heywillia.github.io/Anden-ar/" class="btn-xl" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Abrir Andén.ar
+        </a>
+      </div>
+      <div class="cta-features">
+        <div class="cta-feature">Sin publicidad</div>
+        <div class="cta-feature">Sin cuenta</div>
+        <div class="cta-feature">Funciona offline</div>
+        <div class="cta-feature">Instala como app</div>
+        <div class="cta-feature">Gratis para siempre</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Andén<span>.ar</span></div>
+  <div>Hecho en Buenos Aires · 2026</div>
+  <div>
+    <a href="mailto:info.anden.ar@gmail.com">info.anden.ar@gmail.com</a>
+  </div>
+</footer>
+
+<script>const cursor=document.getElementById("cursor"),ring=document.getElementById("cursorRing");let mx=-100,my=-100,rx=-100,ry=-100;function animateRing(){rx+=.12*(mx-rx),ry+=.12*(my-ry),ring.style.transform=`translate(calc(${rx}px - 50%), calc(${ry}px - 50%))`,requestAnimationFrame(animateRing)}document.addEventListener("mousemove",e=>{mx=e.clientX,my=e.clientY,cursor.style.transform=`translate(calc(${mx}px - 50%), calc(${my}px - 50%))`}),animateRing(),document.addEventListener("mousedown",()=>{cursor.style.width="20px",cursor.style.height="20px"}),document.addEventListener("mouseup",()=>{cursor.style.width="12px",cursor.style.height="12px"}),document.querySelectorAll("a, button").forEach(e=>{e.addEventListener("mouseenter",()=>{cursor.style.width="6px",cursor.style.height="6px",ring.style.width="52px",ring.style.height="52px"}),e.addEventListener("mouseleave",()=>{cursor.style.width="12px",cursor.style.height="12px",ring.style.width="36px",ring.style.height="36px"})});const nav=document.querySelector("nav");window.addEventListener("scroll",()=>{window.scrollY>60?nav.classList.add("scrolled"):nav.classList.remove("scrolled")},{passive:!0});const observer=new IntersectionObserver(e=>{e.forEach((e,t)=>{if(e.isIntersecting){const t=e.target.parentElement.querySelectorAll(".linea-card, .paso"),r=Array.from(t).indexOf(e.target);setTimeout(()=>{e.target.classList.add("visible")},80*r),observer.unobserve(e.target)}})},{threshold:.1,rootMargin:"0px 0px -40px 0px"});function updatePhoneTime(){const e=new Date,t=e.getHours().toString().padStart(2,"0"),r=e.getMinutes().toString().padStart(2,"0"),n=document.querySelector(".phone-time");n&&(n.textContent=t+":"+r);const o=1e3*(60-e.getSeconds())-e.getMilliseconds();setTimeout(updatePhoneTime,o)}document.querySelectorAll(".escena, .paso, .linea-card").forEach(e=>observer.observe(e)),updatePhoneTime(),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",t=>{t.preventDefault();const r=document.querySelector(e.getAttribute("href"));r&&r.scrollIntoView({behavior:"smooth"})})}),window.addEventListener("scroll",()=>{const e=window.scrollY,t=document.querySelector(".hero-phone"),r=document.querySelector(".hero-text");t&&e<window.innerHeight&&(t.style.transform=`translateX(0) translateY(${.08*e}px)`,r.style.transform=`translateY(${.04*e}px)`)},{passive:!0});</script>
+
+</body>
+</html>
