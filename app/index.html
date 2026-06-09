@@ -30,7 +30,8 @@
   --green: #4ade80;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+html, body { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* ── SCREENS ── */
 .screen { display: none; min-height: 100vh; flex-direction: column; }
@@ -434,7 +435,7 @@ select:focus { border-color: var(--accent); }
   gap: 14px;
   position: relative;
   overflow: hidden;
-  animation: slideIn .22s ease both;
+  animation: slideIn .22s ease forwards;
   transition: transform .15s ease, box-shadow .15s ease;
   touch-action: pan-y;
   user-select: none;
@@ -488,7 +489,7 @@ select:focus { border-color: var(--accent); }
   gap: 6px;
   z-index: 50;
   box-shadow: 0 4px 20px rgba(0,0,0,.4);
-  animation: slideIn .15s ease both;
+  animation: slideIn .15s ease forwards;
 }
 .notif-picker button {
   background: var(--bg);
@@ -501,6 +502,62 @@ select:focus { border-color: var(--accent); }
   white-space: nowrap;
 }
 .notif-picker button:active { background: var(--accent); color: #000; border-color: var(--accent); }
+/* ── RECOMPENSAS ── */
+.recomp-banner {
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, rgba(232,197,71,0.08) 0%, rgba(232,197,71,0.03) 100%);
+  border: 1px solid rgba(232,197,71,0.2);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  animation: recompIn .4s cubic-bezier(.34,1.3,.64,1) forwards;
+}
+@keyframes recompIn {
+  from { opacity:0; transform:translateY(-8px) scale(.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.recomp-icon { font-size: 26px; flex-shrink: 0; }
+.recomp-body { flex: 1; min-width: 0; }
+.recomp-titulo { font-size: 13px; font-weight: 700; color: var(--accent); }
+.recomp-sub { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+.recomp-badge {
+  background: rgba(232,197,71,0.15);
+  border: 1px solid rgba(232,197,71,0.3);
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.fav-linea-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(232,197,71,0.1);
+  border: 1px solid rgba(232,197,71,0.25);
+  border-radius: 10px;
+  padding: 1px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+body.tema-noche {
+  --bg: #0b0d10;
+  --surface: #13161c;
+  --card: #1b1f28;
+  --border: #252b3a;
+  --accent: #f0d878;
+  --text: #f5f0e8;
+  --muted: #8a8fa8;
+}
+
 /* Banner PWA */
 /* Snackbar de instalación PWA — aparece desde arriba, estilo Telegram/Chrome */
 #installBanner {
@@ -583,7 +640,7 @@ select:focus { border-color: var(--accent); }
 .no-results-msg { display: block; font-size: 14px; color: var(--muted); line-height: 1.5; }
 .no-results-msg strong { display: inline; font-size: 16px; color: var(--text); margin-bottom: 0; }
 .no-results-eta { font-size: 12px; color: var(--muted); opacity: 0.75; }
-@keyframes slideIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity:1; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
 .train-card:nth-child(1){animation-delay:.00s}.train-card:nth-child(2){animation-delay:.04s}
 .train-card:nth-child(3){animation-delay:.08s}.train-card:nth-child(4){animation-delay:.12s}
 .train-card:nth-child(5){animation-delay:.16s}.train-card:nth-child(6){animation-delay:.20s}
@@ -771,6 +828,7 @@ select:focus { border-color: var(--accent); }
   background: var(--card); border: 1px solid var(--border); border-radius: 10px;
   padding: 11px 14px; color: var(--text); font-size: 14px;
   cursor: pointer; text-align: left; transition: border-color .2s;
+  -webkit-tap-highlight-color: transparent;
 }
 .station-picker-trigger:active { border-color: var(--accent); }
 .station-picker-arrow { color: var(--muted); font-size: 12px; }
@@ -967,9 +1025,49 @@ textarea::placeholder { color: var(--muted); }
 .nav-btn.active .nav-icon { filter: drop-shadow(0 0 4px rgba(232,197,71,.5)); }
 
 /* ajuste body para nav fija */
-body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+
+
+/* ── GEOLOCALIZACIÓN ── */
+.geo-btn {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 24px 16px;
+  padding: 11px 16px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text); font-size: 14px;
+  font-family: inherit; cursor: pointer;
+  width: calc(100% - 48px); text-align: left;
+  transition: border-color .2s, background .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.geo-btn:active { background: var(--card); }
+.geo-btn.loading { opacity: .7; pointer-events: none; }
+.geo-btn-icon { font-size: 18px; flex-shrink: 0; }
+.geo-btn-text { flex: 1; }
+.geo-btn-label { font-weight: 600; font-size: 13px; }
+.geo-btn-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.geo-result {
+  margin: 0 24px 16px; padding: 12px 16px;
+  background: var(--surface); border: 1px solid var(--accent);
+  border-radius: 12px; font-size: 13px; display: none;
+}
+.geo-result.visible { display: block; }
+.geo-result-line { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.geo-result-station { font-weight: 700; font-size: 16px; color: var(--accent); }
+.geo-result-dist { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.geo-result-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.geo-action-btn {
+  font-size: 12px; padding: 5px 12px; border-radius: 20px;
+  border: 1px solid var(--border); background: var(--card);
+  color: var(--text); cursor: pointer; font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.geo-action-btn.primary {
+  background: var(--accent); color: #000;
+  border-color: var(--accent); font-weight: 600;
+}
 
 </style>
+<link rel="manifest" href="manifest.json">
 </head>
 <body>
 
@@ -1029,6 +1127,22 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
     <div id="homeDayBadge" class="home-day-badge">--</div>
   </div>
 
+  <!-- GEOLOCALIZACIÓN — estación más cercana -->
+  <button class="geo-btn" id="geoBtn" onclick="buscarEstacionCercana()">
+    <span class="geo-btn-icon">📍</span>
+    <div class="geo-btn-text">
+      <div class="geo-btn-label">Estación más cercana</div>
+      <div class="geo-btn-sub" id="geoBtnSub">Detectar automáticamente</div>
+    </div>
+    <span style="color:var(--muted);font-size:12px">→</span>
+  </button>
+  <div class="geo-result" id="geoResult">
+    <div class="geo-result-line" id="geoResultLine">—</div>
+    <div class="geo-result-station" id="geoResultStation">—</div>
+    <div class="geo-result-dist" id="geoResultDist"></div>
+    <div class="geo-result-actions" id="geoResultActions"></div>
+  </div>
+
   <!-- FAVORITOS -->
   <div class="section-title" id="favsSectionTitle">Mis viajes frecuentes</div>
   <div class="favs-list" id="favsList"></div>
@@ -1036,6 +1150,9 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   <!-- HISTORIAL RECIENTE -->
   <div class="section-title" id="histSectionTitle" style="margin-top:4px">Recientes</div>
   <div class="favs-list" id="historialList"></div>
+
+  <!-- BANNER DE RECOMPENSAS (renderizado dinámicamente) -->
+  <div id="recompBanner" style="display:none"></div>
 
   <!-- SERVICIOS -->
   <div class="section-title" style="margin-top:8px">Servicios disponibles</div>
@@ -1352,6 +1469,22 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         </div>
       </div>
     </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Por qué la app pide mi ubicación?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Si activás la detección de estación cercana, la app usa tu ubicación <strong>una sola vez</strong> para calcular qué estación tenés más cerca y mostrarte los próximos trenes de esa línea.<br><br>
+        No guardamos tu ubicación. No la compartimos. No la usamos para nada más que eso.<br><br>
+        Es opcional: si preferís no activarla, la app funciona exactamente igual.</div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Qué son los reconocimientos y el badge "Viajero del X"?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Si consultás la misma línea con frecuencia, Andén.ar te reconoce como viajero habitual de esa línea y te muestra un badge. No es un juego ni un sistema de puntos: es simplemente una forma de que la app recuerde cuál es tu línea.<br><br>
+        Cuando alcanzás 10 consultas en una misma línea, te preguntamos si querés recibir una notificación cuando actualicemos los horarios de esa línea. Nada más.</div>
+    </div>
 
     <!-- Cafecito — al final del FAQ -->
     <div style="margin:28px 0 8px;padding:20px;background:rgba(232,197,71,0.05);border:1px solid rgba(232,197,71,0.12);border-radius:12px;text-align:center;">
@@ -1362,13 +1495,10 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
       </a>
     </div>
 
+
   </div>
-
-</div>
-
-
 <!-- ══════════════════════════════════
-     PANTALLA 2: HORARIOS SAN MARTÍN
+     PANTALLA 2: HORARIOS
 ══════════════════════════════════ -->
 <div class="screen horarios-screen" id="screenHorarios">
 
@@ -1452,6 +1582,10 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   <button class="report-btn" onclick="reportarHorario()">⚑ Reportar horario incorrecto</button>
 
 </div>
+
+
+
+
 
 <!-- ══════════════════════════════════
      PANTALLA 3: LÍNEAS / SERVICIOS
@@ -2563,19 +2697,24 @@ function saveFavs(favs) {
 
 function getFavKey() {
   const d = document.getElementById('selDestino').value;
-  return `sm|${tipoDia}|${direccion}|${origenIdx}|${d||''}`;
+  return `${lineaActual}|${tipoDia}|${direccion}|${origenIdx}|${d||''}`;
 }
 function getFavLabel() {
   const d = document.getElementById('selDestino').value;
-  const org = ESTACIONES[origenIdx];
-  const dest = d ? ESTACIONES[parseInt(d)] : null;
+  const cfg = LINEAS_CONFIG[lineaActual];
+  const ests = cfg ? cfg.estaciones() : [];
+  const org = ests[origenIdx] || '';
+  const dest = d !== '' && d !== undefined ? ests[parseInt(d)] : null;
   const dir = direccion==='haciafinal' ? '→' : '←';
-  return dest ? `${org} ${dir} ${dest}` : `${org} ${dir} Retiro/Final`;
+  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : 'Final';
+  return dest ? `${org} ${dir} ${dest}` : `${org} ${dir} ${terminal}`;
 }
 function getFavMeta() {
+  const cfg = LINEAS_CONFIG[lineaActual];
+  const lineaNombre = cfg ? cfg.nombre.replace(/^[^\s]+\s/, '') : lineaActual;
   const dia = tipoDia==='labsab' ? 'Lun–Sáb' : 'Dom/Fer';
-  const dir = direccion==='haciafinal' ? 'Desde Retiro' : 'Hacia Retiro';
-  return `San Martín · ${dia} · ${dir}`;
+  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : '';
+  return `${lineaNombre} · ${dia} · → ${terminal}`;
 }
 
 function isFavSaved() {
@@ -2593,7 +2732,7 @@ function toggleFavorito() {
   } else {
     if (favs.length >= 5) { showToast('Máximo 5 favoritos'); return; }
     favs.push({ key, label: getFavLabel(), meta: getFavMeta(),
-      state: { tipoDia, direccion, origenIdx,
+      state: { linea: lineaActual, tipoDia, direccion, origenIdx,
         destinoIdx: document.getElementById('selDestino').value || '' } });
     showToast('⭐ Guardado como favorito');
     // Preguntar por notificación proactiva si aún no la configuró
@@ -2623,10 +2762,14 @@ function renderFavs() {
   favs.forEach((fav, i) => {
     const card = document.createElement('div');
     card.className = 'fav-card';
+    // Badge viajero si aplica
+    const lineaFav = fav.state && fav.state.linea ? fav.state.linea : 'sm';
+    const badgeHtml = esViajeroLinea(lineaFav)
+      ? `<span class="fav-linea-badge">⭐ habitual</span>` : '';
     card.innerHTML = `
       <div class="fav-icon">⭐</div>
       <div class="fav-info" onclick="abrirFavorito(${i})">
-        <div class="fav-route">${fav.label}</div>
+        <div class="fav-route">${fav.label}${badgeHtml}</div>
         <div class="fav-meta">${fav.meta}</div>
       </div>
       <button class="fav-del" onclick="eliminarFav(${i})">×</button>
@@ -2640,12 +2783,13 @@ function abrirFavorito(idx) {
   const fav = favs[idx];
   if (!fav) return;
   const s = fav.state;
+  const lineaFav = (s && s.linea) ? s.linea : fav.key.split('|')[0];
   // Aplicar estado
   tipoDia = s.tipoDia;
   direccion = s.direccion;
   origenIdx = parseInt(s.origenIdx);
   // Navegar
-  irAHorarios('sm');
+  irAHorarios(lineaFav);
   // Aplicar UI después de render
   setTimeout(() => {
     document.getElementById('btnLabSab').classList.toggle('active', tipoDia==='labsab');
@@ -2924,7 +3068,7 @@ function navTo(dest) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('nav-' + dest).classList.add('active');
   currentNav = dest;
-  window.scrollTo(0,0);
+  const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
 }
 
 // volverHome (versión con nav — única definición)
@@ -2941,7 +3085,7 @@ function volverHome() {
   const list  = document.getElementById('historialList');
   if (title) title.style.display = hist.length ? '' : 'none';
   if (list)  list.style.display  = hist.length ? '' : 'none';
-  window.scrollTo(0,0);
+  const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
 }
 
 // ─────────────────────────────────────────────
@@ -7373,6 +7517,347 @@ const BS_SB_DF_VTA = [
 ];
 
 // ══════════════════════════════════════════════════════════
+// COORDENADAS GPS DE ESTACIONES
+// ══════════════════════════════════════════════════════════
+const COORDS = {
+  'sm': {
+    'Retiro': { lat: -34.5928, lng: -58.3744 },
+    'Palermo': { lat: -34.5756, lng: -58.4237 },
+    'Villa Crespo': { lat: -34.5965, lng: -58.4411 },
+    'La Paternal': { lat: -34.6025, lng: -58.4609 },
+    'Villa del Parque': { lat: -34.6079, lng: -58.4762 },
+    'Devoto': { lat: -34.6069, lng: -58.4936 },
+    'Sáenz Peña': { lat: -34.6043, lng: -58.5106 },
+    'Santos Lugares': { lat: -34.6138, lng: -58.5271 },
+    'Caseros': { lat: -34.62, lng: -58.5614 },
+    'El Palomar': { lat: -34.6114, lng: -58.5952 },
+    'Hurlingham': { lat: -34.5938, lng: -58.6363 },
+    'W.C. Morris': { lat: -34.5855, lng: -58.6596 },
+    'Bella Vista': { lat: -34.5688, lng: -58.6836 },
+    'Muñiz': { lat: -34.5501, lng: -58.71 },
+    'San Miguel': { lat: -34.5387, lng: -58.7175 },
+    'José C. Paz': { lat: -34.5132, lng: -58.7524 },
+    'Sol y Verde': { lat: -34.4947, lng: -58.7813 },
+    'Pte. Derqui': { lat: -34.4814, lng: -58.8128 },
+    'Villa Astolfi': { lat: -34.4695, lng: -58.839 },
+    'Pilar': { lat: -34.4597, lng: -58.9138 },
+    'Manzanares': { lat: -34.399, lng: -58.9648 },
+    'Dr. Cabred': { lat: -34.362, lng: -59.038 },
+  },
+  'bn': {
+    'Retiro': { lat: -34.5913, lng: -58.3791 },
+    'Saldías': { lat: -34.5858, lng: -58.3859 },
+    'Cdad. Universitaria': { lat: -34.5648, lng: -58.4429 },
+    'A. del Valle': { lat: -34.5543, lng: -58.4636 },
+    'M. Padilla': { lat: -34.5439, lng: -58.4876 },
+    'Florida': { lat: -34.5246, lng: -58.499 },
+    'Munro': { lat: -34.5186, lng: -58.5213 },
+    'Carapachay': { lat: -34.51, lng: -58.5447 },
+    'V. Adelina': { lat: -34.5033, lng: -58.5663 },
+    'Boulogne': { lat: -34.4912, lng: -58.576 },
+    'Don Torcuato': { lat: -34.4755, lng: -58.6025 },
+    'A. Sourdeaux': { lat: -34.4639, lng: -58.628 },
+    'Cdad. Villa de Mayo': { lat: -34.4529, lng: -58.66 },
+    'Cdad. Los Polvorines': { lat: -34.4973, lng: -58.6994 },
+    'Cdad. Ing. P. Nogués': { lat: -34.4866, lng: -58.7289 },
+    'Cdad. Grand Bourg': { lat: -34.4769, lng: -58.7192 },
+    'Tierras Altas': { lat: -34.4661, lng: -58.7382 },
+    'Cdad. Tortuguitas': { lat: -34.4527, lng: -58.7614 },
+    'M. Alberti': { lat: -34.4373, lng: -58.789 },
+    'Del Viso': { lat: -34.4244, lng: -58.8021 },
+    'Cecilia Grierson': { lat: -34.4102, lng: -58.8155 },
+    'Villa Rosa': { lat: -34.3929, lng: -58.8384 },
+  },
+  'ur': {
+    'Federico Lacroze': { lat: -34.5838, lng: -58.4569 },
+    'José Artigas': { lat: -34.5904, lng: -58.4711 },
+    'P.N. Arata': { lat: -34.596, lng: -58.4849 },
+    'Dr. Fco. Beiro': { lat: -34.5984, lng: -58.4989 },
+    'El Libertador': { lat: -34.5985, lng: -58.5122 },
+    'Antonio Devoto': { lat: -34.5991, lng: -58.5241 },
+    'Cnel. Fco. Lynch': { lat: -34.6032, lng: -58.5371 },
+    'Fernández Moreno': { lat: -34.6082, lng: -58.5499 },
+    'Lourdes': { lat: -34.6114, lng: -58.5614 },
+    'Tropezón': { lat: -34.616, lng: -58.5726 },
+    'José M. Bosch': { lat: -34.6192, lng: -58.5838 },
+    'Martín Coronado': { lat: -34.6137, lng: -58.598 },
+    'Pablo Podestá': { lat: -34.61, lng: -58.6118 },
+    'Jorge Newbery': { lat: -34.6059, lng: -58.6282 },
+    'Rubén Darío': { lat: -34.5988, lng: -58.6414 },
+    'E. De Los Andes': { lat: -34.5915, lng: -58.6517 },
+    'Juan B. De La Salle': { lat: -34.581, lng: -58.6591 },
+    'Sgto. Barruffaldi': { lat: -34.5686, lng: -58.6681 },
+    'Capitán Lozano': { lat: -34.5559, lng: -58.6754 },
+    'Tnte. Agneta': { lat: -34.544, lng: -58.6832 },
+    'Campo De Mayo': { lat: -34.5337, lng: -58.6907 },
+    'Sgto. Cabral': { lat: -34.5207, lng: -58.7009 },
+    'General Lemos': { lat: -34.5099, lng: -58.7098 },
+  },
+  'roca_lp': {
+    'Pza. Constitución': { lat: -34.6271, lng: -58.3811 },
+    'D. Santillán y M. Kosteki': { lat: -34.6474, lng: -58.377 },
+    'Sarandí': { lat: -34.667, lng: -58.3485 },
+    'Villa Dominico': { lat: -34.6806, lng: -58.33 },
+    'Wilde': { lat: -34.6964, lng: -58.3161 },
+    'Don Bosco': { lat: -34.7101, lng: -58.3064 },
+    'Bernal': { lat: -34.7079, lng: -58.2787 },
+    'Quilmes': { lat: -34.7226, lng: -58.2556 },
+    'Ezpeleta': { lat: -34.7432, lng: -58.2357 },
+    'Berazategui': { lat: -34.7634, lng: -58.2096 },
+    'Plátanos': { lat: -34.7799, lng: -58.1765 },
+    'Hudson': { lat: -34.7933, lng: -58.1441 },
+    'Pereyra': { lat: -34.8109, lng: -58.1191 },
+    'Villa Elisa': { lat: -34.8337, lng: -58.0921 },
+    'City Bell': { lat: -34.8713, lng: -58.0576 },
+    'Gonnet': { lat: -34.8893, lng: -58.0214 },
+    'Ringuelet': { lat: -34.9015, lng: -57.9975 },
+    'Tolosa': { lat: -34.9119, lng: -57.9779 },
+    'La Plata': { lat: -34.921, lng: -57.9478 },
+  },
+  'roca_gk': {
+    'Pza. Constitución': { lat: -34.6271, lng: -58.3811 },
+    'H. Yrigoyen': { lat: -34.6383, lng: -58.3797 },
+    'D. Santillán y M. Kosteki': { lat: -34.6474, lng: -58.377 },
+    'Gerli': { lat: -34.6698, lng: -58.3755 },
+    'Lanús': { lat: -34.6968, lng: -58.3737 },
+    'R. de Escalada': { lat: -34.7154, lng: -58.3753 },
+    'Banfield': { lat: -34.735, lng: -58.3924 },
+    'L. de Zamora': { lat: -34.7554, lng: -58.4005 },
+    'Temperley': { lat: -34.7733, lng: -58.3978 },
+    'Adrogué': { lat: -34.798, lng: -58.3945 },
+    'Burzaco': { lat: -34.8234, lng: -58.3904 },
+    'Longchamps': { lat: -34.8503, lng: -58.3782 },
+    'Glew': { lat: -34.8874, lng: -58.3798 },
+    'Guernica': { lat: -34.9246, lng: -58.3965 },
+    'A. Korn': { lat: -34.963, lng: -58.3955 },
+  },
+  'sm_om': {
+    'Once': { lat: -34.6097, lng: -58.4097 },
+    'Caballito': { lat: -34.6175, lng: -58.4337 },
+    'Flores': { lat: -34.6274, lng: -58.4641 },
+    'Floresta': { lat: -34.6311, lng: -58.4804 },
+    'Villa Luro': { lat: -34.635, lng: -58.4968 },
+    'Liniers': { lat: -34.6376, lng: -58.5227 },
+    'Ciudadela': { lat: -34.6318, lng: -58.5434 },
+    'Ramos Mejía': { lat: -34.643, lng: -58.5649 },
+    'Haedo': { lat: -34.6463, lng: -58.5905 },
+    'Morón': { lat: -34.653, lng: -58.6177 },
+    'Castelar': { lat: -34.6554, lng: -58.6448 },
+    'Ituzaingó': { lat: -34.6583, lng: -58.6718 },
+    'S.A. de Padua': { lat: -34.6611, lng: -58.6978 },
+    'Merlo': { lat: -34.666, lng: -58.7282 },
+    'Paso del Rey': { lat: -34.6479, lng: -58.7595 },
+    'Moreno': { lat: -34.6499, lng: -58.7917 },
+  },
+  'sm_mm': {
+    'Moreno': { lat: -34.6499, lng: -58.7917 },
+    'La Reja': { lat: -34.6499, lng: -58.8319 },
+    'Fco. Álvarez': { lat: -34.6502, lng: -58.866 },
+    'Ing. P. Martín': { lat: -34.6461, lng: -58.9059 },
+    'Las Malvinas': { lat: -34.6395, lng: -58.9363 },
+    'Gral. Rodríguez': { lat: -34.6107, lng: -58.9533 },
+    'La Fraternidad': { lat: -34.5833, lng: -59.0093 },
+    'Lezica y Torrezuri': { lat: -34.5666, lng: -59.0586 },
+    'Univ. de Luján': { lat: -34.5587, lng: -59.0865 },
+    'Luján': { lat: -34.569, lng: -59.1105 },
+    'Jáuregui': { lat: -34.5695, lng: -59.1537 },
+    'Olivera': { lat: -34.5704, lng: -59.2141 },
+    'Gowland': { lat: -34.558, lng: -59.303 },
+    'Mercedes': { lat: -34.6519, lng: -59.4295 },
+  },
+  'sm_ml': {
+    'Merlo': { lat: -34.666, lng: -58.7282 },
+    'KM 34.5': { lat: -34.6815, lng: -58.7556 },
+    'A. Ferrari': { lat: -34.7003, lng: -58.777 },
+    'M. Acosta': { lat: -34.7266, lng: -58.801 },
+    'Maquinista R. Cal': { lat: -34.7496, lng: -58.8182 },
+    'Marcos Paz': { lat: -34.7758, lng: -58.8426 },
+    'Zamudio': { lat: -34.8061, lng: -58.9001 },
+    'Hornos': { lat: -34.8265, lng: -58.9401 },
+    'Las Heras': { lat: -34.8704, lng: -59.0037 },
+    'Speratti': { lat: -34.9074, lng: -59.0683 },
+    'Zapiola': { lat: -34.9455, lng: -59.134 },
+    'Emp. Lobos': { lat: -35.0038, lng: -59.2055 },
+    'Lobos': { lat: -35.1882, lng: -59.0842 },
+  },
+  'roca_ez': {
+    'Pza. Constitución': { lat: -34.6271, lng: -58.3811 },
+    'H. Yrigoyen': { lat: -34.6383, lng: -58.3797 },
+    'D. Santillán y M. Kosteki': { lat: -34.6474, lng: -58.377 },
+    'Gerli': { lat: -34.6698, lng: -58.3755 },
+    'Lanús': { lat: -34.6968, lng: -58.3737 },
+    'R. de Escalada': { lat: -34.7154, lng: -58.3753 },
+    'Banfield': { lat: -34.735, lng: -58.3924 },
+    'L. de Zamora': { lat: -34.7554, lng: -58.4005 },
+    'Temperley': { lat: -34.7733, lng: -58.3978 },
+    'Turdera': { lat: -34.7936, lng: -58.4082 },
+    'Longchamps': { lat: -34.8503, lng: -58.3782 },
+    'Glew': { lat: -34.8874, lng: -58.3798 },
+    'Guernica': { lat: -34.9246, lng: -58.3965 },
+    'Ezeiza': { lat: -34.8526, lng: -58.5183 },
+    'Cañuelas': { lat: -35.0502, lng: -58.7556 },
+  },
+  'roca_bq': {
+    'Pza. Constitución': { lat: -34.6271, lng: -58.3811 },
+    'D. Santillán y M. Kosteki': { lat: -34.6474, lng: -58.377 },
+    'Sarandí': { lat: -34.667, lng: -58.3485 },
+    'Villa Dominico': { lat: -34.6806, lng: -58.33 },
+    'Wilde': { lat: -34.6964, lng: -58.3161 },
+    'Don Bosco': { lat: -34.7101, lng: -58.3064 },
+    'Bernal': { lat: -34.7079, lng: -58.2787 },
+    'Quilmes': { lat: -34.7226, lng: -58.2556 },
+    'Ezpeleta': { lat: -34.7432, lng: -58.2357 },
+    'Berazategui': { lat: -34.7634, lng: -58.2096 },
+    'Villa España': { lat: -34.7888, lng: -58.1818 },
+    'Ranelagh': { lat: -34.8071, lng: -58.1542 },
+    'Sourigues': { lat: -34.8252, lng: -58.1294 },
+    'Bosques': { lat: -34.8427, lng: -58.1108 },
+    'Santa Sofía': { lat: -34.8545, lng: -58.0972 },
+    'Gutiérrez': { lat: -34.8673, lng: -58.0816 },
+  },
+  'roca_bt': {
+    'Pza. Constitución': { lat: -34.6271, lng: -58.3811 },
+    'D. Santillán y M. Kosteki': { lat: -34.6474, lng: -58.377 },
+    'Lanús': { lat: -34.6968, lng: -58.3737 },
+    'Banfield': { lat: -34.735, lng: -58.3924 },
+    'L. de Zamora': { lat: -34.7554, lng: -58.4005 },
+    'Temperley': { lat: -34.7733, lng: -58.3978 },
+    'J. Mármol': { lat: -34.791, lng: -58.3698 },
+    'R. Calzada': { lat: -34.8062, lng: -58.346 },
+    'Claypole': { lat: -34.823, lng: -58.3264 },
+    'Arroyo': { lat: -34.839, lng: -58.3067 },
+    'Fcio. Varela': { lat: -34.8563, lng: -58.2816 },
+    'Zeballos': { lat: -34.8687, lng: -58.2494 },
+    'Bosques': { lat: -34.8427, lng: -58.1108 },
+    'Gutiérrez': { lat: -34.8673, lng: -58.0816 },
+  },
+  'mitre_rt': {
+    'Retiro': { lat: -34.5913, lng: -58.3744 },
+    'L. de la Torre': { lat: -34.5872, lng: -58.3843 },
+    'Belgrano C': { lat: -34.5651, lng: -58.4496 },
+    'Núñez': { lat: -34.5473, lng: -58.4574 },
+    'Rivadavia': { lat: -34.5337, lng: -58.477 },
+    'Vte. López': { lat: -34.5215, lng: -58.4791 },
+    'Olivos': { lat: -34.5118, lng: -58.4918 },
+    'La Lucila': { lat: -34.5038, lng: -58.499 },
+    'Martínez': { lat: -34.493, lng: -58.5079 },
+    'Acassuso': { lat: -34.482, lng: -58.5147 },
+    'San Isidro': { lat: -34.4694, lng: -58.5171 },
+    'Beccar': { lat: -34.4567, lng: -58.5268 },
+    'Victoria': { lat: -34.4467, lng: -58.5354 },
+    'Virreyes': { lat: -34.4285, lng: -58.5476 },
+    'San Fernando': { lat: -34.4101, lng: -58.5571 },
+    'Carupá': { lat: -34.3905, lng: -58.5607 },
+    'Tigre': { lat: -34.3737, lng: -58.5787 },
+  },
+  'mitre_rjb': {
+    'Retiro': { lat: -34.5913, lng: -58.3744 },
+    '3 de Febrero': { lat: -34.5912, lng: -58.3949 },
+    'Carranza': { lat: -34.5867, lng: -58.4118 },
+    'Colegiales': { lat: -34.579, lng: -58.4362 },
+    'Belgrano R': { lat: -34.5633, lng: -58.4581 },
+    'Coghlan': { lat: -34.5576, lng: -58.4757 },
+    'Saavedra': { lat: -34.5514, lng: -58.4934 },
+    'J.B. Justo': { lat: -34.5437, lng: -58.5088 },
+    'Florida': { lat: -34.5243, lng: -58.4992 },
+    'Cetrángolo': { lat: -34.5177, lng: -58.5123 },
+    'Bmé. Mitre': { lat: -34.5138, lng: -58.5299 },
+    'Drago': { lat: -34.5116, lng: -58.5447 },
+    'Urquiza': { lat: -34.5093, lng: -58.56 },
+    'Pueyrredón': { lat: -34.5074, lng: -58.5747 },
+    'Miguelete': { lat: -34.5055, lng: -58.5896 },
+    'San Martín': { lat: -34.5019, lng: -58.601 },
+    'San Andrés': { lat: -34.4981, lng: -58.6133 },
+    'Malaver': { lat: -34.4956, lng: -58.6254 },
+    'Villa Ballester': { lat: -34.4944, lng: -58.651 },
+    'Chilavert': { lat: -34.4967, lng: -58.6686 },
+    'J.L. Suárez': { lat: -34.5062, lng: -58.6849 },
+  },
+  'mitre_vz': {
+    'Villa Ballester': { lat: -34.4944, lng: -58.651 },
+    'Bancalari': { lat: -34.468, lng: -58.6644 },
+    'Pacheco': { lat: -34.449, lng: -58.669 },
+    'Benavidez': { lat: -34.4178, lng: -58.6841 },
+    'Maschwitz': { lat: -34.3849, lng: -58.728 },
+    'Escobar': { lat: -34.3471, lng: -58.7936 },
+    'Río Luján': { lat: -34.3127, lng: -58.8724 },
+    'Otamendi': { lat: -34.2568, lng: -58.9181 },
+    'Campana': { lat: -34.1647, lng: -58.9565 },
+    'Km. 83': { lat: -34.1101, lng: -59.0072 },
+    'Zárate': { lat: -34.098, lng: -59.0288 },
+  },
+  'mitre_vc': {
+    'Victoria': { lat: -34.4467, lng: -58.5354 },
+    'Schweitzer': { lat: -34.427, lng: -58.5518 },
+    'El Talar': { lat: -34.4129, lng: -58.5872 },
+    'López Camelo': { lat: -34.4009, lng: -58.6228 },
+    'Garín': { lat: -34.3936, lng: -58.7293 },
+    'Maq. Savio': { lat: -34.382, lng: -58.7596 },
+    'Matheu': { lat: -34.3661, lng: -58.7895 },
+    'Zelaya': { lat: -34.3429, lng: -58.8323 },
+    'Los Cardales': { lat: -34.3277, lng: -58.8838 },
+    'Capilla del Señor': { lat: -34.3025, lng: -59.0945 },
+  },
+  'bs_gc': {
+    'González Catán': { lat: -34.7696, lng: -58.6383 },
+    '20 de Junio': { lat: -34.7939, lng: -58.6788 },
+    'Marcos Paz': { lat: -34.7994, lng: -58.7181 },
+    'Villars': { lat: -34.8127, lng: -58.774 },
+    'Lozano': { lat: -34.8268, lng: -58.8156 },
+  },
+  'bs_sb': {
+    'Dr.A.Sáenz': { lat: -34.6545, lng: -58.4339 },
+    'Villa Soldati': { lat: -34.6654, lng: -58.4461 },
+    'Pte.Illia': { lat: -34.6758, lng: -58.4619 },
+    'Lugano': { lat: -34.6893, lng: -58.477 },
+    'Villa Madero': { lat: -34.7049, lng: -58.507 },
+    'M.del Fournier': { lat: -34.7161, lng: -58.5279 },
+    'Tapiales/Km12': { lat: -34.7233, lng: -58.551 },
+    'Ing.Castello/Km12': { lat: -34.7313, lng: -58.5718 },
+    'Querandi': { lat: -34.7384, lng: -58.595 },
+    'Laferrere': { lat: -34.7449, lng: -58.618 },
+    'M.Eva Duarte': { lat: -34.7519, lng: -58.6352 },
+    'Independencia': { lat: -34.7573, lng: -58.65 },
+    'González Catán': { lat: -34.7696, lng: -58.6383 },
+    'Aldo Bonzi': { lat: -34.7186, lng: -58.5516 },
+    'Mª S.de Mendeville': { lat: -34.7058, lng: -58.5337 },
+    'José Ingenieros': { lat: -34.6975, lng: -58.514 },
+    'J.Villegas': { lat: -34.6882, lng: -58.4946 },
+    'Isidro Casanova': { lat: -34.713, lng: -58.5779 },
+    'Rafael Castillo': { lat: -34.7209, lng: -58.6044 },
+    'Merio Gómez': { lat: -34.7333, lng: -58.6261 },
+    'Libertad': { lat: -34.7443, lng: -58.6506 },
+    'M.C.Gral.Belgrano': { lat: -34.7603, lng: -58.6681 },
+  },
+  'roca_th': {
+    'Temperley': { lat: -34.7733, lng: -58.3978 },
+    'Hptal.Español': { lat: -34.7613, lng: -58.421 },
+    'Santa Catalina': { lat: -34.7524, lng: -58.4413 },
+    'Juan XXIII': { lat: -34.7436, lng: -58.4598 },
+    'Km 34': { lat: -34.7353, lng: -58.4763 },
+    'P.P.Turner': { lat: -34.7262, lng: -58.494 },
+    'De Elía': { lat: -34.7178, lng: -58.5119 },
+    'Tablada': { lat: -34.7066, lng: -58.5318 },
+    'San Justo': { lat: -34.6926, lng: -58.5602 },
+    'Ing.S.Brian': { lat: -34.6785, lng: -58.5826 },
+    'Haedo': { lat: -34.6463, lng: -58.5905 },
+  },
+  'roca_uni': {
+    'La Plata': { lat: -34.921, lng: -57.9478 },
+    'Arquitectura': { lat: -34.916, lng: -57.9499 },
+    'Informática': { lat: -34.9103, lng: -57.9508 },
+    'Medicina': { lat: -34.905, lng: -57.9511 },
+    'Periodismo': { lat: -34.8991, lng: -57.9508 },
+    'Diagonal 73': { lat: -34.894, lng: -57.9502 },
+    'Policlínico': { lat: -34.8884, lng: -57.9489 },
+    'Avenida 7': { lat: -34.883, lng: -57.9475 },
+    'Circunvalación': { lat: -34.8773, lng: -57.9459 },
+    'Meridiano V': { lat: -34.8714, lng: -57.944 },
+    'Hptal.San Juan de Dios': { lat: -34.8654, lng: -57.9421 },
+  },
+};
+
+// ══════════════════════════════════════════════════════════
 // SUBTES — modelo dinámico (inicio + frecuencia + último)
 // Fuente: Emova — vigente 2026
 // Cada línea define: inicio por tipoDia, freq por tipoDia, último por dirección/tipoDia
@@ -8130,7 +8615,10 @@ function irAHorarios(linea) {
   updateDirLabels();
   poblarOrigen();
   render();
-  window.scrollTo(0,0);
+  // Esperar al siguiente frame para que el browser procese display:flex antes de scrollear
+  requestAnimationFrame(() => { const s = document.getElementById('screenHorarios'); if(s) s.scrollTop = 0; });
+  // Recompensas: registrar consulta a esta línea
+  trackLineaConsulta(lineaActual);
 }
 
 function poblarOrigen() {
@@ -8146,7 +8634,8 @@ function poblarOrigen() {
     opt.value = ri; opt.textContent = e; sel.appendChild(opt);
   });
   if(prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
-  origenIdx = parseInt(sel.value);
+  if(!sel.value && sel.options.length) sel.value = sel.options[0].value;
+  origenIdx = parseInt(sel.value) || 0;
   // Actualizar el trigger del bottom sheet
   actualizarTriggerOrigen();
   poblarDestino();
@@ -8180,7 +8669,7 @@ function render() {
   const listaEl    = document.getElementById('trainsList');
   const showMoreBtn= document.getElementById('showMoreBtn');
 
-  origenIdx = parseInt(selOrigen.value);
+  origenIdx = parseInt(selOrigen.value) || 0;
   const destVal = selDestino.value;
   const destinoIdx = destVal ? parseInt(destVal) : -1;
 
@@ -8456,7 +8945,7 @@ function mostrarHintSwipeSiEsNecesario() {
   if(existing) existing.remove();
   const hint = document.createElement('div');
   hint.id = 'swipeHint';
-  hint.style.cssText = 'text-align:center;font-size:11px;color:var(--muted);padding:4px 0 8px;animation:slideIn .3s ease both';
+  hint.style.cssText = 'text-align:center;font-size:11px;color:var(--muted);padding:4px 0 8px;animation:slideIn .3s ease forwards';
   hint.textContent = '← deslizá una card a la derecha para guardar como favorito →';
   const lista = document.getElementById('trainsList');
   if(lista && lista.children.length > 0) {
@@ -8523,6 +9012,7 @@ function initInstallBanner() {
 
   // Aparecer a los 3 segundos (usuario tuvo tiempo de ver la app)
   setTimeout(() => {
+    if(!banner) return;
     banner.classList.add('visible');
     saveInstallStats({
       ...getInstallStats(),
@@ -8911,7 +9401,7 @@ function preguntarNotifProactiva(favKey) {
   if(Notification.permission === 'denied') return;
 
   const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:16px;right:16px;background:var(--card);border:1px solid rgba(232,197,71,.35);border-radius:14px;padding:14px;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideIn .3s ease both';
+  toast.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:16px;right:16px;background:var(--card);border:1px solid rgba(232,197,71,.35);border-radius:14px;padding:14px;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideIn .3s ease forwards';
 
   const titulo = document.createElement('div');
   titulo.style.cssText = 'font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px';
@@ -9027,6 +9517,234 @@ function programarNotifProactivaFav() {
   });
 }
 
+// ═══════════════════════════════════════════════════════
+// SISTEMA DE RECOMPENSAS — Andén.ar
+// localStorage key: 'anden_recomp'
+// Estructura: { lineaCounts: {sm:12, roca_lp:3...}, totalConsultas: 45,
+//               viajeros: {sm: true}, temaDesbloqueado: false, temaActivo: false,
+//               notifLineas: {sm: true} }
+// ═══════════════════════════════════════════════════════
+
+const RECOMP_KEY = 'anden_recomp';
+const RECOMP_UMBRAL_VIAJERO = 10;   // consultas en misma línea → badge viajero
+const RECOMP_UMBRAL_TEMA    = 25;   // consultas totales → tema noche de andén
+
+function getRecomp() {
+  try {
+    const d = JSON.parse(localStorage.getItem(RECOMP_KEY) || '{}');
+    if (!d.lineaCounts) d.lineaCounts = {};
+    if (!d.totalConsultas) d.totalConsultas = 0;
+    if (!d.viajeros) d.viajeros = {};
+    if (!d.notifLineas) d.notifLineas = {};
+    return d;
+  } catch(e) { return {lineaCounts:{},totalConsultas:0,viajeros:{},notifLineas:{},temaDesbloqueado:false,temaActivo:false}; }
+}
+
+function saveRecomp(d) {
+  try { localStorage.setItem(RECOMP_KEY, JSON.stringify(d)); } catch(e) {}
+}
+
+// Llamar desde irAHorarios — registra una consulta a una línea
+function trackLineaConsulta(linea) {
+  if (!linea) return;
+  const d = getRecomp();
+  d.lineaCounts[linea] = (d.lineaCounts[linea] || 0) + 1;
+  d.totalConsultas = (d.totalConsultas || 0) + 1;
+  const count = d.lineaCounts[linea];
+  const total = d.totalConsultas;
+
+  // ── CAPA 1: Viajero frecuente de línea ───────────────
+  if (count === RECOMP_UMBRAL_VIAJERO && !d.viajeros[linea]) {
+    d.viajeros[linea] = true;
+    saveRecomp(d);
+    // Mostrar toast + propuesta de notificación
+    const cfg = LINEAS_CONFIG[linea];
+    const nombreLinea = cfg ? cfg.nombre : linea;
+    setTimeout(() => {
+      mostrarRecompViajero(linea, nombreLinea);
+    }, 800);
+  }
+
+  // ── CAPA 2: Tema noche de andén ───────────────────────
+  if (total === RECOMP_UMBRAL_TEMA && !d.temaDesbloqueado) {
+    d.temaDesbloqueado = true;
+    saveRecomp(d);
+    setTimeout(() => {
+      mostrarRecompTema();
+    }, 1200);
+  } else {
+    saveRecomp(d);
+  }
+}
+
+// Mostrar banner de viajero frecuente en el home
+function mostrarRecompViajero(linea, nombreLinea) {
+  const banner = document.getElementById('recompBanner');
+  if (!banner) return;
+  banner.style.display = 'block';
+  banner.innerHTML = `<div class="recomp-banner">
+    <div class="recomp-icon">⭐</div>
+    <div class="recomp-body">
+      <div class="recomp-titulo">Viajero del ${nombreLinea}</div>
+      <div class="recomp-sub">Cuando actualicemos los horarios de esta línea, ¿querés que te avisemos?</div>
+    </div>
+    <button onclick="activarNotifLinea('${linea}','${nombreLinea}')" style="background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Sí</button>
+  </div>`;
+  // Auto-ocultar a los 12 segundos
+  setTimeout(() => { if(banner) banner.style.display='none'; }, 12000);
+}
+
+function activarNotifLinea(linea, nombreLinea) {
+  const d = getRecomp();
+  d.notifLineas[linea] = true;
+  saveRecomp(d);
+  const banner = document.getElementById('recompBanner');
+  if (banner) banner.style.display = 'none';
+  showToast(`✓ Te avisamos cuando actualicemos ${nombreLinea}`);
+  // Actualizar el home para mostrar el badge
+  renderRecompHome();
+}
+
+// Mostrar banner de tema desbloqueado
+function mostrarRecompTema() {
+  const banner = document.getElementById('recompBanner');
+  if (!banner) return;
+  banner.style.display = 'block';
+  banner.innerHTML = `<div class="recomp-banner">
+    <div class="recomp-icon">🌙</div>
+    <div class="recomp-body">
+      <div class="recomp-titulo">Noche de Andén desbloqueado</div>
+      <div class="recomp-sub">Un tema alternativo por usarla seguido. ¿Lo activás?</div>
+    </div>
+    <button onclick="toggleTemaNoche(true)" style="background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Activar</button>
+  </div>`;
+  setTimeout(() => { if(banner) banner.style.display='none'; }, 12000);
+}
+
+function toggleTemaNoche(activar) {
+  const d = getRecomp();
+  d.temaActivo = activar !== undefined ? activar : !d.temaActivo;
+  saveRecomp(d);
+  if (d.temaActivo) {
+    document.body.classList.add('tema-noche');
+    showToast('🌙 Tema Noche de Andén activado');
+  } else {
+    document.body.classList.remove('tema-noche');
+    showToast('Tema original restaurado');
+  }
+  const banner = document.getElementById('recompBanner');
+  if (banner) banner.style.display = 'none';
+}
+
+// Renderiza badges de líneas con notif activa en el home
+function renderRecompHome() {
+  const d = getRecomp();
+  // Aplicar tema si estaba activo
+  if (d.temaDesbloqueado && d.temaActivo) {
+    document.body.classList.add('tema-noche');
+  }
+  // No renderizamos nada visible en el home por defecto —
+  // los badges aparecen en los favs via renderFavs()
+}
+
+// Devuelve true si la línea tiene badge viajero
+function esViajeroLinea(linea) {
+  const d = getRecomp();
+  return !!(d.viajeros && d.viajeros[linea]);
+}
+
+// ── INIT de recompensas ──────────────────────────────
+// (se llama desde el bloque INIT al final del archivo)
+
+
+// ═══════════════════════════════════════════════════════
+// GEOLOCALIZACIÓN — Estación más cercana
+// ═══════════════════════════════════════════════════════
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 +
+            Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+            Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+function getNearestStation(userLat, userLng) {
+  if (typeof COORDS === 'undefined') return null;
+  let best = null, bestDist = Infinity;
+  for (const [lineaKey, estaciones] of Object.entries(COORDS)) {
+    for (const [nombre, pos] of Object.entries(estaciones)) {
+      const dist = haversineKm(userLat, userLng, pos.lat, pos.lng);
+      if (dist < bestDist) { bestDist = dist; best = { lineaKey, nombre, dist }; }
+    }
+  }
+  return best;
+}
+function formatDist(km) {
+  return km < 1 ? Math.round(km * 1000) + ' m' : km.toFixed(1) + ' km';
+}
+let _geoLastResult = null;
+function buscarEstacionCercana() {
+  if (!('geolocation' in navigator)) {
+    document.getElementById('geoBtnSub').textContent = 'GPS no disponible';
+    return;
+  }
+  const btn = document.getElementById('geoBtn');
+  const sub = document.getElementById('geoBtnSub');
+  btn.classList.add('loading');
+  sub.textContent = 'Buscando ubicación…';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      btn.classList.remove('loading');
+      const { latitude, longitude } = pos.coords;
+      const nearest = getNearestStation(latitude, longitude);
+      if (!nearest) { sub.textContent = 'No se encontró estación'; return; }
+      _geoLastResult = nearest;
+      const cfg = LINEAS_CONFIG[nearest.lineaKey];
+      const lineaNombre = cfg ? cfg.nombre.replace(/^\S+\s/, '') : nearest.lineaKey;
+      sub.textContent = nearest.nombre + ' · ' + formatDist(nearest.dist);
+      const panel = document.getElementById('geoResult');
+      document.getElementById('geoResultLine').textContent = lineaNombre;
+      document.getElementById('geoResultStation').textContent = nearest.nombre;
+      document.getElementById('geoResultDist').textContent = 'a ' + formatDist(nearest.dist) + ' de tu ubicación';
+      const actions = document.getElementById('geoResultActions');
+      actions.innerHTML = '';
+      const btnIr = document.createElement('button');
+      btnIr.className = 'geo-action-btn primary';
+      btnIr.textContent = 'Ver horarios →';
+      btnIr.addEventListener('click', () => {
+        irAHorarios(nearest.lineaKey);
+        setTimeout(() => {
+          const cfg2 = LINEAS_CONFIG[nearest.lineaKey];
+          if (cfg2) {
+            const ests = cfg2.estaciones();
+            const idx = ests.indexOf(nearest.nombre);
+            if (idx >= 0) seleccionarEstacion(idx, nearest.nombre);
+          }
+        }, 150);
+      });
+      actions.appendChild(btnIr);
+      const btnReset = document.createElement('button');
+      btnReset.className = 'geo-action-btn';
+      btnReset.textContent = '↺ Actualizar';
+      btnReset.addEventListener('click', () => {
+        panel.classList.remove('visible');
+        sub.textContent = 'Detectar automáticamente';
+        _geoLastResult = null;
+      });
+      actions.appendChild(btnReset);
+      panel.classList.add('visible');
+    },
+    err => {
+      btn.classList.remove('loading');
+      const msgs = { 1: 'Permiso denegado', 2: 'Ubicación no disponible', 3: 'Tiempo agotado' };
+      sub.textContent = msgs[err.code] || 'Error de GPS';
+    },
+    { timeout: 10000, maximumAge: 60000, enableHighAccuracy: false }
+  );
+}
+
+// ═══════════════════════════════════════════════════════
 // INIT — al final, después de LINEAS_CONFIG y SCREENS
 // ─────────────────────────────────────────────
 if (new Date().getDay()===0) tipoDia='domfer';
@@ -9046,10 +9764,17 @@ renderHistorial();
 restaurarNotifs();
 // Notificación proactiva de favorito
 programarNotifProactivaFav();
+// Recompensas: aplicar tema guardado y badges
+renderRecompHome();
 // Banner PWA
 initInstallBanner();
 // Onboarding primera vez
 initOnboarding();
+
+// Service Worker — registro al final del init (evita CSP issues)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
 
 </script>
 <!-- Banner instalación PWA -->
@@ -9070,6 +9795,8 @@ initOnboarding();
 </div>
 
 <!-- Bottom sheet selector de estaciones -->
+
+
 <div id="stationPickerOverlay" onclick="cerrarPickerOrigen()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:450;opacity:0;transition:opacity .25s"></div>
 <div id="stationPickerSheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:451;padding-bottom:env(safe-area-inset-bottom,0px);max-height:75vh;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)">
   <div style="padding:16px 16px 8px;border-bottom:1px solid var(--border)">
