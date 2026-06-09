@@ -30,12 +30,11 @@
   --green: #4ade80;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
 /* ── SCREENS ── */
-.screen { display: none; }
-.screen.active { display: flex; min-height: 100vh; height: 100%; flex-direction: column; }
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
 
 /* ════════════════════════════════
    PANTALLA 1 — HOME
@@ -435,7 +434,7 @@ select:focus { border-color: var(--accent); }
   gap: 14px;
   position: relative;
   overflow: hidden;
-  animation: slideIn .22s ease forwards;
+  animation: slideIn .22s ease both;
   transition: transform .15s ease, box-shadow .15s ease;
   touch-action: pan-y;
   user-select: none;
@@ -489,7 +488,7 @@ select:focus { border-color: var(--accent); }
   gap: 6px;
   z-index: 50;
   box-shadow: 0 4px 20px rgba(0,0,0,.4);
-  animation: slideIn .15s ease forwards;
+  animation: slideIn .15s ease both;
 }
 .notif-picker button {
   background: var(--bg);
@@ -502,62 +501,6 @@ select:focus { border-color: var(--accent); }
   white-space: nowrap;
 }
 .notif-picker button:active { background: var(--accent); color: #000; border-color: var(--accent); }
-/* ── RECOMPENSAS ── */
-.recomp-banner {
-  margin: 0 16px 12px;
-  background: linear-gradient(135deg, rgba(232,197,71,0.08) 0%, rgba(232,197,71,0.03) 100%);
-  border: 1px solid rgba(232,197,71,0.2);
-  border-radius: 14px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  animation: recompIn .4s cubic-bezier(.34,1.3,.64,1) forwards;
-}
-@keyframes recompIn {
-  from { opacity:0; transform:translateY(-8px) scale(.97); }
-  to   { opacity:1; transform:translateY(0) scale(1); }
-}
-.recomp-icon { font-size: 26px; flex-shrink: 0; }
-.recomp-body { flex: 1; min-width: 0; }
-.recomp-titulo { font-size: 13px; font-weight: 700; color: var(--accent); }
-.recomp-sub { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
-.recomp-badge {
-  background: rgba(232,197,71,0.15);
-  border: 1px solid rgba(232,197,71,0.3);
-  color: var(--accent);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 20px;
-  flex-shrink: 0;
-}
-.fav-linea-badge {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: rgba(232,197,71,0.1);
-  border: 1px solid rgba(232,197,71,0.25);
-  border-radius: 10px;
-  padding: 1px 7px;
-  margin-left: 6px;
-  vertical-align: middle;
-}
-body.tema-noche {
-  --bg: #0b0d10;
-  --surface: #13161c;
-  --card: #1b1f28;
-  --border: #252b3a;
-  --accent: #f0d878;
-  --text: #f5f0e8;
-  --muted: #8a8fa8;
-}
-
 /* Banner PWA */
 /* Snackbar de instalación PWA — aparece desde arriba, estilo Telegram/Chrome */
 #installBanner {
@@ -640,7 +583,7 @@ body.tema-noche {
 .no-results-msg { display: block; font-size: 14px; color: var(--muted); line-height: 1.5; }
 .no-results-msg strong { display: inline; font-size: 16px; color: var(--text); margin-bottom: 0; }
 .no-results-eta { font-size: 12px; color: var(--muted); opacity: 0.75; }
-@keyframes slideIn { from { opacity:1; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
 .train-card:nth-child(1){animation-delay:.00s}.train-card:nth-child(2){animation-delay:.04s}
 .train-card:nth-child(3){animation-delay:.08s}.train-card:nth-child(4){animation-delay:.12s}
 .train-card:nth-child(5){animation-delay:.16s}.train-card:nth-child(6){animation-delay:.20s}
@@ -1094,9 +1037,6 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
   <div class="section-title" id="histSectionTitle" style="margin-top:4px">Recientes</div>
   <div class="favs-list" id="historialList"></div>
 
-  <!-- BANNER DE RECOMPENSAS (renderizado dinámicamente) -->
-  <div id="recompBanner" style="display:none"></div>
-
   <!-- SERVICIOS -->
   <div class="section-title" style="margin-top:8px">Servicios disponibles</div>
   <div class="services-grid">
@@ -1412,22 +1352,6 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
         </div>
       </div>
     </div>
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        <span>¿Por qué la app pide mi ubicación?</span><span class="faq-arrow">▾</span>
-      </button>
-      <div class="faq-a">Si activás la detección de estación cercana, la app usa tu ubicación <strong>una sola vez</strong> para calcular qué estación tenés más cerca y mostrarte los próximos trenes de esa línea.<br><br>
-        No guardamos tu ubicación. No la compartimos. No la usamos para nada más que eso.<br><br>
-        Es opcional: si preferís no activarla, la app funciona exactamente igual.</div>
-    </div>
-
-    <div class="faq-item">
-      <button class="faq-q" onclick="toggleFaq(this)">
-        <span>¿Qué son los reconocimientos y el badge "Viajero del X"?</span><span class="faq-arrow">▾</span>
-      </button>
-      <div class="faq-a">Si consultás la misma línea con frecuencia, Andén.ar te reconoce como viajero habitual de esa línea y te muestra un badge. No es un juego ni un sistema de puntos: es simplemente una forma de que la app recuerde cuál es tu línea.<br><br>
-        Cuando alcanzás 10 consultas en una misma línea, te preguntamos si querés recibir una notificación cuando actualicemos los horarios de esa línea. Nada más.</div>
-    </div>
 
     <!-- Cafecito — al final del FAQ -->
     <div style="margin:28px 0 8px;padding:20px;background:rgba(232,197,71,0.05);border:1px solid rgba(232,197,71,0.12);border-radius:12px;text-align:center;">
@@ -1438,10 +1362,13 @@ body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
       </a>
     </div>
 
-
   </div>
+
+</div>
+
+
 <!-- ══════════════════════════════════
-     PANTALLA 2: HORARIOS
+     PANTALLA 2: HORARIOS SAN MARTÍN
 ══════════════════════════════════ -->
 <div class="screen horarios-screen" id="screenHorarios">
 
@@ -2636,24 +2563,19 @@ function saveFavs(favs) {
 
 function getFavKey() {
   const d = document.getElementById('selDestino').value;
-  return `${lineaActual}|${tipoDia}|${direccion}|${origenIdx}|${d||''}`;
+  return `sm|${tipoDia}|${direccion}|${origenIdx}|${d||''}`;
 }
 function getFavLabel() {
   const d = document.getElementById('selDestino').value;
-  const cfg = LINEAS_CONFIG[lineaActual];
-  const ests = cfg ? cfg.estaciones() : [];
-  const org = ests[origenIdx] || '';
-  const dest = d !== '' && d !== undefined ? ests[parseInt(d)] : null;
+  const org = ESTACIONES[origenIdx];
+  const dest = d ? ESTACIONES[parseInt(d)] : null;
   const dir = direccion==='haciafinal' ? '→' : '←';
-  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : 'Final';
-  return dest ? `${org} ${dir} ${dest}` : `${org} ${dir} ${terminal}`;
+  return dest ? `${org} ${dir} ${dest}` : `${org} ${dir} Retiro/Final`;
 }
 function getFavMeta() {
-  const cfg = LINEAS_CONFIG[lineaActual];
-  const lineaNombre = cfg ? cfg.nombre.replace(/^[^\s]+\s/, '') : lineaActual;
   const dia = tipoDia==='labsab' ? 'Lun–Sáb' : 'Dom/Fer';
-  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : '';
-  return `${lineaNombre} · ${dia} · → ${terminal}`;
+  const dir = direccion==='haciafinal' ? 'Desde Retiro' : 'Hacia Retiro';
+  return `San Martín · ${dia} · ${dir}`;
 }
 
 function isFavSaved() {
@@ -2671,7 +2593,7 @@ function toggleFavorito() {
   } else {
     if (favs.length >= 5) { showToast('Máximo 5 favoritos'); return; }
     favs.push({ key, label: getFavLabel(), meta: getFavMeta(),
-      state: { linea: lineaActual, tipoDia, direccion, origenIdx,
+      state: { tipoDia, direccion, origenIdx,
         destinoIdx: document.getElementById('selDestino').value || '' } });
     showToast('⭐ Guardado como favorito');
     // Preguntar por notificación proactiva si aún no la configuró
@@ -2701,14 +2623,10 @@ function renderFavs() {
   favs.forEach((fav, i) => {
     const card = document.createElement('div');
     card.className = 'fav-card';
-    // Badge viajero si aplica
-    const lineaFav = fav.state && fav.state.linea ? fav.state.linea : 'sm';
-    const badgeHtml = esViajeroLinea(lineaFav)
-      ? `<span class="fav-linea-badge">⭐ habitual</span>` : '';
     card.innerHTML = `
       <div class="fav-icon">⭐</div>
       <div class="fav-info" onclick="abrirFavorito(${i})">
-        <div class="fav-route">${fav.label}${badgeHtml}</div>
+        <div class="fav-route">${fav.label}</div>
         <div class="fav-meta">${fav.meta}</div>
       </div>
       <button class="fav-del" onclick="eliminarFav(${i})">×</button>
@@ -2722,13 +2640,12 @@ function abrirFavorito(idx) {
   const fav = favs[idx];
   if (!fav) return;
   const s = fav.state;
-  const lineaFav = (s && s.linea) ? s.linea : fav.key.split('|')[0];
   // Aplicar estado
   tipoDia = s.tipoDia;
   direccion = s.direccion;
   origenIdx = parseInt(s.origenIdx);
   // Navegar
-  irAHorarios(lineaFav);
+  irAHorarios('sm');
   // Aplicar UI después de render
   setTimeout(() => {
     document.getElementById('btnLabSab').classList.toggle('active', tipoDia==='labsab');
@@ -8213,10 +8130,7 @@ function irAHorarios(linea) {
   updateDirLabels();
   poblarOrigen();
   render();
-  // Esperar al siguiente frame para que el browser procese display:flex antes de scrollear
-  requestAnimationFrame(() => { window.scrollTo(0,0); });
-  // Recompensas: registrar consulta a esta línea
-  trackLineaConsulta(lineaActual);
+  window.scrollTo(0,0);
 }
 
 function poblarOrigen() {
@@ -8232,8 +8146,7 @@ function poblarOrigen() {
     opt.value = ri; opt.textContent = e; sel.appendChild(opt);
   });
   if(prev!=='' && [...sel.options].some(o=>o.value===prev)) sel.value=prev;
-  if(!sel.value && sel.options.length) sel.value = sel.options[0].value;
-  origenIdx = parseInt(sel.value) || 0;
+  origenIdx = parseInt(sel.value);
   // Actualizar el trigger del bottom sheet
   actualizarTriggerOrigen();
   poblarDestino();
@@ -8267,7 +8180,7 @@ function render() {
   const listaEl    = document.getElementById('trainsList');
   const showMoreBtn= document.getElementById('showMoreBtn');
 
-  origenIdx = parseInt(selOrigen.value) || 0;
+  origenIdx = parseInt(selOrigen.value);
   const destVal = selDestino.value;
   const destinoIdx = destVal ? parseInt(destVal) : -1;
 
@@ -8543,7 +8456,7 @@ function mostrarHintSwipeSiEsNecesario() {
   if(existing) existing.remove();
   const hint = document.createElement('div');
   hint.id = 'swipeHint';
-  hint.style.cssText = 'text-align:center;font-size:11px;color:var(--muted);padding:4px 0 8px;animation:slideIn .3s ease forwards';
+  hint.style.cssText = 'text-align:center;font-size:11px;color:var(--muted);padding:4px 0 8px;animation:slideIn .3s ease both';
   hint.textContent = '← deslizá una card a la derecha para guardar como favorito →';
   const lista = document.getElementById('trainsList');
   if(lista && lista.children.length > 0) {
@@ -8610,7 +8523,6 @@ function initInstallBanner() {
 
   // Aparecer a los 3 segundos (usuario tuvo tiempo de ver la app)
   setTimeout(() => {
-    if(!banner) return;
     banner.classList.add('visible');
     saveInstallStats({
       ...getInstallStats(),
@@ -8999,7 +8911,7 @@ function preguntarNotifProactiva(favKey) {
   if(Notification.permission === 'denied') return;
 
   const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:16px;right:16px;background:var(--card);border:1px solid rgba(232,197,71,.35);border-radius:14px;padding:14px;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideIn .3s ease forwards';
+  toast.style.cssText = 'position:fixed;bottom:calc(60px + env(safe-area-inset-bottom,0px) + 10px);left:16px;right:16px;background:var(--card);border:1px solid rgba(232,197,71,.35);border-radius:14px;padding:14px;z-index:400;box-shadow:0 4px 20px rgba(0,0,0,.4);animation:slideIn .3s ease both';
 
   const titulo = document.createElement('div');
   titulo.style.cssText = 'font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px';
@@ -9115,146 +9027,6 @@ function programarNotifProactivaFav() {
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// SISTEMA DE RECOMPENSAS — Andén.ar
-// localStorage key: 'anden_recomp'
-// Estructura: { lineaCounts: {sm:12, roca_lp:3...}, totalConsultas: 45,
-//               viajeros: {sm: true}, temaDesbloqueado: false, temaActivo: false,
-//               notifLineas: {sm: true} }
-// ═══════════════════════════════════════════════════════
-
-const RECOMP_KEY = 'anden_recomp';
-const RECOMP_UMBRAL_VIAJERO = 10;   // consultas en misma línea → badge viajero
-const RECOMP_UMBRAL_TEMA    = 25;   // consultas totales → tema noche de andén
-
-function getRecomp() {
-  try {
-    const d = JSON.parse(localStorage.getItem(RECOMP_KEY) || '{}');
-    if (!d.lineaCounts) d.lineaCounts = {};
-    if (!d.totalConsultas) d.totalConsultas = 0;
-    if (!d.viajeros) d.viajeros = {};
-    if (!d.notifLineas) d.notifLineas = {};
-    return d;
-  } catch(e) { return {lineaCounts:{},totalConsultas:0,viajeros:{},notifLineas:{},temaDesbloqueado:false,temaActivo:false}; }
-}
-
-function saveRecomp(d) {
-  try { localStorage.setItem(RECOMP_KEY, JSON.stringify(d)); } catch(e) {}
-}
-
-// Llamar desde irAHorarios — registra una consulta a una línea
-function trackLineaConsulta(linea) {
-  if (!linea) return;
-  const d = getRecomp();
-  d.lineaCounts[linea] = (d.lineaCounts[linea] || 0) + 1;
-  d.totalConsultas = (d.totalConsultas || 0) + 1;
-  const count = d.lineaCounts[linea];
-  const total = d.totalConsultas;
-
-  // ── CAPA 1: Viajero frecuente de línea ───────────────
-  if (count === RECOMP_UMBRAL_VIAJERO && !d.viajeros[linea]) {
-    d.viajeros[linea] = true;
-    saveRecomp(d);
-    // Mostrar toast + propuesta de notificación
-    const cfg = LINEAS_CONFIG[linea];
-    const nombreLinea = cfg ? cfg.nombre : linea;
-    setTimeout(() => {
-      mostrarRecompViajero(linea, nombreLinea);
-    }, 800);
-  }
-
-  // ── CAPA 2: Tema noche de andén ───────────────────────
-  if (total === RECOMP_UMBRAL_TEMA && !d.temaDesbloqueado) {
-    d.temaDesbloqueado = true;
-    saveRecomp(d);
-    setTimeout(() => {
-      mostrarRecompTema();
-    }, 1200);
-  } else {
-    saveRecomp(d);
-  }
-}
-
-// Mostrar banner de viajero frecuente en el home
-function mostrarRecompViajero(linea, nombreLinea) {
-  const banner = document.getElementById('recompBanner');
-  if (!banner) return;
-  banner.style.display = 'block';
-  banner.innerHTML = `<div class="recomp-banner">
-    <div class="recomp-icon">⭐</div>
-    <div class="recomp-body">
-      <div class="recomp-titulo">Viajero del ${nombreLinea}</div>
-      <div class="recomp-sub">Cuando actualicemos los horarios de esta línea, ¿querés que te avisemos?</div>
-    </div>
-    <button onclick="activarNotifLinea('${linea}','${nombreLinea}')" style="background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Sí</button>
-  </div>`;
-  // Auto-ocultar a los 12 segundos
-  setTimeout(() => { if(banner) banner.style.display='none'; }, 12000);
-}
-
-function activarNotifLinea(linea, nombreLinea) {
-  const d = getRecomp();
-  d.notifLineas[linea] = true;
-  saveRecomp(d);
-  const banner = document.getElementById('recompBanner');
-  if (banner) banner.style.display = 'none';
-  showToast(`✓ Te avisamos cuando actualicemos ${nombreLinea}`);
-  // Actualizar el home para mostrar el badge
-  renderRecompHome();
-}
-
-// Mostrar banner de tema desbloqueado
-function mostrarRecompTema() {
-  const banner = document.getElementById('recompBanner');
-  if (!banner) return;
-  banner.style.display = 'block';
-  banner.innerHTML = `<div class="recomp-banner">
-    <div class="recomp-icon">🌙</div>
-    <div class="recomp-body">
-      <div class="recomp-titulo">Noche de Andén desbloqueado</div>
-      <div class="recomp-sub">Un tema alternativo por usarla seguido. ¿Lo activás?</div>
-    </div>
-    <button onclick="toggleTemaNoche(true)" style="background:var(--accent);color:var(--bg);border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">Activar</button>
-  </div>`;
-  setTimeout(() => { if(banner) banner.style.display='none'; }, 12000);
-}
-
-function toggleTemaNoche(activar) {
-  const d = getRecomp();
-  d.temaActivo = activar !== undefined ? activar : !d.temaActivo;
-  saveRecomp(d);
-  if (d.temaActivo) {
-    document.body.classList.add('tema-noche');
-    showToast('🌙 Tema Noche de Andén activado');
-  } else {
-    document.body.classList.remove('tema-noche');
-    showToast('Tema original restaurado');
-  }
-  const banner = document.getElementById('recompBanner');
-  if (banner) banner.style.display = 'none';
-}
-
-// Renderiza badges de líneas con notif activa en el home
-function renderRecompHome() {
-  const d = getRecomp();
-  // Aplicar tema si estaba activo
-  if (d.temaDesbloqueado && d.temaActivo) {
-    document.body.classList.add('tema-noche');
-  }
-  // No renderizamos nada visible en el home por defecto —
-  // los badges aparecen en los favs via renderFavs()
-}
-
-// Devuelve true si la línea tiene badge viajero
-function esViajeroLinea(linea) {
-  const d = getRecomp();
-  return !!(d.viajeros && d.viajeros[linea]);
-}
-
-// ── INIT de recompensas ──────────────────────────────
-// (se llama desde el bloque INIT al final del archivo)
-
-// ═══════════════════════════════════════════════════════
 // INIT — al final, después de LINEAS_CONFIG y SCREENS
 // ─────────────────────────────────────────────
 if (new Date().getDay()===0) tipoDia='domfer';
@@ -9274,8 +9046,6 @@ renderHistorial();
 restaurarNotifs();
 // Notificación proactiva de favorito
 programarNotifProactivaFav();
-// Recompensas: aplicar tema guardado y badges
-renderRecompHome();
 // Banner PWA
 initInstallBanner();
 // Onboarding primera vez
