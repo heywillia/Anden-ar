@@ -30,11 +30,12 @@
   --green: #4ade80;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
 /* ── SCREENS ── */
 .screen { display: none; }
-.screen.active { display: flex; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; min-height: 100vh; height: 100%; flex-direction: column; }
 
 /* ════════════════════════════════
    PANTALLA 1 — HOME
@@ -1025,25 +1026,9 @@ textarea::placeholder { color: var(--muted); }
 /* ajuste body para nav fija */
 body { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
 
-#logPanel {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  background: rgba(0,0,0,0.92);
-  color: #4ade80;
-  font-family: monospace;
-  font-size: 10px;
-  padding: 6px 8px;
-  max-height: 45vh;
-  overflow-y: auto;
-  z-index: 99999;
-  border-bottom: 1px solid #4ade80;
-}
-#logPanel.on { display: block; }
 </style>
 </head>
 <body>
-<div id="logPanel"></div>
 
 <!-- ══════════════════════════════════
      PANTALLA 1: HOME
@@ -9270,56 +9255,6 @@ function esViajeroLinea(linea) {
 // (se llama desde el bloque INIT al final del archivo)
 
 // ═══════════════════════════════════════════════════════
-
-// ── LOG VISUAL ──────────────────────────────────────
-const _LOG = location.search.includes('log');
-const _logEl = document.getElementById('logPanel');
-if (_LOG && _logEl) _logEl.classList.add('on');
-function L(msg) {
-  if (!_LOG || !_logEl) return;
-  const t = new Date().toLocaleTimeString('es-AR', {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  _logEl.innerHTML += t + ' ' + msg + '<br>';
-  _logEl.scrollTop = _logEl.scrollHeight;
-}
-window.onerror = function(msg, src, line) { L('❌ ERROR: ' + msg + ' L' + line); };
-
-// Parchear funciones clave para loggear
-const _origIrAHorarios = irAHorarios;
-irAHorarios = function(linea) {
-  L('→ irAHorarios(' + linea + ')');
-  _origIrAHorarios(linea);
-  const sh = document.getElementById('screenHorarios');
-  L('screenHorarios.active=' + (sh ? sh.classList.contains('active') : 'NULL'));
-  L('scrollY=' + window.scrollY + ' innerH=' + window.innerHeight);
-  const tl = document.getElementById('trainsList');
-  L('trainsList children=' + (tl ? tl.children.length : 'NULL'));
-  if (tl) {
-    const first = tl.children[0];
-    if (first) {
-      const rect = first.getBoundingClientRect();
-      L('first card rect: top=' + Math.round(rect.top) + ' h=' + Math.round(rect.height) + ' opacity=' + getComputedStyle(first).opacity);
-    }
-  }
-  const sh2 = document.getElementById('screenHorarios');
-  if (sh2) {
-    const rect = sh2.getBoundingClientRect();
-    L('screenHorarios rect: top=' + Math.round(rect.top) + ' h=' + Math.round(rect.height));
-    L('screenHorarios computed display=' + getComputedStyle(sh2).display + ' minH=' + getComputedStyle(sh2).minHeight);
-  }
-};
-
-const _origNavTo = navTo;
-navTo = function(dest) {
-  L('→ navTo(' + dest + ')');
-  _origNavTo(dest);
-  const el = document.getElementById('screen' + dest.charAt(0).toUpperCase() + dest.slice(1));
-  if (el) {
-    const rect = el.getBoundingClientRect();
-    L('screen' + dest + ' rect: top=' + Math.round(rect.top) + ' h=' + Math.round(rect.height));
-  }
-};
-// ────────────────────────────────────────────────────
-
 // INIT — al final, después de LINEAS_CONFIG y SCREENS
 // ─────────────────────────────────────────────
 if (new Date().getDay()===0) tipoDia='domfer';
