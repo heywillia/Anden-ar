@@ -1908,6 +1908,37 @@ textarea::placeholder { color: var(--muted); }
   </button>
 </nav>
 
+<!-- Banner instalación PWA -->
+<div id="installBanner" role="alert" aria-live="polite">
+  <span class="install-snack-icon">🚉</span>
+  <div class="install-snack-body">
+    <div class="install-snack-title">Instalá Andén.ar</div>
+    <div class="install-snack-sub" id="installBannerSub">Offline · directo desde tu inicio</div>
+    <div class="install-snack-steps" id="installStepsIos" style="display:none">
+      Safari ⬆ → "Agregar al inicio" → Agregar
+    </div>
+  </div>
+  <div class="install-snack-btns">
+    <button class="install-btn-main" id="installBtnMain" onclick="doInstall()">Instalar</button>
+    <button class="install-btn-close" onclick="cerrarBanner(true)" aria-label="Cerrar">✕</button>
+  </div>
+  <div class="install-progress" id="installProgress"></div>
+</div>
+
+<!-- Bottom sheet selector de estaciones -->
+
+
+<div id="stationPickerOverlay" onclick="cerrarPickerOrigen()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:450;opacity:0;transition:opacity .25s"></div>
+<div id="stationPickerSheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:451;padding-bottom:env(safe-area-inset-bottom,0px);max-height:75vh;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)">
+  <div style="padding:16px 16px 8px;border-bottom:1px solid var(--border)">
+    <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
+    <input id="stationSearch" type="text" placeholder="Buscar estación..." autocomplete="off"
+      style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none"
+      oninput="filtrarEstaciones(this.value)">
+  </div>
+  <div id="stationList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
+</div>
+
 <script>
 // ─────────────────────────────────────────────
 // ESTACIONES
@@ -9773,40 +9804,10 @@ initOnboarding();
 
 // Service Worker — registro al final del init (evita CSP issues)
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).catch(() => {});
 }
 
 </script>
-<!-- Banner instalación PWA -->
-<div id="installBanner" role="alert" aria-live="polite">
-  <span class="install-snack-icon">🚉</span>
-  <div class="install-snack-body">
-    <div class="install-snack-title">Instalá Andén.ar</div>
-    <div class="install-snack-sub" id="installBannerSub">Offline · directo desde tu inicio</div>
-    <div class="install-snack-steps" id="installStepsIos" style="display:none">
-      Safari ⬆ → "Agregar al inicio" → Agregar
-    </div>
-  </div>
-  <div class="install-snack-btns">
-    <button class="install-btn-main" id="installBtnMain" onclick="doInstall()">Instalar</button>
-    <button class="install-btn-close" onclick="cerrarBanner(true)" aria-label="Cerrar">✕</button>
-  </div>
-  <div class="install-progress" id="installProgress"></div>
-</div>
-
-<!-- Bottom sheet selector de estaciones -->
-
-
-<div id="stationPickerOverlay" onclick="cerrarPickerOrigen()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:450;opacity:0;transition:opacity .25s"></div>
-<div id="stationPickerSheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:451;padding-bottom:env(safe-area-inset-bottom,0px);max-height:75vh;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)">
-  <div style="padding:16px 16px 8px;border-bottom:1px solid var(--border)">
-    <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
-    <input id="stationSearch" type="text" placeholder="Buscar estación..." autocomplete="off"
-      style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none"
-      oninput="filtrarEstaciones(this.value)">
-  </div>
-  <div id="stationList" style="overflow-y:auto;flex:1;padding:8px 0"></div>
-</div>
 
 </body>
 </html>

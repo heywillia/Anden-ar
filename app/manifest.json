@@ -1,0 +1,36 @@
+{
+  "name": "Andén.ar — Horarios de trenes BA",
+  "short_name": "Andén.ar",
+  "description": "Horarios de trenes y subtes en Buenos Aires. Offline, gratis, sin publicidad.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0f14",
+  "theme_color": "#0d0f14",
+  "orientation": "portrait",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230d0f14'/%3E%3Crect x='0' y='488' width='512' height='24' rx='4' fill='%23e8c547'/%3E%3Ctext x='256' y='310' font-family='Arial Black,sans-serif' font-weight='900' font-size='220' text-anchor='middle' fill='%23f0f2f7'%3EA%3C/text%3E%3Ctext x='256' y='420' font-family='Arial,sans-serif' font-weight='400' font-size='68' text-anchor='middle' fill='%23e8c547' letter-spacing='8'%3E.ar%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "travel",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "San Martín",
+      "url": "./index.html?linea=sm",
+      "description": "Retiro → Pilar"
+    },
+    {
+      "name": "Mitre – Tigre",
+      "url": "./index.html?linea=mitre_rt",
+      "description": "Retiro → Tigre"
+    }
+  ],
+  "scope": "./"
+}
