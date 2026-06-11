@@ -1497,6 +1497,8 @@ textarea::placeholder { color: var(--muted); }
 
 
   </div>
+
+</div>
 <!-- ══════════════════════════════════
      PANTALLA 2: HORARIOS
 ══════════════════════════════════ -->
@@ -3099,7 +3101,7 @@ function navTo(dest) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('nav-' + dest).classList.add('active');
   currentNav = dest;
-  const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
+  window.scrollTo(0, 0); const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
 }
 
 // volverHome (versión con nav — única definición)
@@ -3116,7 +3118,7 @@ function volverHome() {
   const list  = document.getElementById('historialList');
   if (title) title.style.display = hist.length ? '' : 'none';
   if (list)  list.style.display  = hist.length ? '' : 'none';
-  const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
+  window.scrollTo(0, 0); const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
 }
 
 // ─────────────────────────────────────────────
@@ -8647,7 +8649,7 @@ function irAHorarios(linea) {
   poblarOrigen();
   render();
   // Esperar al siguiente frame para que el browser procese display:flex antes de scrollear
-  requestAnimationFrame(() => { const s = document.getElementById('screenHorarios'); if(s) s.scrollTop = 0; });
+  requestAnimationFrame(() => { window.scrollTo(0, 0); const s = document.getElementById('screenHorarios'); if(s) s.scrollTop = 0; });
   // Recompensas: registrar consulta a esta línea
   trackLineaConsulta(lineaActual);
 }
