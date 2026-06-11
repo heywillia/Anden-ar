@@ -713,6 +713,62 @@ body.tema-noche {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ── HERO CARD (modo commuter) ──────────────────────────── */
+#heroCard {
+  margin: 0 16px 14px;
+  background: var(--card);
+  border: 1px solid rgba(232,197,71,.3);
+  border-left: 4px solid var(--accent);
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+}
+#heroCard:active { transform: scale(.985); }
+.hero-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+.hero-route { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.hero-main { display: flex; align-items: baseline; gap: 10px; }
+.hero-time { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 1; color: var(--accent); }
+.hero-eta { font-size: 15px; font-weight: 600; color: var(--text); }
+.hero-llegada { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.hero-manana { font-size: 14px; color: var(--muted); padding: 4px 0; }
+
+/* ── DIÁLOGO LÍMITE DE FAVORITOS ────────────────────────── */
+#favLimitDialog {
+  position: fixed; left: 16px; right: 16px;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 10px);
+  background: var(--card);
+  border: 1px solid rgba(232,197,71,.35);
+  border-radius: 14px; padding: 16px;
+  z-index: 460;
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+}
+.fld-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.fld-sub { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.fld-opt {
+  display: block; width: 100%; text-align: left;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 11px 14px; margin-bottom: 8px;
+  color: var(--text); font-size: 13px; cursor: pointer;
+}
+.fld-opt:active { border-color: var(--accent); }
+.fld-opt strong { color: var(--accent); }
+.fld-cancel { background: none; border: none; color: var(--muted); font-size: 13px; padding: 8px; width: 100%; cursor: pointer; }
+
+/* ── ÚLTIMO TREN + VIGENCIA ─────────────────────────────── */
+.ultimo-tren-bar {
+  margin: 0 16px 10px; padding: 7px 12px;
+  font-size: 12px; color: var(--muted);
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.ultimo-tren-bar strong { color: var(--text); }
+.vigencia-bar {
+  text-align: center; font-size: 11px; color: var(--muted);
+  padding: 4px 16px 0; line-height: 1.5;
+}
+.vigencia-bar .vig-warn { color: #f59e0b; }
+
 /* ── ONBOARDING ─────────────────────────────────────────── */
 #onboardingScreen {
   position: fixed; inset: 0;
@@ -1126,6 +1182,9 @@ textarea::placeholder { color: var(--muted); }
     </div>
     <div id="homeDayBadge" class="home-day-badge">--</div>
   </div>
+
+  <!-- HERO — MODO COMMUTER (próximo tren del favorito, sin taps) -->
+  <div id="heroCard" style="display:none"></div>
 
   <!-- GEOLOCALIZACIÓN — estación más cercana -->
   <button class="geo-btn" id="geoBtn" onclick="buscarEstacionCercana()">
@@ -1579,8 +1638,10 @@ textarea::placeholder { color: var(--muted); }
   </div>
 
   <div id="infoBar" class="info-bar" style="display:none"></div>
+  <div id="ultimoTrenBar" class="ultimo-tren-bar" style="display:none"></div>
   <div class="trains-list" id="trainsList"></div>
   <button class="show-more-btn" id="showMoreBtn" onclick="showMore()" style="display:none">Ver más horarios ↓</button>
+  <div id="vigenciaBar" class="vigencia-bar"></div>
   <button class="report-btn" onclick="reportarHorario()">⚑ Reportar horario incorrecto</button>
 
 </div>
@@ -1934,6 +1995,7 @@ textarea::placeholder { color: var(--muted); }
 <div id="stationPickerSheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;z-index:451;padding-bottom:env(safe-area-inset-bottom,0px);max-height:75vh;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1)">
   <div style="padding:16px 16px 8px;border-bottom:1px solid var(--border)">
     <div style="width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px"></div>
+    <div id="pickerTitle" style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px;display:none"></div>
     <input id="stationSearch" type="text" placeholder="Buscar estación..." autocomplete="off"
       style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:15px;outline:none"
       oninput="filtrarEstaciones(this.value)">
@@ -2720,59 +2782,217 @@ function getDestFinal(tren, dir) {
 // FAVORITOS
 // ─────────────────────────────────────────────
 function getFavs() {
-  try { return JSON.parse(localStorage.getItem('anden_favs') || '[]'); }
-  catch(e) { return []; }
+  try { LINEAS_CONFIG; } catch(e) { return []; } // TDZ guard: nunca antes del init
+  try {
+    let favs = JSON.parse(localStorage.getItem('anden_favs') || '[]');
+    let cambio = false;
+    favs = favs.map(f => {
+      if (f && f.v === 2) return f;
+      cambio = true;
+      try {
+        // Migración de favoritos v1 → v2 (bidireccionales)
+        const s = f.state || {};
+        const linea = s.linea || (f.key ? f.key.split('|')[0] : 'sm');
+        const cfg = LINEAS_CONFIG[linea];
+        if (!cfg) return null;
+        const ests = cfg.estaciones();
+        const a = parseInt(s.origenIdx) || 0;
+        let b = (s.destinoIdx !== '' && s.destinoIdx !== undefined && s.destinoIdx !== null) ? parseInt(s.destinoIdx) : NaN;
+        if (isNaN(b)) b = (s.direccion === 'haciaretiro') ? 0 : Math.max(ests.length - 1, 0);
+        if (b === a) b = (a === 0) ? Math.max(ests.length - 1, 0) : 0;
+        return { v: 2, key: favKeyDe(linea, a, b), linea, aIdx: a, bIdx: b,
+          aNombre: ests[a] || '', bNombre: ests[b] || '',
+          dirGuardada: s.direccion || 'haciafinal', horaGuardada: 8 };
+      } catch(e) { return null; }
+    }).filter(Boolean).slice(0, 3);
+    if (cambio) saveFavs(favs);
+    return favs;
+  } catch(e) { return []; }
 }
 function saveFavs(favs) {
   try { localStorage.setItem('anden_favs', JSON.stringify(favs)); }
   catch(e) {}
 }
 
-function getFavKey() {
-  const d = document.getElementById('selDestino').value;
-  return `${lineaActual}|${tipoDia}|${direccion}|${origenIdx}|${d||''}`;
-}
-function getFavLabel() {
-  const d = document.getElementById('selDestino').value;
-  const cfg = LINEAS_CONFIG[lineaActual];
-  const ests = cfg ? cfg.estaciones() : [];
-  const org = ests[origenIdx] || '';
-  const dest = d !== '' && d !== undefined ? ests[parseInt(d)] : null;
-  const dir = direccion==='haciafinal' ? '→' : '←';
-  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : 'Final';
-  return dest ? `${org} ${dir} ${dest}` : `${org} ${dir} ${terminal}`;
-}
-function getFavMeta() {
-  const cfg = LINEAS_CONFIG[lineaActual];
-  const lineaNombre = cfg ? cfg.nombre.replace(/^[^\s]+\s/, '') : lineaActual;
-  const dia = tipoDia==='labsab' ? 'Lun–Sáb' : 'Dom/Fer';
-  const terminal = cfg ? (direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta) : '';
-  return `${lineaNombre} · ${dia} · → ${terminal}`;
+// ═══════════════════════════════════════════════════════
+// FAVORITOS v2 — bidireccionales, máx 2 (+1 opcional), destino real
+// Un favorito = un viaje completo (A ↔ B). La app muestra la
+// dirección según la mitad del día (mañana = como se guardó).
+// ═══════════════════════════════════════════════════════
+const FAV_MAX_BASE = 2;
+const FAV_MAX_ABS  = 3;
+
+// Líneas que distinguen sábado — MANTENER EN SYNC con los bloques if de render()
+const SAB_LINES = ['bn','roca_lp','roca_gk','sm_om','roca_ez','roca_bq','ur','mitre_rjb','mitre_vz','bs_gc','bs_sb','roca_th','roca_uni'];
+
+function tdKeyEfectivo(linea, dow) {
+  if (dow === 0) return 'domfer';
+  if (dow === 6 && SAB_LINES.includes(linea)) return 'sab';
+  return 'labsab';
 }
 
-function isFavSaved() {
-  const key = getFavKey();
-  return getFavs().some(f => f.key === key);
+// Quirk Urquiza: en VTA los índices de h[] van invertidos (mismo criterio que hIdx() de render)
+function hIdxPara(linea, dir, idx, totalEsts) {
+  if (linea === 'ur' && dir === 'haciaretiro') return totalEsts - 1 - idx;
+  return idx;
 }
+
+function favKeyDe(linea, a, b) { return 'f2|' + linea + '|' + Math.min(a,b) + '|' + Math.max(a,b); }
+
+// Dirección vigente del favorito según la mitad del día:
+// misma mitad que cuando se guardó → A→B; la otra mitad → B→A
+function favViajeActual(fav, d) {
+  d = d || new Date();
+  const mismaMitad = (d.getHours() < 12) === ((fav.horaGuardada || 8) < 12);
+  if (mismaMitad) {
+    return { linea: fav.linea, direccion: fav.dirGuardada, origenIdx: fav.aIdx, destinoIdx: fav.bIdx,
+             origenNombre: fav.aNombre, destinoNombre: fav.bNombre };
+  }
+  const dirInv = fav.dirGuardada === 'haciafinal' ? 'haciaretiro' : 'haciafinal';
+  return { linea: fav.linea, direccion: dirInv, origenIdx: fav.bIdx, destinoIdx: fav.aIdx,
+           origenNombre: fav.bNombre, destinoNombre: fav.aNombre };
+}
+
+// Próximo tren del favorito (solo trenes que paran en su destino).
+// Si hoy ya no hay, devuelve el primero de mañana con manana:true.
+function proximoTrenFav(fav, d) {
+  d = d || new Date();
+  const v = favViajeActual(fav, d);
+  const cfg = LINEAS_CONFIG[v.linea];
+  if (!cfg) return null;
+  const ests = cfg.estaciones();
+  const now = d.getHours() * 60 + d.getMinutes();
+
+  function buscar(trenes, desdeMin) {
+    let mejor = null;
+    (trenes || []).forEach(t => {
+      const hO = t.h[hIdxPara(v.linea, v.direccion, v.origenIdx, ests.length)];
+      if (!hO) return;
+      let mO = hO[0] * 60 + hO[1];
+      if (mO < 120 && desdeMin > 1200) mO += 1440;
+      if (desdeMin !== null && mO < desdeMin) return;
+      const hD = t.h[hIdxPara(v.linea, v.direccion, v.destinoIdx, ests.length)];
+      if (!hD) return;
+      let mD = hD[0] * 60 + hD[1];
+      if (mD < 120 && mO > 1200) mD += 1440;
+      if (mD <= mO) return;
+      if (mejor === null || mO < mejor.mOrigen) mejor = { mOrigen: mO, mDestino: mD, tren: t };
+    });
+    return mejor;
+  }
+
+  const hoy = buscar(cfg.getData(tdKeyEfectivo(v.linea, d.getDay()), v.direccion), now);
+  if (hoy) return Object.assign(hoy, { viaje: v, manana: false });
+
+  const dM = new Date(d.getTime() + 86400000);
+  const man = buscar(cfg.getData(tdKeyEfectivo(v.linea, dM.getDay()), v.direccion), null);
+  if (man) return Object.assign(man, { viaje: v, manana: true });
+  return null;
+}
+
+function crearFav(linea, aIdx, bIdx, dirGuardada) {
+  const cfg = LINEAS_CONFIG[linea];
+  const ests = cfg ? cfg.estaciones() : [];
+  return { v: 2, key: favKeyDe(linea, aIdx, bIdx), linea, aIdx, bIdx,
+    aNombre: ests[aIdx] || '', bNombre: ests[bIdx] || '',
+    dirGuardada, horaGuardada: new Date().getHours() };
+}
+
+// ¿El viaje actual (origen + destino opcional) ya está guardado?
+function favEncontrarActual(favs) {
+  const dVal = document.getElementById('selDestino').value;
+  const dIdx = dVal === '' ? null : parseInt(dVal);
+  return favs.findIndex(f => f.linea === lineaActual &&
+    (f.aIdx === origenIdx || f.bIdx === origenIdx) &&
+    (dIdx === null || f.aIdx === dIdx || f.bIdx === dIdx));
+}
+
+function isFavSaved() { return favEncontrarActual(getFavs()) >= 0; }
 
 function toggleFavorito() {
-  const key = getFavKey();
+  const cfg = LINEAS_CONFIG[lineaActual];
+  if (!cfg) return;
   let favs = getFavs();
-  const idx = favs.findIndex(f => f.key===key);
-  if (idx >= 0) {
-    favs.splice(idx, 1);
+  const existente = favEncontrarActual(favs);
+  if (existente >= 0) {
+    favs.splice(existente, 1);
+    saveFavs(favs);
+    renderFavs(); renderHero(); updateFavBtn();
     showToast('Favorito eliminado');
-  } else {
-    if (favs.length >= 5) { showToast('Máximo 5 favoritos'); return; }
-    favs.push({ key, label: getFavLabel(), meta: getFavMeta(),
-      state: { linea: lineaActual, tipoDia, direccion, origenIdx,
-        destinoIdx: document.getElementById('selDestino').value || '' } });
-    showToast('⭐ Guardado como favorito');
-    // Preguntar por notificación proactiva si aún no la configuró
-    setTimeout(() => preguntarNotifProactiva(key), 800);
+    return;
   }
+  // Necesitamos el destino REAL del viaje
+  const dVal = document.getElementById('selDestino').value;
+  if (dVal === '' || dVal === undefined) {
+    abrirPickerDestino(idx => finalizarGuardadoFav(origenIdx, idx));
+    return;
+  }
+  finalizarGuardadoFav(origenIdx, parseInt(dVal));
+}
+
+function finalizarGuardadoFav(aIdx, bIdx) {
+  if (aIdx === bIdx || isNaN(bIdx)) { showToast('Elegí un destino distinto al origen'); return; }
+  let favs = getFavs();
+  const key = favKeyDe(lineaActual, aIdx, bIdx);
+  if (favs.some(f => f.key === key)) { showToast('Ese viaje ya está guardado'); updateFavBtn(); return; }
+  const nuevo = crearFav(lineaActual, aIdx, bIdx, direccion);
+  if (favs.length >= FAV_MAX_BASE) { mostrarFavLimitDialog(nuevo, favs); return; }
+  favs.push(nuevo);
   saveFavs(favs);
-  updateFavBtn();
+  renderFavs(); renderHero(); updateFavBtn();
+  showToast('⭐ Guardado: ' + nuevo.aNombre + ' ↔ ' + nuevo.bNombre);
+  setTimeout(() => preguntarNotifProactiva(nuevo.key), 800);
+}
+
+function _confirmarFavEn(nuevo, reemplazarIdx) {
+  let favs = getFavs();
+  if (reemplazarIdx === null) favs.push(nuevo);
+  else favs.splice(reemplazarIdx, 1, nuevo);
+  saveFavs(favs);
+  cerrarFavLimitDialog();
+  renderFavs(); renderHero(); updateFavBtn();
+  showToast('⭐ Guardado: ' + nuevo.aNombre + ' ↔ ' + nuevo.bNombre);
+  setTimeout(() => preguntarNotifProactiva(nuevo.key), 800);
+}
+
+function mostrarFavLimitDialog(nuevo, favs) {
+  cerrarFavLimitDialog();
+  const d = document.createElement('div');
+  d.id = 'favLimitDialog';
+  const t = document.createElement('div');
+  t.className = 'fld-title';
+  t.textContent = favs.length >= FAV_MAX_ABS ? 'Tenés el máximo de viajes guardados' : 'Ya tenés 2 viajes guardados';
+  const s = document.createElement('div');
+  s.className = 'fld-sub';
+  s.textContent = '¿Qué hacemos con ' + nuevo.aNombre + ' ↔ ' + nuevo.bNombre + '?';
+  d.appendChild(t); d.appendChild(s);
+  favs.forEach((f, i) => {
+    const b = document.createElement('button');
+    b.className = 'fld-opt';
+    const pre = document.createTextNode('Reemplazar: ');
+    const st = document.createElement('strong');
+    st.textContent = f.aNombre + ' ↔ ' + f.bNombre;
+    b.appendChild(pre); b.appendChild(st);
+    b.addEventListener('click', () => _confirmarFavEn(nuevo, i));
+    d.appendChild(b);
+  });
+  if (favs.length < FAV_MAX_ABS) {
+    const b = document.createElement('button');
+    b.className = 'fld-opt';
+    b.textContent = '➕ Agregar igual como 3ro';
+    b.addEventListener('click', () => _confirmarFavEn(nuevo, null));
+    d.appendChild(b);
+  }
+  const c = document.createElement('button');
+  c.className = 'fld-cancel';
+  c.textContent = 'Cancelar';
+  c.addEventListener('click', cerrarFavLimitDialog);
+  d.appendChild(c);
+  document.body.appendChild(d);
+}
+function cerrarFavLimitDialog() {
+  const e = document.getElementById('favLimitDialog');
+  if (e) e.remove();
 }
 
 function updateFavBtn() {
@@ -2784,69 +3004,114 @@ function updateFavBtn() {
 function renderFavs() {
   const favs = getFavs();
   const list = document.getElementById('favsList');
-  const title = document.getElementById('favsSectionTitle');
-
+  if (!list) return;
   if (favs.length === 0) {
     list.innerHTML = `<div class="fav-empty">Guardá tus viajes frecuentes<br>con ★ desde la pantalla de horarios</div>`;
     return;
   }
-
   list.innerHTML = '';
   favs.forEach((fav, i) => {
+    const cfg = LINEAS_CONFIG[fav.linea];
+    const v = favViajeActual(fav);
+    const nombreLinea = cfg ? cfg.nombre.replace(/🚆\s*|🚇\s*|🚂\s*/g,'').trim() : fav.linea;
+    const badgeTxt = esViajeroLinea(fav.linea) ? ' · ⭐ habitual' : '';
     const card = document.createElement('div');
     card.className = 'fav-card';
-    // Badge viajero si aplica
-    const lineaFav = fav.state && fav.state.linea ? fav.state.linea : 'sm';
-    const badgeHtml = esViajeroLinea(lineaFav)
-      ? `<span class="fav-linea-badge">⭐ habitual</span>` : '';
-    card.innerHTML = `
-      <div class="fav-icon">⭐</div>
-      <div class="fav-info" onclick="abrirFavorito(${i})">
-        <div class="fav-route">${fav.label}${badgeHtml}</div>
-        <div class="fav-meta">${fav.meta}</div>
-      </div>
-      <button class="fav-del" onclick="eliminarFav(${i})">×</button>
-    `;
+    const icon = document.createElement('div'); icon.className = 'fav-icon'; icon.textContent = '⭐';
+    const info = document.createElement('div'); info.className = 'fav-info';
+    const route = document.createElement('div'); route.className = 'fav-route';
+    route.textContent = fav.aNombre + ' ↔ ' + fav.bNombre;
+    const meta = document.createElement('div'); meta.className = 'fav-meta';
+    meta.textContent = nombreLinea + ' · ahora: ' + v.origenNombre + ' → ' + v.destinoNombre + badgeTxt;
+    info.appendChild(route); info.appendChild(meta);
+    info.addEventListener('click', () => abrirFavorito(i));
+    const del = document.createElement('button'); del.className = 'fav-del'; del.textContent = '×';
+    del.addEventListener('click', (e) => { e.stopPropagation(); eliminarFav(i); });
+    card.appendChild(icon); card.appendChild(info); card.appendChild(del);
     list.appendChild(card);
   });
 }
 
 function abrirFavorito(idx) {
-  const favs = getFavs();
-  const fav = favs[idx];
+  const fav = getFavs()[idx];
   if (!fav) return;
-  const s = fav.state;
-  const lineaFav = (s && s.linea) ? s.linea : fav.key.split('|')[0];
-  // Aplicar estado
-  tipoDia = s.tipoDia;
-  direccion = s.direccion;
-  origenIdx = parseInt(s.origenIdx);
-  // Navegar
-  irAHorarios(lineaFav);
-  // Aplicar UI después de render
+  const v = favViajeActual(fav);
+  irAHorarios(v.linea); // setea tipoDia de HOY, dirección default y renderiza
   setTimeout(() => {
-    document.getElementById('btnLabSab').classList.toggle('active', tipoDia==='labsab');
-    document.getElementById('btnDomFer').classList.toggle('active', tipoDia==='domfer');
-    document.getElementById('btnHaciaFinal').classList.toggle('active', direccion==='haciafinal');
-    document.getElementById('btnHaciaRetiro').classList.toggle('active', direccion==='haciaretiro');
+    direccion = v.direccion;
+    document.getElementById('btnHaciaFinal').classList.toggle('active', direccion === 'haciafinal');
+    document.getElementById('btnHaciaRetiro').classList.toggle('active', direccion !== 'haciafinal');
     updateDirLabels();
     poblarOrigen();
-    document.getElementById('selOrigen').value = origenIdx;
+    document.getElementById('selOrigen').value = v.origenIdx;
+    origenIdx = v.origenIdx;
+    if (typeof actualizarTriggerOrigen === 'function') actualizarTriggerOrigen();
     poblarDestino();
-    if (s.destinoIdx !== '') {
-      document.getElementById('selDestino').value = s.destinoIdx;
-    }
+    document.getElementById('selDestino').value = String(v.destinoIdx);
     render();
     updateFavBtn();
-  }, 50);
+  }, 60);
 }
 
 function eliminarFav(idx) {
   let favs = getFavs();
   favs.splice(idx, 1);
   saveFavs(favs);
-  renderFavs();
+  renderFavs(); renderHero();
   showToast('Favorito eliminado');
+}
+
+// ═══════════════════════════════════════════════════════
+// HERO — MODO COMMUTER
+// Próximo tren del favorito, en el Home, sin un solo tap.
+// Con 2+ favoritos muestra el que sale antes.
+// ═══════════════════════════════════════════════════════
+function renderHero() {
+  const el = document.getElementById('heroCard');
+  if (!el) return;
+  const favs = getFavs();
+  if (!favs.length) { el.style.display = 'none'; return; }
+  let mejor = null, mejorIdx = -1;
+  favs.forEach((f, i) => {
+    const p = proximoTrenFav(f);
+    if (!p) return;
+    const score = (p.manana ? 100000 : 0) + p.mOrigen;
+    if (mejor === null || score < mejor.score) { mejor = Object.assign({ score }, p); mejorIdx = i; }
+  });
+  if (mejor === null) { el.style.display = 'none'; return; }
+  const cfg = LINEAS_CONFIG[mejor.viaje.linea];
+  const color = (cfg && cfg.color) || '#e8c547';
+  el.innerHTML = '';
+  const lab = document.createElement('div');
+  lab.className = 'hero-label';
+  lab.textContent = 'Tu próximo tren';
+  const route = document.createElement('div');
+  route.className = 'hero-route';
+  route.textContent = mejor.viaje.origenNombre + ' → ' + mejor.viaje.destinoNombre;
+  el.appendChild(lab); el.appendChild(route);
+  if (mejor.manana) {
+    const m = document.createElement('div');
+    m.className = 'hero-manana';
+    m.textContent = 'Mañana a las ' + minsToStr(mejor.mOrigen % 1440) + ' — hoy ya no hay servicios';
+    el.appendChild(m);
+  } else {
+    const now = nowMins();
+    const main = document.createElement('div'); main.className = 'hero-main';
+    const time = document.createElement('div'); time.className = 'hero-time';
+    time.style.color = color;
+    time.textContent = minsToStr(mejor.mOrigen % 1440);
+    const eta = document.createElement('div'); eta.className = 'hero-eta';
+    eta.textContent = etaMinsLabel(mejor.mOrigen - now);
+    main.appendChild(time); main.appendChild(eta);
+    el.appendChild(main);
+    const lleg = document.createElement('div');
+    lleg.className = 'hero-llegada';
+    lleg.textContent = 'Llegás a ' + mejor.viaje.destinoNombre + ' ' + minsToStr(mejor.mDestino % 1440);
+    el.appendChild(lleg);
+  }
+  el.style.borderLeftColor = color;
+  el.onclick = () => abrirFavorito(mejorIdx);
+  el.style.display = 'block';
 }
 
 // ─────────────────────────────────────────────
@@ -2868,7 +3133,7 @@ function updateDirLabels() {
 // HISTORIAL DE BÚSQUEDAS RECIENTES
 // ─────────────────────────────────────────────
 const HISTORIAL_KEY = 'anden_historial';
-const HISTORIAL_MAX = 5;
+const HISTORIAL_MAX = 2;
 
 function guardarHistorial() {
   const cfg = LINEAS_CONFIG[lineaActual];
@@ -3075,7 +3340,7 @@ setInterval(updateClocks,1000);
 let _lastRenderMin = -1;
 setInterval(() => {
   const m = nowMins();
-  if(m !== _lastRenderMin) { _lastRenderMin = m; render(); }
+  if(m !== _lastRenderMin) { _lastRenderMin = m; render(); renderHero(); }
 }, 60000);
 
 // (init movido al final, después de LINEAS_CONFIG)
@@ -3112,6 +3377,7 @@ function volverHome() {
   currentNav = 'home';
   cerrarFavSuggest();
   renderFavs();
+  renderHero();
   renderHistorial();
   const hist = getHistorial();
   const title = document.getElementById('histSectionTitle');
@@ -8631,6 +8897,14 @@ function toggleSubteCard() {
   }
 }
 
+// Vigencia de horarios oficiales por línea (de los PDFs de Trenes Argentinos)
+const VIGENCIAS = {
+  roca_th:  { f: '04/02/2026' },
+  roca_uni: { f: '15/07/2024', warn: true },
+  bs_gc:    { f: '25/05/2026' },
+  bs_sb:    { f: '25/05/2026' },
+};
+
 function irAHorarios(linea) {
   lineaActual = linea || 'sm';
   Object.values(SCREENS).forEach(id => document.getElementById(id).classList.remove('active'));
@@ -8647,6 +8921,14 @@ function irAHorarios(linea) {
   document.getElementById('rangoToggleLabel').textContent = 'Filtrar por rango horario';
   updateDirLabels();
   poblarOrigen();
+  // Vigencia de horarios de esta línea
+  const vb = document.getElementById('vigenciaBar');
+  if(vb) {
+    const vig = VIGENCIAS[lineaActual];
+    if(vig && vig.warn) vb.innerHTML = `Horarios oficiales · vigencia ${vig.f} <span class="vig-warn">⚠ pueden estar desactualizados</span>`;
+    else if(vig) vb.textContent = `Horarios oficiales · vigencia ${vig.f}`;
+    else vb.textContent = lineaActual.indexOf('subte')===0 ? 'Frecuencias oficiales Emova' : 'Horarios oficiales de Trenes Argentinos';
+  }
   render();
   // Esperar al siguiente frame para que el browser procese display:flex antes de scrollear
   requestAnimationFrame(() => { window.scrollTo(0, 0); const s = document.getElementById('screenHorarios'); if(s) s.scrollTop = 0; });
@@ -8783,16 +9065,34 @@ function render() {
     let etaStr=null, etaMins=null;
     if(destinoIdx>=0) {
       const hDest = tren.h[hIdx(destinoIdx)];
-      if(hDest) {
-        let mDest=toMins(hDest);
-        if(mDest<120&&mOrigen>1200) mDest+=1440;
-        etaStr=minsToStr(mDest);
-        etaMins=mDest-now;
-      }
+      if(!hDest) return;                    // no para en tu destino → no te sirve
+      let mDest=toMins(hDest);
+      if(mDest<120&&mOrigen>1200) mDest+=1440;
+      if(mDest<=mOrigen) return;            // llega "antes" de salir → sentido inválido
+      etaStr=minsToStr(mDest);
+      etaMins=mDest-now;
     }
     resultados.push({tren,mOrigen,ramal,destFinal,etaStr,etaMins});
   });
   resultados.sort((a,b)=>a.mOrigen-b.mOrigen);
+
+  // Último tren del día desde esta estación (independiente de la ventana de 4h)
+  const ultimoBar = document.getElementById('ultimoTrenBar');
+  if(ultimoBar) {
+    let ultimo = null;
+    trenes.forEach(tren => {
+      const hO = tren.h[hIdx(origenIdx)];
+      if(!hO) return;
+      if(destinoIdx>=0 && !tren.h[hIdx(destinoIdx)]) return;
+      let mT = toMins(hO);
+      if(mT < 180) mT += 1440; // madrugada cuenta como "después de medianoche"
+      if(ultimo===null || mT>ultimo) ultimo = mT;
+    });
+    if(ultimo!==null && !modoRango) {
+      ultimoBar.style.display='block';
+      ultimoBar.innerHTML = `🌙 Último de hoy: <strong>${minsToStr(ultimo%1440)}</strong>`;
+    } else { ultimoBar.style.display='none'; }
+  }
 
   const infoBar=document.getElementById('infoBar');
   const termFinal = direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta;
@@ -9339,7 +9639,22 @@ function reportarHorario() {
 // ─────────────────────────────────────────────
 let _pickerEstaciones = [];
 
+let _pickerTarget = 'origen';      // 'origen' | 'destino'
+let _pickerDestinoCb = null;       // callback al elegir destino (flujo de guardar favorito)
+
 function abrirPickerOrigen() {
+  _pickerTarget = 'origen';
+  _pickerDestinoCb = null;
+  _abrirPicker('¿Desde dónde salís?');
+}
+
+function abrirPickerDestino(cb) {
+  _pickerTarget = 'destino';
+  _pickerDestinoCb = cb || null;
+  _abrirPicker('¿Hasta dónde viajás?');
+}
+
+function _abrirPicker(titulo) {
   const cfg = LINEAS_CONFIG[lineaActual];
   if(!cfg) return;
   _pickerEstaciones = cfg.estaciones();
@@ -9347,6 +9662,8 @@ function abrirPickerOrigen() {
   const overlay = document.getElementById('stationPickerOverlay');
   const sheet   = document.getElementById('stationPickerSheet');
   const search  = document.getElementById('stationSearch');
+  const title   = document.getElementById('pickerTitle');
+  if(title) { title.textContent = titulo; title.style.display = 'block'; }
 
   overlay.style.display = 'block';
   sheet.style.display   = 'flex';
@@ -9356,8 +9673,15 @@ function abrirPickerOrigen() {
   sheet.style.transform = 'translateY(0)';
 
   search.value = '';
-  renderPickerItems(_pickerEstaciones);
+  renderPickerItems(_pickerListaVisible());
   setTimeout(() => search.focus(), 350);
+}
+
+// Para destino: solo estaciones válidas según la dirección actual
+function _pickerListaVisible() {
+  if(_pickerTarget !== 'destino') return _pickerEstaciones;
+  if(direccion === 'haciafinal') return _pickerEstaciones.slice(origenIdx + 1);
+  return _pickerEstaciones.slice(0, origenIdx).reverse();
 }
 
 function cerrarPickerOrigen() {
@@ -9365,6 +9689,12 @@ function cerrarPickerOrigen() {
   const sheet   = document.getElementById('stationPickerSheet');
   overlay.style.opacity = '0';
   sheet.style.transform = 'translateY(100%)';
+  // Si era el flujo de guardar favorito y se cerró sin elegir → cancelar
+  if(_pickerTarget === 'destino' && _pickerDestinoCb) {
+    _pickerDestinoCb = null;
+    showToast('Elegí hasta dónde viajás para guardar el favorito');
+  }
+  _pickerTarget = 'origen';
   setTimeout(() => {
     overlay.style.display = 'none';
     sheet.style.display   = 'none';
@@ -9372,19 +9702,25 @@ function cerrarPickerOrigen() {
 }
 
 function filtrarEstaciones(q) {
+  const base = _pickerListaVisible();
   const filtradas = q.trim() === ''
-    ? _pickerEstaciones
-    : _pickerEstaciones.filter(e => e.toLowerCase().includes(q.toLowerCase()));
+    ? base
+    : base.filter(e => e.toLowerCase().includes(q.toLowerCase()));
   renderPickerItems(filtradas);
 }
 
 function renderPickerItems(lista) {
   const cont = document.getElementById('stationList');
   cont.innerHTML = '';
+  let selIdx = origenIdx;
+  if(_pickerTarget === 'destino') {
+    const dv = document.getElementById('selDestino').value;
+    selIdx = dv === '' ? -1 : parseInt(dv);
+  }
   lista.forEach(nombre => {
     const idx = _pickerEstaciones.indexOf(nombre);
     const div = document.createElement('div');
-    div.className = 'station-list-item' + (idx === origenIdx ? ' selected' : '');
+    div.className = 'station-list-item' + (idx === selIdx ? ' selected' : '');
     div.textContent = nombre;
     div.onclick = () => seleccionarEstacion(idx, nombre);
     cont.appendChild(div);
@@ -9392,6 +9728,19 @@ function renderPickerItems(lista) {
 }
 
 function seleccionarEstacion(idx, nombre) {
+  if(_pickerTarget === 'destino') {
+    // Selección de DESTINO (flujo favorito / ETA)
+    // Capturar el callback ANTES de cerrar: cerrarPickerOrigen() lo anula
+    const cb = _pickerDestinoCb;
+    _pickerDestinoCb = null;
+    _pickerTarget = 'origen';
+    document.getElementById('selDestino').value = String(idx);
+    cerrarPickerOrigen();
+    render();
+    updateFavBtn();
+    if(cb) cb(idx);
+    return;
+  }
   const selOrigen = document.getElementById('selOrigen');
   selOrigen.value = idx;
   origenIdx = idx;
@@ -9492,7 +9841,7 @@ function programarNotifProactivaFav() {
   const cfg = getNotifFavConfig();
   const favs = getFavs();
   if(!favs.length) return;
-  if(Notification.permission !== 'granted') return;
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
 
   const now = nowMins();
 
@@ -9500,49 +9849,19 @@ function programarNotifProactivaFav() {
     const favCfg = cfg[fav.key];
     if(!favCfg || !favCfg.activo) return;
 
-    const linea = fav.state ? fav.key.split('_')[0] : null;
-    if(!linea) return;
-    const lineaCfg = LINEAS_CONFIG[linea];
-    if(!lineaCfg) return;
+    const p = proximoTrenFav(fav);
+    if(!p || p.manana) return;
 
-    const estado = fav.state;
-    // Obtener los trenes del día actual
-    const dow = new Date().getDay();
-    const td = dow === 0 ? 'domfer' : (dow === 6 ? 'sab' : 'labsab');
-    const trenes = lineaCfg.getData(td, estado.direccion || 'haciafinal');
-    if(!trenes || !trenes.length) return;
-
-    const origenI = parseInt(estado.origenIdx) || 0;
-
-    // Encontrar el próximo tren
-    let proximoMin = null;
-    trenes.forEach(tren => {
-      const hOr = tren.h[origenI];
-      if(!hOr) return;
-      let mT = hOr[0]*60 + hOr[1];
-      if(mT < 300 && now > 1200) mT += 1440;
-      if(mT >= now) {
-        if(proximoMin === null || mT < proximoMin) proximoMin = mT;
-      }
-    });
-
-    if(proximoMin === null) return;
-
-    const msHastaNotif = (proximoMin - now - favCfg.minAntes) * 60 * 1000;
+    const msHastaNotif = (p.mOrigen - now - favCfg.minAntes) * 60 * 1000;
     if(msHastaNotif <= 0 || msHastaNotif > 4 * 60 * 60 * 1000) return; // Solo si es en <4h
 
     const tid = `fav_${fav.key}`;
-    // No duplicar si ya hay un timer activo para este fav
-    if(notifTimers[tid]) return;
+    if(notifTimers[tid]) return; // No duplicar
 
-    const ests = lineaCfg.estaciones();
-    const origen = ests[origenI] || '';
-    const terminal = estado.direccion === 'haciafinal' ? lineaCfg.terminalIda : lineaCfg.terminalVta;
-    const horaStr = `${String(proximoMin%1440 < 0 ? 0 : Math.floor((proximoMin%1440)/60)).padStart(2,'0')}:${String((proximoMin%1440)%60).padStart(2,'0')}`;
-
+    const horaStr = minsToStr(p.mOrigen % 1440);
     notifTimers[tid] = setTimeout(() => {
       new Notification(`🚉 Tu tren en ${favCfg.minAntes} min`, {
-        body: `${origen} → ${terminal} · Sale a las ${horaStr}`,
+        body: `${p.viaje.origenNombre} → ${p.viaje.destinoNombre} · Sale a las ${horaStr}`,
         icon: '/favicon.ico', tag: tid,
       });
       delete notifTimers[tid];
@@ -9784,6 +10103,7 @@ if (new Date().getDay()===0) tipoDia='domfer';
 poblarOrigen();
 render();
 renderFavs();
+renderHero();
 renderHistorial();
 // Ocultar sección historial si no hay entradas
 (function() {
