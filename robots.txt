@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://heywillia.github.io/Anden-ar/sitemap.xml
