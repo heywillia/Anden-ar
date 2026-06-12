@@ -156,7 +156,7 @@ ${breadcrumbLd ? `<script type="application/ld+json">${breadcrumbLd}</script>` :
 <body>
 <nav class="bc">${breadcrumbHtml}</nav>
 ${body}
-<footer>Andén.ar — horarios de trenes y subtes del AMBA, gratis y sin conexión. · <a href="${BASE_URL}/horarios/">Todas las líneas</a> · <a href="${APP_URL}">Abrir la app</a></footer>
+<footer>Andén.ar — horarios de trenes y subtes del AMBA, gratis y sin conexión. · <a href="${BASE_URL}/horarios/">Todas las líneas</a> · <a href="${APP_URL}">Abrir la app</a> · <a href="${BASE_URL}/privacidad/">Privacidad</a></footer>
 </body>
 </html>`;
 }
