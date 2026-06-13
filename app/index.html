@@ -983,6 +983,17 @@ body.tema-noche {
 }
 .fb-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,.08); }
 
+/* ── Estado de línea (chips + puntos) ── */
+.lb-normal { background:rgba(52,211,153,.16); color:#34d399; }
+.lb-demoras { background:rgba(232,197,71,.18); color:#e8c547; }
+.lb-parcial { background:rgba(232,197,71,.18); color:#e8c547; }
+.lb-corte { background:rgba(229,90,90,.18); color:#e55a5a; }
+.lb-prog { background:rgba(255,255,255,.07); color:var(--muted); }
+.linea-nombre { color:#fff; }
+.ramal-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; flex-shrink:0; vertical-align:middle; }
+.ramal-dot.ok { background:#34d399; }
+.ramal-dot.warn { background:#e8c547; }
+.ramal-dot.down { background:#e55a5a; }
 .app-footer { text-align:center; font-size:11px; color:var(--muted); padding:20px 16px calc(80px + env(safe-area-inset-bottom,0px)); }
 .app-footer a { color:var(--muted); text-decoration:underline; }
 /* ── FAQ ── */
@@ -1591,7 +1602,8 @@ textarea::placeholder { color: var(--muted); }
 
   </div>
 
-\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
+  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>
+</div>
 <!-- ══════════════════════════════════
      PANTALLA 2: HORARIOS
 ══════════════════════════════════ -->
@@ -1701,7 +1713,7 @@ textarea::placeholder { color: var(--muted); }
     <div class="lineas-group-title">🚆 Trenes — Trenes Argentinos</div>
     <div class="lineas-list">
 
-      <div class="linea-row disponible" onclick="irAHorarios('sm')" style="--lc:#e8c547">
+      <div data-linea="sm" class="linea-row disponible" onclick="irAHorarios('sm')" style="--lc:#e8c547">
         <div class="linea-dot" style="background:#e8c547;color:#0d0f14">SM</div>
         <div class="linea-info">
           <div class="linea-nombre">San Martín</div>
@@ -1710,14 +1722,14 @@ textarea::placeholder { color: var(--muted); }
         <div class="linea-badge lb-activo">activo</div>
       </div>
       <!-- Mitre: header + sub-filas -->
-      <div class="linea-row linea-grupo-header" style="--lc:#f87171">
+      <div class="linea-row linea-grupo-header" data-grupo="mitre" style="--lc:#f87171">
         <div class="linea-dot" style="background:#f87171;color:#fff">MI</div>
         <div class="linea-info">
           <div class="linea-nombre">Mitre</div>
           <div class="linea-tramo">4 ramales disponibles</div>
         </div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_rt')" style="--lc:#f87171">
+      <div data-linea="mitre_rt" class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_rt')" style="--lc:#f87171">
         <div class="linea-dot linea-dot-sub" style="background:#f87171;color:#fff">RT</div>
         <div class="linea-info">
           <div class="linea-nombre">Retiro – Tigre</div>
@@ -1725,7 +1737,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_rjb')" style="--lc:#f87171">
+      <div data-linea="mitre_rjb" class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_rjb')" style="--lc:#f87171">
         <div class="linea-dot linea-dot-sub" style="background:#f87171;color:#fff">JB</div>
         <div class="linea-info">
           <div class="linea-nombre">Retiro – J.L. Suárez / Bmé. Mitre</div>
@@ -1733,7 +1745,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_vz')" style="--lc:#f87171">
+      <div data-linea="mitre_vz" class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_vz')" style="--lc:#f87171">
         <div class="linea-dot linea-dot-sub" style="background:#f87171;color:#fff">VZ</div>
         <div class="linea-info">
           <div class="linea-nombre">Villa Ballester – Zárate</div>
@@ -1741,7 +1753,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_vc')" style="--lc:#f87171">
+      <div data-linea="mitre_vc" class="linea-row linea-sub disponible" onclick="irAHorarios('mitre_vc')" style="--lc:#f87171">
         <div class="linea-dot linea-dot-sub" style="background:#f87171;color:#fff">VC</div>
         <div class="linea-info">
           <div class="linea-nombre">Victoria – Capilla del Señor</div>
@@ -1750,14 +1762,14 @@ textarea::placeholder { color: var(--muted); }
         <div class="linea-badge lb-activo">activo</div>
       </div>
       <!-- Sarmiento: header + sub-filas -->
-      <div class="linea-row linea-grupo-header" style="--lc:#a78bfa">
+      <div class="linea-row linea-grupo-header" data-grupo="sm_" style="--lc:#a78bfa">
         <div class="linea-dot" style="background:#a78bfa;color:#fff">SR</div>
         <div class="linea-info">
           <div class="linea-nombre" style="color:#a78bfa">Sarmiento</div>
           <div class="linea-tramo">Once · múltiples ramales</div>
         </div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('sm_om')" style="--lc:#a78bfa">
+      <div data-linea="sm_om" class="linea-row linea-sub disponible" onclick="irAHorarios('sm_om')" style="--lc:#a78bfa">
         <div class="linea-sub-dot" style="background:#a78bfa">OM</div>
         <div class="linea-info">
           <div class="linea-nombre">Once – Moreno</div>
@@ -1765,7 +1777,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('sm_mm')" style="--lc:#a78bfa">
+      <div data-linea="sm_mm" class="linea-row linea-sub disponible" onclick="irAHorarios('sm_mm')" style="--lc:#a78bfa">
         <div class="linea-sub-dot" style="background:#a78bfa">MM</div>
         <div class="linea-info">
           <div class="linea-nombre">Moreno – Mercedes / Luján</div>
@@ -1773,7 +1785,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('sm_ml')" style="--lc:#a78bfa">
+      <div data-linea="sm_ml" class="linea-row linea-sub disponible" onclick="irAHorarios('sm_ml')" style="--lc:#a78bfa">
         <div class="linea-sub-dot" style="background:#a78bfa">ML</div>
         <div class="linea-info">
           <div class="linea-nombre">Merlo – Las Heras</div>
@@ -1782,14 +1794,14 @@ textarea::placeholder { color: var(--muted); }
         <div class="linea-badge lb-activo">activo</div>
       </div>
       <!-- Roca: header agrupador + sub-filas indentadas -->
-      <div class="linea-row linea-grupo-header" style="--lc:#f97316">
+      <div class="linea-row linea-grupo-header" data-grupo="roca" style="--lc:#f97316">
         <div class="linea-dot" style="background:#f97316;color:#fff">RO</div>
         <div class="linea-info">
           <div class="linea-nombre">Roca</div>
           <div class="linea-tramo">Pza. Constitución · múltiples ramales</div>
         </div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_lp')" style="--lc:#f97316">
+      <div data-linea="roca_lp" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_lp')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">LP</div>
         <div class="linea-info">
           <div class="linea-nombre">La Plata</div>
@@ -1797,7 +1809,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_gk')" style="--lc:#f97316">
+      <div data-linea="roca_gk" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_gk')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">GK</div>
         <div class="linea-info">
           <div class="linea-nombre">Glew / Alejandro Korn</div>
@@ -1805,7 +1817,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_ez')" style="--lc:#f97316">
+      <div data-linea="roca_ez" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_ez')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">EZ</div>
         <div class="linea-info">
           <div class="linea-nombre">Ezeiza / Cañuelas</div>
@@ -1813,7 +1825,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_bq')" style="--lc:#f97316">
+      <div data-linea="roca_bq" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_bq')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">BQ</div>
         <div class="linea-info">
           <div class="linea-nombre">Bosques vía Quilmes</div>
@@ -1821,7 +1833,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_bt')" style="--lc:#f97316">
+      <div data-linea="roca_bt" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_bt')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">BT</div>
         <div class="linea-info">
           <div class="linea-nombre">Bosques vía Temperley</div>
@@ -1829,7 +1841,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_th')" style="--lc:#f97316">
+      <div data-linea="roca_th" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_th')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">TH</div>
         <div class="linea-info">
           <div class="linea-nombre">Temperley – Haedo</div>
@@ -1837,7 +1849,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('roca_uni')" style="--lc:#f97316">
+      <div data-linea="roca_uni" class="linea-row linea-sub disponible" onclick="irAHorarios('roca_uni')" style="--lc:#f97316">
         <div class="linea-sub-dot" style="background:#f97316">UNI</div>
         <div class="linea-info">
           <div class="linea-nombre">Tren Universitario</div>
@@ -1845,7 +1857,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('bn')" style="--lc:#34d399">
+      <div data-linea="bn" class="linea-row disponible" onclick="irAHorarios('bn')" style="--lc:#34d399">
         <div class="linea-dot" style="background:#34d399;color:#0d0f14">BN</div>
         <div class="linea-info">
           <div class="linea-nombre">Belgrano Norte</div>
@@ -1853,14 +1865,14 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-grupo-header" style="--lc:#1d4ed8">
+      <div class="linea-row linea-grupo-header" data-grupo="bs" style="--lc:#1d4ed8">
         <div class="linea-dot" style="background:#1d4ed8;color:#fff">BS</div>
         <div class="linea-info">
           <div class="linea-nombre">Belgrano Sur</div>
           <div class="linea-tramo">G.Catán → Marcos Paz / Lozano · 2 ramales</div>
         </div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('bs_gc')" style="--lc:#1d4ed8">
+      <div data-linea="bs_gc" class="linea-row linea-sub disponible" onclick="irAHorarios('bs_gc')" style="--lc:#1d4ed8">
         <div class="linea-sub-dot" style="background:#1d4ed8">GC</div>
         <div class="linea-info">
           <div class="linea-nombre">González Catán / Marcos Paz</div>
@@ -1868,7 +1880,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row linea-sub disponible" onclick="irAHorarios('bs_sb')" style="--lc:#1d4ed8">
+      <div data-linea="bs_sb" class="linea-row linea-sub disponible" onclick="irAHorarios('bs_sb')" style="--lc:#1d4ed8">
         <div class="linea-sub-dot" style="background:#1d4ed8">SB</div>
         <div class="linea-info">
           <div class="linea-nombre">Sáenz – Tapiales – M.C.Gral.Belgrano</div>
@@ -1876,7 +1888,7 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('ur')" style="--lc:#60a5fa">
+      <div data-linea="ur" class="linea-row disponible" onclick="irAHorarios('ur')" style="--lc:#60a5fa">
         <div class="linea-dot" style="background:#60a5fa;color:#fff">UR</div>
         <div class="linea-info">
           <div class="linea-nombre">Urquiza</div>
@@ -1891,32 +1903,32 @@ textarea::placeholder { color: var(--muted); }
   <div class="lineas-group">
     <div class="lineas-group-title">🚇 Subte — Metrovías</div>
     <div class="lineas-list">
-      <div class="linea-row disponible" onclick="irAHorarios('subte_a')" style="--lc:#5ba4d4">
+      <div data-linea="subte_a" class="linea-row disponible" onclick="irAHorarios('subte_a')" style="--lc:#5ba4d4">
         <div class="linea-dot" style="background:#5ba4d4;color:#fff;font-size:22px;font-weight:900">A</div>
         <div class="linea-info"><div class="linea-nombre">Línea A</div><div class="linea-tramo">San Pedrito ↔ Plaza de Mayo</div></div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('subte_b')" style="--lc:#d4003d">
+      <div data-linea="subte_b" class="linea-row disponible" onclick="irAHorarios('subte_b')" style="--lc:#d4003d">
         <div class="linea-dot" style="background:#d4003d;color:#fff;font-size:22px;font-weight:900">B</div>
         <div class="linea-info"><div class="linea-nombre">Línea B</div><div class="linea-tramo">J.M. de Rosas ↔ L.N. Alem</div></div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('subte_c')" style="--lc:#254aa5">
+      <div data-linea="subte_c" class="linea-row disponible" onclick="irAHorarios('subte_c')" style="--lc:#254aa5">
         <div class="linea-dot" style="background:#254aa5;color:#fff;font-size:22px;font-weight:900">C</div>
         <div class="linea-info"><div class="linea-nombre">Línea C</div><div class="linea-tramo">Constitución ↔ Retiro</div></div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('subte_d')" style="--lc:#00a651">
+      <div data-linea="subte_d" class="linea-row disponible" onclick="irAHorarios('subte_d')" style="--lc:#00a651">
         <div class="linea-dot" style="background:#00a651;color:#fff;font-size:22px;font-weight:900">D</div>
         <div class="linea-info"><div class="linea-nombre">Línea D</div><div class="linea-tramo">Congreso de Tucumán ↔ Catedral</div></div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('subte_e')" style="--lc:#a05ca5">
+      <div data-linea="subte_e" class="linea-row disponible" onclick="irAHorarios('subte_e')" style="--lc:#a05ca5">
         <div class="linea-dot" style="background:#a05ca5;color:#fff;font-size:22px;font-weight:900">E</div>
         <div class="linea-info"><div class="linea-nombre">Línea E</div><div class="linea-tramo">Retiro ↔ P. de los Virreyes</div></div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row disponible" onclick="irAHorarios('subte_h')" style="--lc:#f5a800">
+      <div data-linea="subte_h" class="linea-row disponible" onclick="irAHorarios('subte_h')" style="--lc:#f5a800">
         <div class="linea-dot" style="background:#f5a800;color:#fff;font-size:22px;font-weight:900">H</div>
         <div class="linea-info"><div class="linea-nombre">Línea H</div><div class="linea-tramo">Hospitales ↔ J. Lanteri</div></div>
         <div class="linea-badge lb-activo">activo</div>
@@ -1924,7 +1936,8 @@ textarea::placeholder { color: var(--muted); }
     </div>
   </div>
 
-\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
+  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>
+</div>
 
 
 <!-- ══════════════════════════════════
@@ -1994,7 +2007,8 @@ textarea::placeholder { color: var(--muted); }
       </a>
     </div>
   </div>
-\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
+  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>
+</div>
 
 
 <!-- TOAST -->
@@ -3413,6 +3427,7 @@ function navTo(dest) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('nav-' + dest).classList.add('active');
   currentNav = dest;
+  if(dest === 'lineas') { try { actualizarChipsLineas(); } catch(e) {} }
   window.scrollTo(0, 0); const _activeScreen = document.querySelector('.screen.active'); if(_activeScreen) _activeScreen.scrollTop = 0;
 }
 
@@ -9886,6 +9901,7 @@ function initGruposLineas() {
   });
 }
 initGruposLineas();
+try { actualizarChipsLineas(); } catch(e) {}
 
 // ─────────────────────────────────────────────
 // ESTADO DEL SERVICIO — alertas oficiales en vivo
@@ -9904,7 +9920,114 @@ function _estadoHace(ts) {
   return 'hace ' + h + ' h';
 }
 
+let _estadoData = null;
+
+// Mapea el nombre de línea de una alerta (ej. "Subte H") a su key interna (subte_h)
+function _keyDeAlerta(linea) {
+  const t = (linea || '').toLowerCase();
+  const m = t.match(/subte\s+([a-eh])/);
+  if(m) return 'subte_' + m[1];
+  return null; // trenes: la API no da estado, no se mapean
+}
+
+// Severidad de una alerta para una línea: 'corte' | 'demoras'
+function _nivelAlerta(a) {
+  if(a.sev === 'alta') return 'corte';
+  return 'demoras';
+}
+
+// Estado calculado por línea de subte: {subte_a:'demoras', ...}
+function estadoPorLinea() {
+  const out = {};
+  if(!_estadoData || !Array.isArray(_estadoData.alertas)) return out;
+  const edad = Date.now() - (_estadoData.ts || 0);
+  if(edad > 24 * 3600 * 1000) return out; // datos viejos: tratar como sin info
+  _estadoData.alertas.forEach(a => {
+    const k = _keyDeAlerta(a.linea);
+    if(!k) return;
+    const niv = _nivelAlerta(a);
+    // corte pisa a demoras
+    if(out[k] !== 'corte') out[k] = niv;
+  });
+  return out;
+}
+
+// Actualiza chips y puntos de la pantalla Líneas según el estado vivo
+function actualizarChipsLineas() {
+  const est = estadoPorLinea();
+  const CHIP = {
+    normal:  ['lb-normal','Normal'],
+    demoras: ['lb-demoras','Demoras'],
+    corte:   ['lb-corte','Sin servicio'],
+  };
+  // 1) filas con data-linea (subtes + trenes sueltos + sub-ramales)
+  document.querySelectorAll('#screenLineas .linea-row[data-linea]').forEach(row => {
+    const key = row.getAttribute('data-linea');
+    const esSubte = key.indexOf('subte_') === 0;
+    const badge = row.querySelector('.linea-badge');
+    const dotSub = row.querySelector('.linea-sub-dot');
+
+    if(esSubte) {
+      const e = est[key] || 'normal';
+      if(badge) {
+        badge.className = 'linea-badge ' + CHIP[e][0];
+        badge.textContent = CHIP[e][1];
+      }
+    } else {
+      // tren: chip "Activo" sobrio (sin datos en vivo)
+      if(badge && !row.classList.contains('linea-sub')) {
+        badge.className = 'linea-badge lb-activo';
+        badge.textContent = 'activo';
+      }
+    }
+    // punto en sub-ramales (verde salvo que la API diga lo contrario para subtes)
+    if(dotSub) {
+      // los sub-ramales de tren no tienen estado vivo → verde
+      // (sólo subtes tendrían punto distinto, pero los subtes no son sub-filas)
+    }
+  });
+
+  // 2) sub-ramales de tren: agregar punto verde al inicio del nombre si no lo tienen
+  document.querySelectorAll('#screenLineas .linea-row.linea-sub[data-linea]').forEach(sub => {
+    const info = sub.querySelector('.linea-nombre');
+    if(info && !info.querySelector('.ramal-dot')) {
+      const dot = document.createElement('span');
+      dot.className = 'ramal-dot ok';
+      info.insertBefore(dot, info.firstChild);
+    }
+  });
+
+  // 3) headers de grupo: chip-resumen
+  document.querySelectorAll('#screenLineas .linea-grupo-header[data-grupo]').forEach(header => {
+    // juntar las sub-filas del grupo
+    const subs = [];
+    let n = header.nextElementSibling;
+    while(n && n.classList.contains('linea-sub')) { subs.push(n); n = n.nextElementSibling; }
+    // resumen: si algún sub tiene estado vivo de corte/demoras lo refleja; si no, Activo
+    let resumen = 'activo', clase = 'lb-activo';
+    // (los grupos actuales son todos de tren → sin estado vivo → Activo)
+    // estructura lista para el día que los trenes tengan datos:
+    const niveles = subs.map(s => est[s.getAttribute('data-linea')]).filter(Boolean);
+    if(niveles.includes('corte')) { resumen = 'Parcial'; clase = 'lb-parcial'; }
+    else if(niveles.includes('demoras')) { resumen = 'Demoras'; clase = 'lb-demoras'; }
+    // colocar/actualizar el chip del header
+    let badge = header.querySelector('.linea-badge.grupo-chip');
+    if(!badge) {
+      badge = document.createElement('div');
+      badge.className = 'linea-badge grupo-chip';
+      // insertar antes del chevron si existe
+      const chev = header.querySelector('.linea-grupo-chevron');
+      if(chev) header.insertBefore(badge, chev); else header.appendChild(badge);
+    }
+    badge.classList.remove('lb-activo','lb-parcial','lb-demoras','lb-corte');
+    badge.classList.add(clase);
+    badge.textContent = resumen === 'activo' ? 'activo' : resumen;
+  });
+}
+
 function renderEstadoServicio(data, esCache) {
+  _estadoData = data || null;
+  try { actualizarChipsLineas(); } catch(e) {}
   const cont = document.getElementById('estadoServicio');
   if(!cont) return;
   const alertas = (data && Array.isArray(data.alertas)) ? data.alertas : [];
