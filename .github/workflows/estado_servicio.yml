@@ -1,0 +1,45 @@
+name: Estado del servicio
+
+on:
+  schedule:
+    # Cada 15 minutos, solo en horario de servicio (4:00–02:00 ART = 7:00–05:00 UTC)
+    - cron: "*/15 0-5,7-23 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estado-servicio
+  cancel-in-progress: true
+
+jobs:
+  estado:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Consultar alertas
+        env:
+          APITRANSPORTE_CLIENT_ID: ${{ secrets.APITRANSPORTE_CLIENT_ID }}
+          APITRANSPORTE_CLIENT_SECRET: ${{ secrets.APITRANSPORTE_CLIENT_SECRET }}
+        run: python estado_servicio.py
+
+      - name: Commitear si cambió
+        run: |
+          git config user.name "anden-bot"
+          git config user.email "actions@github.com"
+          git add estado.json || true
+          if git diff --cached --quiet; then
+            echo "Sin cambios."
+          else
+            git pull --rebase
+            git commit -m "Estado del servicio [skip ci]"
+            git push
+          fi
