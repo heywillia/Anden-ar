@@ -39,7 +39,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "Sin cambios."
           else
-            git pull --rebase
             git commit -m "Estado del servicio [skip ci]"
+            # sincronizar por si hubo otro commit mientras corría, sin perder el nuestro
+            git pull --rebase --autostash || true
             git push
           fi
