@@ -1,9 +1,9 @@
 {
- "ts": 1781319855542,
+ "ts": 1781333776697,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
+   "linea": "Subte B",
+   "texto": "Viernes y sábados horario extendido. Estaciones habilitadas en buenosaires.gob.ar",
    "sev": "media"
   },
   {
