@@ -397,6 +397,37 @@ section { position: relative; overflow: hidden; }
   flex-direction: column;
   gap: 12px;
 }
+.phone-screen.live {
+  padding: 0;
+  position: relative;
+}
+.phone-screen.live iframe {
+  width: 390px;
+  height: 750px;
+  border: 0;
+  margin-top: 26px;
+  transform: scale(0.6051);
+  transform-origin: top left;
+  background: #0d0f14;
+}
+.live-badge {
+  position: absolute;
+  top: -38px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 7px;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gris);
+  white-space: nowrap;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #34d399;
+  animation: livePulse 2s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(52,211,153,0); }
+}
+@media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
 
 .phone-topbar {
   display: flex;
@@ -1159,50 +1190,9 @@ footer a:hover { color: var(--hueso); }
       <div class="hero-phone">
         <div class="phone-glow"></div>
         <div class="phone-frame">
-          <div class="phone-screen">
-            <div class="phone-topbar">
-              <span class="phone-time">14:03</span>
-              <div class="phone-signal">
-                <span></span><span></span><span></span>
-              </div>
-            </div>
-            <div class="phone-header">
-              <div class="phone-linea">🚆 Tu línea</div>
-              <div class="phone-ruta">Tu estación <span>→ Destino</span></div>
-            </div>
-            <div class="phone-proximo">
-              <div>
-                <div class="proximo-label">Próximo tren</div>
-                <div class="proximo-hora">14:17</div>
-              </div>
-              <div class="proximo-eta">
-                <div class="eta-num">14</div>
-                <div class="eta-label">min</div>
-              </div>
-            </div>
-            <div class="phone-cards">
-              <div class="phone-card">
-                <div class="card-hora">14:48</div>
-                <div class="card-info">
-                  <div class="card-dest">→ Pilar</div>
-                  <div class="card-num">#3217</div>
-                </div>
-              </div>
-              <div class="phone-card">
-                <div class="card-hora">15:22</div>
-                <div class="card-info">
-                  <div class="card-dest">→ J.C. Paz</div>
-                  <div class="card-num">#3219</div>
-                </div>
-              </div>
-              <div class="phone-card" style="opacity:0.4;">
-                <div class="card-hora">15:55</div>
-                <div class="card-info">
-                  <div class="card-dest">→ Pilar</div>
-                  <div class="card-num">#3221</div>
-                </div>
-              </div>
-            </div>
+          <div class="live-badge"><span class="live-dot"></span>App real · en vivo · probala</div>
+          <div class="phone-screen live">
+            <iframe src="app/index.html" title="Andén.ar en vivo" loading="lazy"></iframe>
           </div>
         </div>
       </div>
@@ -1601,6 +1591,7 @@ footer a:hover { color: var(--hueso); }
   <div style="display:flex;gap:18px;flex-wrap:wrap;justify-content:center">
     <a href="https://heywillia.github.io/Anden-ar/horarios/">Horarios por estación</a>
     <a href="https://heywillia.github.io/Anden-ar/privacidad/">Privacidad</a>
+    <a href="https://cafecito.app/anden_ar" rel="noopener">☕ Apoyá el proyecto</a>
     <a href="mailto:info.anden.ar@gmail.com">info.anden.ar@gmail.com</a>
   </div>
 </footer>
