@@ -18,9 +18,15 @@ SALIDA        = "estado.json"
 BASE = "https://apitransporte.buenosaires.gob.ar"
 # Endpoints de alertas de servicio (GTFS-Realtime en JSON).
 # Se toleran 404/errores individuales: si un endpoint cambia, los demás siguen.
-ENDPOINTS = [
-    ("subte", f"{BASE}/subtes/serviceAlerts"),
-    ("tren",  f"{BASE}/trenes/serviceAlerts"),
+# El subte responde en /subtes/serviceAlerts (confirmado).
+# Para trenes la ruta no es obvia: probamos candidatos y usamos el que dé 200.
+ENDPOINTS_SUBTE = [f"{BASE}/subtes/serviceAlerts"]
+ENDPOINTS_TREN_CANDIDATOS = [
+    f"{BASE}/trenes/serviceAlerts",
+    f"{BASE}/trenes/serviceAlert",
+    f"{BASE}/trenes/alerts",
+    f"{BASE}/trenes/forecastGTFS/serviceAlerts",
+    f"{BASE}/transito/trenes/serviceAlerts",
 ]
 
 # Normalización de nombres de línea para mostrar en la app
@@ -53,25 +59,42 @@ def texto_es(translated):
             return (t.get("text") or "").strip()
     return (trs[0].get("text") or "").strip() if trs else ""
 
-def severidad(alert):
-    eff = (alert.get("effect") or "").upper()
-    if eff in ("NO_SERVICE", "REDUCED_SERVICE", "SIGNIFICANT_DELAYS", "STOP_MOVED"):
-        return "alta"
-    return "media"
+# Enum GTFS-RT Alert.Effect (la API puede mandar número o texto)
+EFFECT_ENUM = {
+    1: "NO_SERVICE", 2: "REDUCED_SERVICE", 3: "SIGNIFICANT_DELAYS",
+    4: "DETOUR", 5: "ADDITIONAL_SERVICE", 6: "MODIFIED_SERVICE",
+    7: "OTHER_EFFECT", 8: "UNKNOWN_EFFECT", 9: "STOP_MOVED",
+}
+SEV_ALTA = {"NO_SERVICE", "REDUCED_SERVICE", "SIGNIFICANT_DELAYS", "STOP_MOVED"}
 
-def fetch_alertas(tipo, url):
+def _effect_str(alert):
+    eff = alert.get("effect")
+    if eff is None:
+        return ""
+    if isinstance(eff, int):
+        return EFFECT_ENUM.get(eff, "")
+    return str(eff).upper()
+
+def severidad(alert):
+    return "alta" if _effect_str(alert) in SEV_ALTA else "media"
+
+def _url_con_creds(url):
     qs = urllib.parse.urlencode({
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
         "json": 1,
     })
+    return f"{url}?{qs}"
+
+def fetch_json(url):
     req = urllib.request.Request(
-        f"{url}?{qs}",
+        _url_con_creds(url),
         headers={"User-Agent": "AndenAr-Estado/1.0", "Accept": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=25) as r:
-        data = json.loads(r.read().decode("utf-8", errors="replace"))
+        return json.loads(r.read().decode("utf-8", errors="replace"))
 
+def parsear_alertas(tipo, data):
     entidades = data.get("entity") or data.get("Entity") or []
     alertas = []
     for ent in entidades:
@@ -103,24 +126,36 @@ def fetch_alertas(tipo, url):
         })
     return alertas
 
+def consultar(tipo, urls):
+    """Prueba los candidatos en orden; devuelve (alertas, ok). ok=False si todos fallan."""
+    ultimo_err = None
+    for url in urls:
+        try:
+            data = fetch_json(url)
+            alertas = parsear_alertas(tipo, data)
+            print(f"{tipo}: {len(alertas)} alerta(s) via {url.split(BASE)[-1]}" +
+                  (" — servicio normal" if not alertas else ""))
+            return alertas, True
+        except Exception as e:
+            ultimo_err = e
+            print(f"{tipo}: probé {url.split(BASE)[-1]} → {e}")
+    print(f"{tipo}: ningún endpoint respondió (último error: {ultimo_err})")
+    return [], False
+
 def main():
     if not CLIENT_ID or not CLIENT_SECRET:
         print("Credenciales de API Transporte no configuradas — feature dormida, salgo OK.")
         sys.exit(0)
 
-    todas, errores = [], []
-    for tipo, url in ENDPOINTS:
-        try:
-            alertas = fetch_alertas(tipo, url)
-            print(f"{tipo}: {len(alertas)} alerta(s)" + (" — servicio normal" if not alertas else ""))
-            todas.extend(alertas)
-        except Exception as e:
-            print(f"{tipo}: error — {e}")
-            errores.append(tipo)
+    todas = []
+    sub_alertas, sub_ok = consultar("subte", ENDPOINTS_SUBTE)
+    todas.extend(sub_alertas)
+    tren_alertas, tren_ok = consultar("tren", ENDPOINTS_TREN_CANDIDATOS)
+    todas.extend(tren_alertas)
 
-    if len(errores) == len(ENDPOINTS):
-        # Todos los endpoints fallaron: no pisar el estado anterior con datos vacíos.
-        print("Todos los endpoints fallaron; no se actualiza estado.json.")
+    if not sub_ok and not tren_ok:
+        # Ambos modos fallaron: no pisar el estado anterior con datos vacíos.
+        print("Ningún modo respondió; no se actualiza estado.json.")
         sys.exit(0)
 
     # dedup conservando orden (misma línea + mismo texto)
