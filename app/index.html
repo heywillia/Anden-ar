@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Andén.ar — Horarios de trenes BA</title>
 <meta name="description" content="Horarios de trenes y subtes en Buenos Aires. San Martín, Mitre, Roca, Sarmiento y más. Offline, gratis, sin publicidad.">
@@ -920,6 +921,10 @@ body.tema-noche {
   padding: 10px 24px 8px;
 }
 .lineas-list { padding: 0 16px; display: flex; flex-direction: column; gap: 7px; margin-bottom: 4px; }
+.linea-grupo-header { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.linea-grupo-chevron { color: var(--muted); font-size: 13px; margin-left: auto; transition: transform .25s; flex-shrink: 0; }
+.linea-grupo-header.abierto .linea-grupo-chevron { transform: rotate(180deg); }
+.linea-sub.grupo-colapsado { display: none; }
 .linea-row {
   background: var(--card);
   border: 1px solid var(--border);
@@ -978,6 +983,8 @@ body.tema-noche {
 }
 .fb-chip.selected { border-color: var(--accent); color: var(--accent); background: rgba(232,197,71,.08); }
 
+.app-footer { text-align:center; font-size:11px; color:var(--muted); padding:20px 16px calc(80px + env(safe-area-inset-bottom,0px)); }
+.app-footer a { color:var(--muted); text-decoration:underline; }
 /* ── FAQ ── */
 .faq-section { padding: 8px 16px 32px; }
 .faq-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 12px; padding-top: 8px; }
@@ -1196,6 +1203,9 @@ textarea::placeholder { color: var(--muted); }
     </div>
     <div id="homeDayBadge" class="home-day-badge">--</div>
   </div>
+
+  <!-- ESTADO DEL SERVICIO — alertas oficiales (oculto si no hay datos) -->
+  <div id="estadoServicio" style="display:none"></div>
 
   <!-- HERO — MODO COMMUTER (próximo tren del favorito, sin taps) -->
   <div id="heroCard" style="display:none"></div>
@@ -1461,7 +1471,9 @@ textarea::placeholder { color: var(--muted); }
       <button class="faq-q" onclick="toggleFaq(this)">
         <span>¿Los horarios están actualizados?</span><span class="faq-arrow">▾</span>
       </button>
-      <div class="faq-a">Se actualizan cada vez que las operadoras publican un nuevo diagrama. Dado que los servicios pueden cambiar sin previo aviso, siempre es recomendable confirmar el cronograma vigente antes de viajar, especialmente en feriados o fechas especiales.</div>
+      <div class="faq-a">Se actualizan cada vez que las operadoras publican un nuevo diagrama. Dado que los servicios pueden cambiar sin previo aviso, siempre es recomendable confirmar el cronograma vigente antes de viajar, especialmente en feriados o fechas especiales.<br><br>
+        <a class="faq-link" href="https://www.argentina.gob.ar/transporte/horarios-de-trenes" target="_blank" rel="noopener">→ Ver los horarios oficiales de Trenes Argentinos</a><br>
+        <a class="faq-link" href="https://www.metrovias.com.ar/horarios" target="_blank" rel="noopener">→ Ver los horarios oficiales del Subte y Urquiza</a></div>
     </div>
 
     <div class="faq-item">
@@ -1492,7 +1504,7 @@ textarea::placeholder { color: var(--muted); }
       <button class="faq-q" onclick="toggleFaq(this)">
         <span>¿Hay algún corte o modificación hoy?</span><span class="faq-arrow">▾</span>
       </button>
-      <div class="faq-a">Andén.ar no tiene información en tiempo real sobre cortes o cambios de servicio. Para eso, revisá las cuentas oficiales en X antes de salir:
+      <div class="faq-a">Cuando hay novedades oficiales (demoras, cortes, servicios reducidos), Andén.ar las muestra arriba de todo en la pantalla de inicio bajo "Estado del servicio" — necesitás conexión para verlas. Para el detalle minuto a minuto, las cuentas oficiales en X son la fuente directa:
         <div class="faq-twitter-grid">
           <a class="faq-tw-card" href="https://x.com/trenesarg" target="_blank">
             <span class="faq-tw-dot" style="background:#e8c547"></span>
@@ -1544,6 +1556,14 @@ textarea::placeholder { color: var(--muted); }
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
+        <span>¿Qué datos míos guarda la app?</span><span class="faq-arrow">▾</span>
+      </button>
+      <div class="faq-a">Ninguno que salga de tu teléfono. No hay cuentas, no hay analítica, no hay publicidad. Tus favoritos y búsquedas se guardan solo en tu dispositivo.<br><br>
+        <a class="faq-link" href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">→ Leer la política de privacidad completa</a></div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">
         <span>¿Por qué la app pide mi ubicación?</span><span class="faq-arrow">▾</span>
       </button>
       <div class="faq-a">Si activás la detección de estación cercana, la app usa tu ubicación <strong>una sola vez</strong> para calcular qué estación tenés más cerca y mostrarte los próximos trenes de esa línea.<br><br>
@@ -1571,7 +1591,7 @@ textarea::placeholder { color: var(--muted); }
 
   </div>
 
-</div>
+\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
 <!-- ══════════════════════════════════
      PANTALLA 2: HORARIOS
 ══════════════════════════════════ -->
@@ -1619,7 +1639,11 @@ textarea::placeholder { color: var(--muted); }
     </div>
     <div class="field-block">
       <div class="field-label">Estación de destino <span style="color:var(--muted);font-size:10px;font-weight:400">(opcional — para ETA)</span></div>
-      <select id="selDestino" onchange="render()">
+      <button class="station-picker-trigger" id="destinoTrigger" onclick="abrirPickerDestinoUI()">
+        <span id="destinoTriggerLabel" style="color:var(--muted)">— Sin destino —</span>
+        <span class="station-picker-arrow">▾</span>
+      </button>
+      <select id="selDestino" onchange="render()" style="display:none">
         <option value="">— Sin destino —</option>
       </select>
     </div>
@@ -1829,13 +1853,12 @@ textarea::placeholder { color: var(--muted); }
         </div>
         <div class="linea-badge lb-activo">activo</div>
       </div>
-      <div class="linea-row" style="--lc:#1d4ed8">
+      <div class="linea-row linea-grupo-header" style="--lc:#1d4ed8">
         <div class="linea-dot" style="background:#1d4ed8;color:#fff">BS</div>
         <div class="linea-info">
           <div class="linea-nombre">Belgrano Sur</div>
-          <div class="linea-tramo">G.Catán → Marcos Paz / Lozano</div>
+          <div class="linea-tramo">G.Catán → Marcos Paz / Lozano · 2 ramales</div>
         </div>
-        <div class="linea-badge lb-activo">activo</div>
       </div>
       <div class="linea-row linea-sub disponible" onclick="irAHorarios('bs_gc')" style="--lc:#1d4ed8">
         <div class="linea-sub-dot" style="background:#1d4ed8">GC</div>
@@ -1901,7 +1924,7 @@ textarea::placeholder { color: var(--muted); }
     </div>
   </div>
 
-</div>
+\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
 
 
 <!-- ══════════════════════════════════
@@ -1943,6 +1966,16 @@ textarea::placeholder { color: var(--muted); }
       <textarea id="fbContact" rows="1" placeholder="Email, Instagram, lo que prefieras"></textarea>
     </div>
     <button class="fb-submit" id="fbSubmit" onclick="enviarFeedback()">ENVIAR →</button>
+
+    <!-- Recomendar a un amigo -->
+    <div style="margin-top:28px;padding:18px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;text-align:center">
+      <div style="font-size:20px;margin-bottom:6px">📲</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">¿Te sirve Andén.ar?</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">La mejor forma de ayudar es pasarla:<br>recomendásela a alguien que viaje en tren.</div>
+      <button onclick="recomendarApp()" style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:12px 24px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
+        Recomendar a un amigo →
+      </button>
+    </div>
   </div>
   <div class="fb-sent" id="fbSent">
     <div class="fb-sent-icon">🙌</div>
@@ -1961,7 +1994,7 @@ textarea::placeholder { color: var(--muted); }
       </a>
     </div>
   </div>
-</div>
+\n  <div class="app-footer">Andén<span style="color:var(--accent)">.ar</span> · Hecho en Buenos Aires · <a href="https://heywillia.github.io/Anden-ar/privacidad/" target="_blank" rel="noopener">Privacidad</a> · <a href="https://cafecito.app/anden_ar" target="_blank" rel="noopener">☕ Apoyá el proyecto</a></div>\n</div>
 
 
 <!-- TOAST -->
@@ -8991,6 +9024,7 @@ function poblarDestino() {
 function render() {
   const cfg = LINEAS_CONFIG[lineaActual] || LINEAS_CONFIG.sm;
   const ests = cfg.estaciones();
+  actualizarTriggerDestino();
 
   // Fix perf: referencias DOM cacheadas en esta ejecución
   const selOrigen  = document.getElementById('selOrigen');
@@ -9668,6 +9702,36 @@ function abrirPickerDestino(cb) {
   _abrirPicker('¿Hasta dónde viajás?');
 }
 
+// Trigger del campo destino en pantalla de horarios (sin callback de favorito)
+function abrirPickerDestinoUI() {
+  abrirPickerDestino(null);
+}
+
+function limpiarDestino() {
+  document.getElementById('selDestino').value = '';
+  _pickerDestinoCb = null;
+  _pickerTarget = 'origen';
+  cerrarPickerOrigen();
+  render();
+  updateFavBtn();
+}
+
+function actualizarTriggerDestino() {
+  const lbl = document.getElementById('destinoTriggerLabel');
+  if(!lbl) return;
+  const sel = document.getElementById('selDestino');
+  const v = sel.value;
+  if(v === '' || isNaN(parseInt(v))) {
+    lbl.textContent = '— Sin destino —';
+    lbl.style.color = 'var(--muted)';
+  } else {
+    const cfg = LINEAS_CONFIG[lineaActual];
+    const ests = cfg ? cfg.estaciones() : [];
+    lbl.textContent = ests[parseInt(v)] || '— Sin destino —';
+    lbl.style.color = 'var(--text)';
+  }
+}
+
 function _abrirPicker(titulo) {
   const cfg = LINEAS_CONFIG[lineaActual];
   if(!cfg) return;
@@ -9731,6 +9795,14 @@ function renderPickerItems(lista) {
     const dv = document.getElementById('selDestino').value;
     selIdx = dv === '' ? -1 : parseInt(dv);
   }
+  if(_pickerTarget === 'destino' && !_pickerDestinoCb) {
+    const sinDest = document.createElement('div');
+    sinDest.className = 'station-list-item' + (selIdx === -1 ? ' selected' : '');
+    sinDest.textContent = '— Sin destino —';
+    sinDest.style.color = 'var(--muted)';
+    sinDest.onclick = limpiarDestino;
+    cont.appendChild(sinDest);
+  }
   lista.forEach(nombre => {
     const idx = _pickerEstaciones.indexOf(nombre);
     const div = document.createElement('div');
@@ -9774,6 +9846,129 @@ function actualizarTriggerOrigen() {
   const trigger = document.getElementById('origenTriggerLabel');
   if(trigger) trigger.textContent = ests[origenIdx] || 'Seleccioná una estación';
 }
+
+// ─────────────────────────────────────────────
+// LÍNEAS — grupos multi-ramal colapsables
+// Cada .linea-grupo-header pliega/despliega sus .linea-sub siguientes.
+// Colapsados por defecto para que la lista entre en una pantalla.
+// ─────────────────────────────────────────────
+function recomendarApp() {
+  const texto = 'Mirá esta app para ver los horarios del tren y el subte: gratis, sin publicidad y funciona sin señal en el andén 🚆';
+  const url = 'https://heywillia.github.io/Anden-ar/';
+  if (navigator.share) {
+    navigator.share({ title: 'Andén.ar', text: texto, url: url }).catch(() => {});
+  } else {
+    window.open('https://wa.me/?text=' + encodeURIComponent(texto + ' ' + url), '_blank', 'noopener');
+  }
+}
+
+function initGruposLineas() {
+  document.querySelectorAll('#screenLineas .linea-grupo-header').forEach(header => {
+    // juntar las sub-filas que le siguen hasta la próxima fila no-sub
+    const subs = [];
+    let nodo = header.nextElementSibling;
+    while (nodo && nodo.classList.contains('linea-sub')) {
+      subs.push(nodo);
+      nodo = nodo.nextElementSibling;
+    }
+    if (!subs.length) return;
+    // chevron de affordance
+    const chev = document.createElement('span');
+    chev.className = 'linea-grupo-chevron';
+    chev.textContent = '▾';
+    header.appendChild(chev);
+    // colapsado por defecto
+    subs.forEach(s => s.classList.add('grupo-colapsado'));
+    header.addEventListener('click', () => {
+      const abierto = header.classList.toggle('abierto');
+      subs.forEach(s => s.classList.toggle('grupo-colapsado', !abierto));
+    });
+  });
+}
+initGruposLineas();
+
+// ─────────────────────────────────────────────
+// ESTADO DEL SERVICIO — alertas oficiales en vivo
+// Lee estado.json (generado por GitHub Actions desde API Transporte GCBA).
+// Si el archivo no existe o no hay alertas, la sección queda oculta.
+// Offline: muestra el último estado conocido si tiene < 24h.
+// ─────────────────────────────────────────────
+const ESTADO_URL = '../estado.json';
+const ESTADO_LS  = 'anden_estado';
+
+function _estadoHace(ts) {
+  const min = Math.round((Date.now() - ts) / 60000);
+  if(min < 1)  return 'recién';
+  if(min < 60) return 'hace ' + min + ' min';
+  const h = Math.round(min / 60);
+  return 'hace ' + h + ' h';
+}
+
+function renderEstadoServicio(data, esCache) {
+  const cont = document.getElementById('estadoServicio');
+  if(!cont) return;
+  const alertas = (data && Array.isArray(data.alertas)) ? data.alertas : [];
+  const ts = (data && data.ts) ? data.ts : 0;
+  const edadMs = Date.now() - ts;
+  // Sin alertas, o cache demasiado viejo → ocultar
+  if(alertas.length === 0 || edadMs > 24 * 3600 * 1000) {
+    cont.style.display = 'none';
+    cont.innerHTML = '';
+    return;
+  }
+  cont.innerHTML = '';
+  cont.style.cssText = 'display:block;margin:0 16px 14px';
+
+  const head = document.createElement('div');
+  head.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px';
+  const t1 = document.createElement('div');
+  t1.textContent = 'Estado del servicio';
+  t1.style.cssText = 'font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px';
+  const t2 = document.createElement('div');
+  t2.textContent = (esCache ? 'sin conexión · ' : '') + _estadoHace(ts);
+  t2.style.cssText = 'font-size:10px;color:var(--muted)';
+  head.appendChild(t1); head.appendChild(t2);
+  cont.appendChild(head);
+
+  alertas.slice(0, 4).forEach(a => {
+    const sev = a.sev === 'alta';
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--card);border:1px solid ' +
+      (sev ? 'rgba(229,90,90,.45)' : 'rgba(232,197,71,.35)') +
+      ';border-left:3px solid ' + (sev ? '#e55a5a' : 'var(--accent)') +
+      ';border-radius:12px;padding:10px 12px;margin-bottom:8px';
+    const lin = document.createElement('div');
+    lin.textContent = (sev ? '🔴 ' : '⚠️ ') + (a.linea || 'Servicio');
+    lin.style.cssText = 'font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px';
+    const det = document.createElement('div');
+    det.textContent = a.texto || '';
+    det.style.cssText = 'font-size:12px;color:var(--muted);line-height:1.45';
+    card.appendChild(lin); card.appendChild(det);
+    cont.appendChild(card);
+  });
+}
+
+function cargarEstadoServicio() {
+  fetch(ESTADO_URL, { cache: 'no-store' })
+    .then(r => { if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => {
+      try { localStorage.setItem(ESTADO_LS, JSON.stringify(data)); } catch(e) {}
+      renderEstadoServicio(data, false);
+    })
+    .catch(() => {
+      // Offline o estado.json inexistente: usar cache local si lo hay
+      try {
+        const cacheado = JSON.parse(localStorage.getItem(ESTADO_LS) || 'null');
+        renderEstadoServicio(cacheado, true);
+      } catch(e) {
+        const cont = document.getElementById('estadoServicio');
+        if(cont) cont.style.display = 'none';
+      }
+    });
+}
+
+cargarEstadoServicio();
+setInterval(cargarEstadoServicio, 5 * 60 * 1000);
 
 // ─────────────────────────────────────────────
 // FASE 1 — NOTIFICACIÓN PROACTIVA DEL FAVORITO
@@ -10041,7 +10236,7 @@ function getNearestStation(userLat, userLng) {
   for (const [lineaKey, estaciones] of Object.entries(COORDS)) {
     for (const [nombre, pos] of Object.entries(estaciones)) {
       const dist = haversineKm(userLat, userLng, pos.lat, pos.lng);
-      if (dist < bestDist) { bestDist = dist; best = { lineaKey, nombre, dist }; }
+      if (dist < bestDist) { bestDist = dist; best = { lineaKey, nombre, dist, lat: pos.lat, lng: pos.lng }; }
     }
   }
   return best;
@@ -10090,6 +10285,16 @@ function buscarEstacionCercana() {
         }, 150);
       });
       actions.appendChild(btnIr);
+      // Cómo llegar: abre la app de mapas del teléfono con la estación como destino
+      const btnMapa = document.createElement('button');
+      btnMapa.className = 'geo-action-btn';
+      btnMapa.textContent = '🗺 Cómo llegar';
+      btnMapa.addEventListener('click', () => {
+        const url = 'https://www.google.com/maps/dir/?api=1&destination=' +
+          nearest.lat + ',' + nearest.lng + '&travelmode=walking';
+        window.open(url, '_blank', 'noopener');
+      });
+      actions.appendChild(btnMapa);
       const btnReset = document.createElement('button');
       btnReset.className = 'geo-action-btn';
       btnReset.textContent = '↺ Actualizar';
