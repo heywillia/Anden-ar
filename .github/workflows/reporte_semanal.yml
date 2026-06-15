@@ -1,0 +1,29 @@
+name: Reporte semanal
+
+on:
+  schedule:
+    # Lunes 8:00 ART (11:00 UTC)
+    - cron: "0 11 * * 1"
+  workflow_dispatch:
+
+jobs:
+  reporte:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias de Search Console (opcional)
+        run: pip install google-api-python-client google-auth
+
+      - name: Generar y enviar reporte
+        env:
+          GH_STATS_TOKEN: ${{ secrets.GH_STATS_TOKEN }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          GSC_SA_JSON: ${{ secrets.GSC_SA_JSON }}
+        run: python reporte_semanal.py
