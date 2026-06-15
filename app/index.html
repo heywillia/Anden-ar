@@ -994,6 +994,18 @@ body.tema-noche {
 .ramal-dot.ok { background:#34d399; }
 .ramal-dot.warn { background:#e8c547; }
 .ramal-dot.down { background:#e55a5a; }
+/* ── ¿Llego? ── */
+.llego-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.llego-pre { font-size:13px; color:var(--muted); }
+.llego-steps { display:flex; gap:6px; flex-wrap:wrap; }
+.llego-step { background:var(--card); border:1px solid var(--border); color:var(--text); font-size:12px; font-weight:600; padding:7px 12px; border-radius:8px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.llego-step.activo { background:var(--accent); color:#0d0f14; border-color:var(--accent); }
+.llego-hint { font-size:11px; color:var(--muted); margin-bottom:10px; }
+.train-card-wrap.no-llego { opacity:.4; }
+.train-card-wrap.no-llego .train-card { filter:grayscale(.6); }
+.train-card .llego-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.5px; padding:2px 7px; border-radius:6px; margin-top:4px; }
+.train-card .llego-tag.si { background:rgba(52,211,153,.16); color:#34d399; }
+.train-card .llego-tag.no { background:rgba(229,90,90,.16); color:#e55a5a; }
 .app-footer { text-align:center; font-size:11px; color:var(--muted); padding:20px 16px calc(80px + env(safe-area-inset-bottom,0px)); }
 .app-footer a { color:var(--muted); text-decoration:underline; }
 /* ── FAQ ── */
@@ -1676,6 +1688,25 @@ textarea::placeholder { color: var(--muted); }
           </div>
         </div>
         <button class="rango-clear" onclick="limpiarRango()">✕ Quitar filtro</button>
+      </div>
+    </div>
+    <div class="field-block">
+      <button class="rango-toggle-btn" id="llegoToggleBtn" onclick="toggleLlego()">
+        <span>🏃</span>
+        <span id="llegoToggleLabel">¿Llego? Tiempo hasta el andén</span>
+      </button>
+      <div class="rango-panel" id="llegoPanel">
+        <div class="llego-row">
+          <span class="llego-pre">Estoy a</span>
+          <div class="llego-steps">
+            <button type="button" class="llego-step" data-min="3" onclick="setLlego(3)">3 min</button>
+            <button type="button" class="llego-step" data-min="5" onclick="setLlego(5)">5 min</button>
+            <button type="button" class="llego-step" data-min="10" onclick="setLlego(10)">10 min</button>
+            <button type="button" class="llego-step" data-min="15" onclick="setLlego(15)">15 min</button>
+          </div>
+        </div>
+        <div class="llego-hint" id="llegoHint">Marcamos a cuáles llegás y a cuáles no.</div>
+        <button class="rango-clear" onclick="limpiarLlego()">✕ Quitar</button>
       </div>
     </div>
   </div>
@@ -2979,6 +3010,7 @@ function toggleFavorito() {
     favs.splice(existente, 1);
     saveFavs(favs);
     renderFavs(); renderHero(); updateFavBtn();
+    hbuzz(12);
     showToast('Favorito eliminado');
     return;
   }
@@ -2997,6 +3029,7 @@ function finalizarGuardadoFav(aIdx, bIdx) {
   const key = favKeyDe(lineaActual, aIdx, bIdx);
   if (favs.some(f => f.key === key)) { showToast('Ese viaje ya está guardado'); updateFavBtn(); return; }
   const nuevo = crearFav(lineaActual, aIdx, bIdx, direccion);
+  hbuzz(18);
   if (favs.length >= FAV_MAX_BASE) { mostrarFavLimitDialog(nuevo, favs); return; }
   favs.push(nuevo);
   saveFavs(favs);
@@ -3273,22 +3306,39 @@ function compartirHorario() {
   const ests = cfg.estaciones();
   const origen = ests[origenIdx] || '';
   const terminal = direccion==='haciafinal' ? cfg.terminalIda : cfg.terminalVta;
-  // Agarrar el primer resultado visible (próximo tren)
-  const primer = document.querySelector('.train-card');
-  let textoTren = '';
-  if (primer) {
-    const hora = primer.querySelector('.train-time');
-    const eta  = primer.querySelector('.train-eta');
-    if (hora) textoTren = `\nPróximo: ${hora.textContent.trim()}`;
-    if (eta)  textoTren += ` · llega ${eta.textContent.trim()}`;
-  }
   const lineNombre = cfg.nombre.replace(/🚆\s*|🚇\s*|🚂\s*/g,'').trim();
-  const texto = `🚉 ${lineNombre}\n${origen} → ${terminal}${textoTren}\n\nHorarios offline en andén.ar`;
+  const primer = document.querySelector('.train-card');
+
+  // Si hay destino elegido y el primer tren muestra hora de llegada → "Salgo X, llego Y"
+  const dVal = document.getElementById('selDestino').value;
+  const destinoIdx = dVal !== '' ? parseInt(dVal) : -1;
+  let texto = '';
+  if (destinoIdx >= 0 && primer) {
+    const destNombre = ests[destinoIdx] || terminal;
+    const hSal  = primer.querySelector('.train-time');
+    const hLleg = primer.querySelector('.eta-time');
+    const salida  = hSal ? hSal.textContent.trim() : '';
+    const llegada = hLleg ? hLleg.textContent.trim() : '';
+    if (salida && llegada) {
+      texto = `🚉 Voy en el ${lineNombre}\nSalgo de ${origen} ${salida} → llego a ${destNombre} ${llegada} 🕒\n\nVisto en andén.ar`;
+    }
+  }
+  if (!texto) {
+    let textoTren = '';
+    if (primer) {
+      const hora = primer.querySelector('.train-time');
+      const eta  = primer.querySelector('.eta-time');
+      if (hora) textoTren = `\nPróximo: ${hora.textContent.trim()}`;
+      if (eta)  textoTren += ` · llega ${eta.textContent.trim()}`;
+    }
+    texto = `🚉 ${lineNombre}\n${origen} → ${terminal}${textoTren}\n\nHorarios offline en andén.ar`;
+  }
+
+  hbuzz(12);
   if (navigator.share) {
     navigator.share({ text: texto }).catch(() => {});
   } else {
-    // Fallback: copiar al portapapeles
-    navigator.clipboard.writeText(texto).then(() => showToast('Horario copiado ✓')).catch(() => showToast('No se pudo compartir'));
+    navigator.clipboard.writeText(texto).then(() => showToast('Copiado ✓')).catch(() => showToast('No se pudo compartir'));
   }
 }
 
@@ -3296,6 +3346,11 @@ function compartirHorario() {
 // TOAST
 // ─────────────────────────────────────────────
 let toastTimer = null;
+function hbuzz(ms) {
+  // vibración sutil (solo si el dispositivo lo soporta y el usuario no la desactivó)
+  try { if (navigator.vibrate) navigator.vibrate(ms || 12); } catch(e) {}
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -3373,6 +3428,44 @@ function getRangoMins() {
   return {desde:p(desde),hasta:p(hasta)};
 }
 function showMore() { mostrarTodos=true; render(); }
+
+// ─────────────────────────────────────────────
+// ¿LLEGO? — dado un tiempo de caminata, marca trenes alcanzables
+// ─────────────────────────────────────────────
+let llegoActivo = false;
+let llegoMin = 0;
+function toggleLlego() {
+  llegoActivo = !llegoActivo;
+  const panel = document.getElementById('llegoPanel');
+  const btn = document.getElementById('llegoToggleBtn');
+  const label = document.getElementById('llegoToggleLabel');
+  panel.classList.toggle('visible', llegoActivo);
+  btn.classList.toggle('activo', llegoActivo);
+  if (llegoActivo) {
+    if (!llegoMin) setLlego(5); else { label.textContent = 'Estás a ' + llegoMin + ' min del andén'; render(); }
+  } else {
+    label.textContent = '¿Llego? Tiempo hasta el andén';
+    render();
+  }
+}
+function setLlego(min) {
+  llegoMin = min;
+  llegoActivo = true;
+  document.getElementById('llegoToggleLabel').textContent = 'Estás a ' + min + ' min del andén';
+  document.querySelectorAll('#llegoPanel .llego-step').forEach(b => {
+    b.classList.toggle('activo', parseInt(b.getAttribute('data-min')) === min);
+  });
+  hbuzz(10);
+  render();
+}
+function limpiarLlego() {
+  llegoActivo = false; llegoMin = 0;
+  document.getElementById('llegoPanel').classList.remove('visible');
+  document.getElementById('llegoToggleBtn').classList.remove('activo');
+  document.getElementById('llegoToggleLabel').textContent = '¿Llego? Tiempo hasta el andén';
+  document.querySelectorAll('#llegoPanel .llego-step').forEach(b => b.classList.remove('activo'));
+  render();
+}
 
 // ─────────────────────────────────────────────
 // RENDER
@@ -9240,6 +9333,15 @@ function render() {
       const el=!modoRango&&r.etaMins>0?`en ${r.etaMins} min`:'';
       etaB=`<div class="train-eta-block"><div class="eta-label">Llega</div><div class="eta-time" style="color:${lineColor}">${r.etaStr}</div><div class="eta-mins">${el}</div></div>`;
     }
+    // ¿Llego? — alcanzable si sale después de (ahora + caminata)
+    let llegoTag = '';
+    let alcanzo = true;
+    if(llegoActivo && llegoMin > 0 && !modoRango) {
+      alcanzo = mR >= llegoMin;
+      llegoTag = alcanzo
+        ? `<div class="llego-tag si">✓ Llegás</div>`
+        : `<div class="llego-tag no">✕ No llegás</div>`;
+    }
     card.innerHTML=`
       ${isNext?`<div class="badge-next" style="background:${lineColor};color:#0d0f14">PRÓXIMO</div>`:''}
       <div class="train-time-block"><div class="train-time">${minsToStr(r.mOrigen)}</div>${isNext?`<div class="train-eta-mins">${etaMinsLabel(mR)}</div>`:''} ${inL}</div>
@@ -9247,6 +9349,7 @@ function render() {
         <div class="train-dest-label" style="color:${lineColor}">${cfg.getRamalLabel(r.ramal, direccion)}</div>
         <div class="train-dest">${direccion==='haciaretiro'?'destino':'hasta'} ${r.destFinal}</div>
         <div style="font-size:10px;color:var(--muted);margin-top:2px">Tren ${r.tren.n}</div>
+        ${llegoTag}
       </div>${etaB}`;
     // Botón notificación
     const notifBtn = document.createElement('button');
@@ -9259,7 +9362,7 @@ function render() {
     card.appendChild(notifBtn);
     // Envolver en wrap para swipe
     const wrap = document.createElement('div');
-    wrap.className = 'train-card-wrap';
+    wrap.className = 'train-card-wrap' + ((llegoActivo && llegoMin>0 && !modoRango && !alcanzo) ? ' no-llego' : '');
     const swipeBg = document.createElement('div');
     swipeBg.className = 'swipe-bg';
     swipeBg.textContent = '★';
@@ -9517,6 +9620,7 @@ async function toggleNotifTren(trenN, mOrigen, btnEl, pickerParent) {
 }
 
 function programarNotif(tid, trenN, mOrigen, minAntes, btnEl, notifs) {
+  hbuzz(14);
   const now = nowMins();
   // mOrigen puede ser >1440 si es madrugada del día siguiente
   const msHastaTren = (mOrigen - now) * 60 * 1000;
@@ -9868,6 +9972,7 @@ function actualizarTriggerOrigen() {
 // Colapsados por defecto para que la lista entre en una pantalla.
 // ─────────────────────────────────────────────
 function recomendarApp() {
+  hbuzz(12);
   const texto = 'Mirá esta app para ver los horarios del tren y el subte: gratis, sin publicidad y funciona sin señal en el andén 🚆';
   const url = 'https://heywillia.github.io/Anden-ar/';
   if (navigator.share) {
