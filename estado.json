@@ -1,10 +1,10 @@
 {
- "ts": 1781613126102,
+ "ts": 1781642721773,
  "alertas": [
   {
    "linea": "Subte D",
-   "texto": "Hoy horario extendido hasta 01:00am. Más info en buenosaires.gob.ar/Subte",
-   "sev": "media"
+   "texto": "Servicio con demora debido a una causa técnica en una formación",
+   "sev": "alta"
   }
  ]
 }
