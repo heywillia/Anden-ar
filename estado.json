@@ -1,4 +1,10 @@
 {
- "ts": 1782150515276,
- "alertas": []
+ "ts": 1782160773945,
+ "alertas": [
+  {
+   "linea": "Subte D",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
+  }
+ ]
 }
