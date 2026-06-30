@@ -1,6 +1,11 @@
 {
- "ts": 1782683123187,
+ "ts": 1782843222714,
  "alertas": [
+  {
+   "linea": "Subte H",
+   "texto": "Servicio interrumpido por falta de suministro eléctrico externo.",
+   "sev": "alta"
+  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
