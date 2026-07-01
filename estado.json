@@ -1,20 +1,20 @@
 {
- "ts": 1782939202491,
+ "ts": 1782944113957,
  "alertas": [
   {
-   "linea": "Subte D",
-   "texto": "Servicio con demora debido a una causa técnica en una formación",
-   "sev": "alta"
-  },
-  {
    "linea": "PM-Civico",
-   "texto": "Servicio Interrumpido por manifestantes que impiden el servicio",
+   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
    "sev": "alta"
   },
   {
    "linea": "PM-Savio",
-   "texto": "Servicio Interrumpido por manifestantes que impiden el servicio",
+   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
    "sev": "alta"
+  },
+  {
+   "linea": "Subte D",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
   }
  ]
 }
