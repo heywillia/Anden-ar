@@ -1,9 +1,19 @@
 {
- "ts": 1782925161366,
+ "ts": 1782932524304,
  "alertas": [
   {
    "linea": "Subte A",
    "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "sev": "alta"
+  },
+  {
+   "linea": "PM-Civico",
+   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
+   "sev": "alta"
+  },
+  {
+   "linea": "PM-Savio",
+   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
    "sev": "alta"
   },
   {
