@@ -1,25 +1,20 @@
 {
- "ts": 1782932524304,
+ "ts": 1782939202491,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "linea": "Subte D",
+   "texto": "Servicio con demora debido a una causa técnica en una formación",
    "sev": "alta"
   },
   {
    "linea": "PM-Civico",
-   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
+   "texto": "Servicio Interrumpido por manifestantes que impiden el servicio",
    "sev": "alta"
   },
   {
    "linea": "PM-Savio",
-   "texto": "Servicio interrumpido por manifestantes que impiden el servicio",
+   "texto": "Servicio Interrumpido por manifestantes que impiden el servicio",
    "sev": "alta"
-  },
-  {
-   "linea": "Subte D",
-   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
-   "sev": "media"
   }
  ]
 }
