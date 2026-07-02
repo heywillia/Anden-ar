@@ -1,10 +1,10 @@
 {
- "ts": 1783015885217,
+ "ts": 1783025969073,
  "alertas": [
   {
    "linea": "Subte D",
-   "texto": "Servicio limitado entre Catedral - Agüero Palermo - Congreso de Tucumán",
-   "sev": "alta"
+   "texto": "Presta su servicio completo entre cabeceras normalizando su frecuencia habitual",
+   "sev": "media"
   }
  ]
 }
