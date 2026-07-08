@@ -1,11 +1,6 @@
 {
- "ts": 1783543415135,
+ "ts": 1783547314127,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Ya se detienen en todas las estaciones.",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
