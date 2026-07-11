@@ -1,34 +1,14 @@
 {
- "ts": 1783744000399,
+ "ts": 1783751705951,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
   {
    "linea": "Subte B",
    "texto": "Viernes y sábados horario extendido. Estaciones habilitadas en buenosaires.gob.ar",
    "sev": "media"
   },
   {
-   "linea": "Subte C",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
    "linea": "Subte D",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte E",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte H",
-   "texto": "Servicio finalizado",
+   "texto": "11/07 horario extendido hasta las 02 am Tribunales cerrada por obras",
    "sev": "media"
   }
  ]
