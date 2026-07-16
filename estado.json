@@ -1,20 +1,10 @@
 {
- "ts": 1784167713037,
+ "ts": 1784179198716,
  "alertas": [
   {
-   "linea": "Subte B",
-   "texto": "Los trenes no se detienen en la estación Carlos Pellegrini",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte C",
-   "texto": "Los trenes no se detienen en la estación Diagonal Norte",
-   "sev": "alta"
-  },
-  {
    "linea": "Subte D",
-   "texto": "Los trenes no se detienen en la estación 9 de Julio",
-   "sev": "alta"
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
   }
  ]
 }
