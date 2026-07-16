@@ -1,5 +1,5 @@
 {
- "ts": 1784152486521,
+ "ts": 1784167713037,
  "alertas": [
   {
    "linea": "Subte B",
@@ -14,16 +14,6 @@
   {
    "linea": "Subte D",
    "texto": "Los trenes no se detienen en la estación 9 de Julio",
-   "sev": "alta"
-  },
-  {
-   "linea": "PM-Civico",
-   "texto": "Servicio interrumpido por mayor afluencia de usuarios",
-   "sev": "alta"
-  },
-  {
-   "linea": "PM-Savio",
-   "texto": "Servicio interrumpido por mayor afluencia de usuarios",
    "sev": "alta"
   }
  ]
