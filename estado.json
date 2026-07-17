@@ -1,10 +1,10 @@
 {
- "ts": 1784285872296,
+ "ts": 1784290240267,
  "alertas": [
   {
    "linea": "Subte B",
-   "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
-   "sev": "media"
+   "texto": "Servicio con demora por una formación detenida debido a una causa técnica",
+   "sev": "alta"
   },
   {
    "linea": "Subte D",
