@@ -1,14 +1,14 @@
 {
- "ts": 1784279150035,
+ "ts": 1784285872296,
  "alertas": [
-  {
-   "linea": "Subte D",
-   "texto": "No se detienen en F. de Medicina - Tribunales continúa cerrad por obras.",
-   "sev": "alta"
-  },
   {
    "linea": "Subte B",
    "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte D",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
    "sev": "media"
   }
  ]
