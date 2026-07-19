@@ -1,11 +1,6 @@
 {
- "ts": 1784461345295,
+ "ts": 1784474062438,
  "alertas": [
-  {
-   "linea": "Subte H",
-   "texto": "Los trenes no se detienen en la estación Inclán por obras de mejora",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
