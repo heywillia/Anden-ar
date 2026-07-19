@@ -1,5 +1,5 @@
 {
- "ts": 1784496330072,
+ "ts": 1784503622737,
  "alertas": [
   {
    "linea": "Subte B",
@@ -14,11 +14,6 @@
   {
    "linea": "Subte D",
    "texto": "Los trenes no se detienen en la estacion 9 de Julio",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte H",
-   "texto": "Servicio interrumpido",
    "sev": "alta"
   }
  ]
