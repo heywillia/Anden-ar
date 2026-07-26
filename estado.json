@@ -1,15 +1,10 @@
 {
- "ts": 1785064180481,
+ "ts": 1785068146078,
  "alertas": [
   {
    "linea": "Subte H",
    "texto": "Los trenes no se detienen en la estación Inclán por obras de mejora",
    "sev": "alta"
-  },
-  {
-   "linea": "Subte B",
-   "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
-   "sev": "media"
   },
   {
    "linea": "Subte D",
