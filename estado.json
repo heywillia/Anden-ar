@@ -1,6 +1,11 @@
 {
- "ts": 1785174475571,
+ "ts": 1785341342731,
  "alertas": [
+  {
+   "linea": "Subte A",
+   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "sev": "alta"
+  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
