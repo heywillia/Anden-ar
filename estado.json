@@ -1,5 +1,5 @@
 {
- "ts": 1785492916392,
+ "ts": 1785516245045,
  "alertas": [
   {
    "linea": "Subte B",
@@ -9,6 +9,11 @@
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte E",
+   "texto": "Desde el 03/08 estación Urquiza cerrada por obras de renovación integral.",
    "sev": "media"
   }
  ]
