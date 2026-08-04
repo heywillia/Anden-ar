@@ -1,16 +1,6 @@
 {
- "ts": 1785869490092,
+ "ts": 1785874841606,
  "alertas": [
-  {
-   "linea": "PM-Civico",
-   "texto": "Servicio limitado entre las estaciones Int. Saguier y Centro Cívico",
-   "sev": "alta"
-  },
-  {
-   "linea": "PM-Savio",
-   "texto": "Servicio limitado entre las estaciones Int. Saguier y Centro Cívico",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
