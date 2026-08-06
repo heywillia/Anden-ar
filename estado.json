@@ -1,11 +1,6 @@
 {
- "ts": 1785978248666,
+ "ts": 1785990554781,
  "alertas": [
-  {
-   "linea": "Subte C",
-   "texto": "Servicio limitado entre las estaciones Retiro y Av. de Mayo",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
