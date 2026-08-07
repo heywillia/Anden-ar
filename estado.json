@@ -1,6 +1,11 @@
 {
- "ts": 1786073137133,
+ "ts": 1786141048584,
  "alertas": [
+  {
+   "linea": "Subte A",
+   "texto": "Servicio con demora por medida de fuerza gremial.",
+   "sev": "alta"
+  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
