@@ -1,9 +1,9 @@
 {
- "ts": 1786143817282,
+ "ts": 1786146427244,
  "alertas": [
   {
    "linea": "Subte A",
-   "texto": "Servicio con demora por medida de fuerza gremial.",
+   "texto": "Servicio con demora por medida de fuerza gremial",
    "sev": "alta"
   },
   {
