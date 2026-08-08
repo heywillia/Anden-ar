@@ -1,11 +1,6 @@
 {
- "ts": 1786209858341,
+ "ts": 1786211755181,
  "alertas": [
-  {
-   "linea": "Subte E",
-   "texto": "Servicio con demora debido a un usuario que requiere asistencia",
-   "sev": "alta"
-  },
   {
    "linea": "Subte B",
    "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
@@ -14,6 +9,11 @@
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte E",
+   "texto": "Estación Urquiza cerrada por obras de renovación integral",
    "sev": "media"
   }
  ]
