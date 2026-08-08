@@ -1,11 +1,6 @@
 {
- "ts": 1786146427244,
+ "ts": 1786151530202,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Servicio con demora por medida de fuerza gremial",
-   "sev": "alta"
-  },
   {
    "linea": "Subte B",
    "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
