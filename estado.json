@@ -1,14 +1,14 @@
 {
- "ts": 1786476402560,
+ "ts": 1786478982022,
  "alertas": [
-  {
-   "linea": "Subte E",
-   "texto": "Servicio con demora debido a una causa técnica en una formación",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte E",
+   "texto": "Estación Urquiza cerrada por obras de renovación integral",
    "sev": "media"
   }
  ]
