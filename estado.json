@@ -1,6 +1,11 @@
 {
- "ts": 1786568492897,
+ "ts": 1786700063726,
  "alertas": [
+  {
+   "linea": "Subte B",
+   "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
+   "sev": "media"
+  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
