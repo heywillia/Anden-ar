@@ -1,5 +1,5 @@
 {
- "ts": 1786763083155,
+ "ts": 1786765948463,
  "alertas": [
   {
    "linea": "Subte A",
@@ -23,6 +23,11 @@
   },
   {
    "linea": "Subte E",
+   "texto": "Servicio finalizado",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte H",
    "texto": "Servicio finalizado",
    "sev": "media"
   }
