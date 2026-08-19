@@ -1,14 +1,14 @@
 {
- "ts": 1787140146950,
+ "ts": 1787151118248,
  "alertas": [
+  {
+   "linea": "Subte E",
+   "texto": "El 20/08 cierra Entre Ríos por obras. Urquiza cerrada por obras de renovación.",
+   "sev": "alta"
+  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte E",
-   "texto": "Estación Urquiza cerrada por obras de renovación integral",
    "sev": "media"
   }
  ]
