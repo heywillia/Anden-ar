@@ -1,11 +1,6 @@
 {
- "ts": 1787154971620,
+ "ts": 1787173300636,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "El 20/08 cierra Entre Ríos por obras. Urquiza cerrada por obras de renovación.",
