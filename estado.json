@@ -1,11 +1,6 @@
 {
- "ts": 1787138390988,
+ "ts": 1787140146950,
  "alertas": [
-  {
-   "linea": "Subte B",
-   "texto": "Servicio con demora debido a un usuario que requiere asistencia",
-   "sev": "alta"
-  },
   {
    "linea": "Subte D",
    "texto": "Estación Tribunales cerrada por obras de renovación integral.",
