@@ -1,15 +1,10 @@
 {
- "ts": 1787260280293,
+ "ts": 1787262179167,
  "alertas": [
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
    "sev": "alta"
-  },
-  {
-   "linea": "Subte B",
-   "texto": "Ya funciona con su frecuencia habitual",
-   "sev": "media"
   },
   {
    "linea": "Subte D",
