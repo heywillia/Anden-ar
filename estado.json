@@ -1,10 +1,10 @@
 {
- "ts": 1787370893935,
+ "ts": 1787376792513,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
-   "sev": "media"
+   "linea": "Subte E",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
+   "sev": "alta"
   },
   {
    "linea": "Subte B",
@@ -12,23 +12,8 @@
    "sev": "media"
   },
   {
-   "linea": "Subte C",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
    "linea": "Subte D",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte E",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte H",
-   "texto": "Servicio finalizado",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
    "sev": "media"
   }
  ]
