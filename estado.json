@@ -1,11 +1,6 @@
 {
- "ts": 1787682732962,
+ "ts": 1787685414312,
  "alertas": [
-  {
-   "linea": "Subte B",
-   "texto": "Servicio con demora debido a una causa técnica",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
