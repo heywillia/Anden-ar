@@ -1,5 +1,5 @@
 {
- "ts": 1787685414312,
+ "ts": 1787735375601,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "26/08 horario extendido hasta las 01:00 AM. Tribunales continúa cerrada por obras",
+   "texto": "Hoy horario extendido desde C. De Tucumán. Tribunales cerrada por obras",
    "sev": "media"
   }
  ]
