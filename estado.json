@@ -1,14 +1,9 @@
 {
- "ts": 1787759517305,
+ "ts": 1787762636381,
  "alertas": [
   {
    "linea": "Subte A",
-   "texto": "Servicio limitado entre las estaciones Plaza de Mayo y Loria",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte B",
-   "texto": "Servicio con demora por medida de fuerza gremial.",
+   "texto": "Servicio limitado entre Pza de Mayo y Loria. No se detiene en la estación Congreso.",
    "sev": "alta"
   },
   {
