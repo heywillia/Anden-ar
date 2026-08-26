@@ -1,9 +1,9 @@
 {
- "ts": 1787762636381,
+ "ts": 1787776424585,
  "alertas": [
   {
    "linea": "Subte A",
-   "texto": "Servicio limitado entre Pza de Mayo y Loria. No se detiene en la estación Congreso.",
+   "texto": "Los trenes no se detienen en las estaciones Congreso y Río de Janeiro.",
    "sev": "alta"
   },
   {
