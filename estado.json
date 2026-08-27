@@ -1,11 +1,6 @@
 {
- "ts": 1787776424585,
+ "ts": 1787789119447,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Los trenes no se detienen en las estaciones Congreso y Río de Janeiro.",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
