@@ -1,11 +1,6 @@
 {
- "ts": 1787823877224,
+ "ts": 1787860822626,
  "alertas": [
-  {
-   "linea": "Subte B",
-   "texto": "Servicio limitado entre las estaciones Juan Manuel de Rosas y Carlos Pellegrini",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
