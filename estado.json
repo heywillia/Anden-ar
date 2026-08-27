@@ -1,6 +1,11 @@
 {
- "ts": 1787789119447,
+ "ts": 1787823877224,
  "alertas": [
+  {
+   "linea": "Subte B",
+   "texto": "Servicio limitado entre las estaciones Juan Manuel de Rosas y Carlos Pellegrini",
+   "sev": "alta"
+  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
@@ -8,7 +13,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "Hoy horario extendido desde C. De Tucumán. Tribunales cerrada por obras",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
    "sev": "media"
   }
  ]
