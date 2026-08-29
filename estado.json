@@ -1,5 +1,5 @@
 {
- "ts": 1787935629055,
+ "ts": 1787964589653,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte B",
-   "texto": "Viernes y sábados horario extendido. Est. habilitadas en buenosaires.gob.ar/Subte",
+   "texto": "Hoy horario extendido. Desde 31/8 Medrano cerrada por obras.",
    "sev": "media"
   },
   {
