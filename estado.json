@@ -1,5 +1,5 @@
 {
- "ts": 1788068228509,
+ "ts": 1788169294207,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte B",
-   "texto": "A partir 31/08 Medrano cerrada por obras renovación integral.",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
