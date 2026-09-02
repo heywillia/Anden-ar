@@ -1,11 +1,6 @@
 {
- "ts": 1788369684046,
+ "ts": 1788387977688,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
