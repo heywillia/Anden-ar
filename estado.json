@@ -1,6 +1,11 @@
 {
- "ts": 1788387977688,
+ "ts": 1788474815414,
  "alertas": [
+  {
+   "linea": "Subte A",
+   "texto": "Servicio con demora por medida de fuerza gremial",
+   "sev": "alta"
+  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
