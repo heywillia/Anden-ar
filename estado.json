@@ -1,34 +1,19 @@
 {
- "ts": 1788669349343,
+ "ts": 1788684938874,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras. Viernes y Sábado con horario extendido.",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte C",
-   "texto": "Servicio finalizado",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte D",
-   "texto": "Servicio finalizado",
+   "texto": "Estación Tribunales cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte E",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte H",
-   "texto": "Servicio finalizado",
+   "texto": "Estación Urquiza cerrada por obras de renovación integral",
    "sev": "media"
   }
  ]
