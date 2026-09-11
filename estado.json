@@ -1,5 +1,5 @@
 {
- "ts": 1789127960209,
+ "ts": 1789143359374,
  "alertas": [
   {
    "linea": "Subte E",
@@ -9,6 +9,11 @@
   {
    "linea": "Subte B",
    "texto": "Estación Medrano cerrada por obras. Viernes y Sábado con horario extendido.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte C",
+   "texto": "El 14-09 cierra la estación Lavalle por obras de renovación integral.",
    "sev": "media"
   },
   {
