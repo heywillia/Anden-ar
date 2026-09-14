@@ -1,5 +1,5 @@
 {
- "ts": 1789280940622,
+ "ts": 1789392872266,
  "alertas": [
   {
    "linea": "Subte E",
@@ -13,7 +13,7 @@
   },
   {
    "linea": "Subte C",
-   "texto": "El 14-09 cierra la estación Lavalle por obras de renovación integral.",
+   "texto": "Estación Lavalle cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
