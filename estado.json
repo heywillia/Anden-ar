@@ -1,9 +1,9 @@
 {
- "ts": 1789839747221,
+ "ts": 1789846565245,
  "alertas": [
   {
    "linea": "Subte A",
-   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "texto": "Servicio limitado entre las estaciones Perú y San Pedrito y no se detienen en Congreso",
    "sev": "alta"
   },
   {
