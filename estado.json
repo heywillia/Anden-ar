@@ -1,11 +1,6 @@
 {
- "ts": 1789846565245,
+ "ts": 1789861846742,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Servicio limitado entre las estaciones Perú y San Pedrito y no se detienen en Congreso",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
