@@ -1,15 +1,15 @@
 {
- "ts": 1789999644975,
+ "ts": 1790018783406,
  "alertas": [
   {
-   "linea": "Subte B",
-   "texto": "Servicio con demora por una formación detenida debido a una causa técnica",
+   "linea": "Subte E",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral",
    "sev": "alta"
   },
   {
-   "linea": "Subte E",
-   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
-   "sev": "alta"
+   "linea": "Subte B",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "sev": "media"
   },
   {
    "linea": "Subte C",
