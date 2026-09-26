@@ -1,5 +1,5 @@
 {
- "ts": 1790339473323,
+ "ts": 1790425175417,
  "alertas": [
   {
    "linea": "Subte E",
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "Mañana horario extendido hasta la 1:30 desde C. de Tucumán por el recital de Lali.",
+   "texto": "Hoy horario extendido desde C. de Tucumán por el recital de Lali. Tribunales cerrada",
    "sev": "media"
   }
  ]
