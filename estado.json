@@ -1,5 +1,5 @@
 {
- "ts": 1790991613375,
+ "ts": 1791011139832,
  "alertas": [
   {
    "linea": "Subte E",
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "5-10 reabre Tribunales Mañana horario extendido hasta la 1 am.",
+   "texto": "Hoy horario extendido hasta la 1 am. 5-10 reabre Tribunales.",
    "sev": "media"
   }
  ]
