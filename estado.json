@@ -1,5 +1,5 @@
 {
- "ts": 1791011139832,
+ "ts": 1791099713551,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras. Viernes y Sábado con horario extendido.",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "Hoy horario extendido hasta la 1 am. 5-10 reabre Tribunales.",
+   "texto": "05/10 reabre la estación Tribunales. luego del plan de renovación integral",
    "sev": "media"
   }
  ]
