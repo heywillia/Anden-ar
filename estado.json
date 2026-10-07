@@ -1,24 +1,29 @@
 {
- "ts": 1791339971712,
+ "ts": 1791390414708,
  "alertas": [
   {
+   "linea": "Subte A",
+   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "sev": "alta"
+  },
+  {
    "linea": "Subte E",
-   "texto": "Entre Rios y Urquiza cerradas por obras de renovación integral",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
    "sev": "alta"
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras de renovació integral",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte C",
-   "texto": "Estación Lavalle cerrada por obras de renovacion integral",
+   "texto": "Estación Lavalle cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte D",
-   "texto": "Hoy horario extendido hasta la 1:30 am por partido de Argentina.Reabrió Tribunales",
+   "texto": "Reabrió la estación Tribunales luego del plan de renovación integral.",
    "sev": "media"
   }
  ]
