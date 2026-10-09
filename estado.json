@@ -1,5 +1,5 @@
 {
- "ts": 1791408474328,
+ "ts": 1791554663079,
  "alertas": [
   {
    "linea": "Subte E",
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "Reabrió la estación Tribunales luego del plan de renovación integral.",
+   "texto": "Mañana horario extendios hasta la 1 am. Reabrió Tribunales.",
    "sev": "media"
   }
  ]
