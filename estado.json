@@ -1,24 +1,19 @@
 {
- "ts": 1791660287917,
+ "ts": 1791729314120,
  "alertas": [
   {
    "linea": "Subte E",
-   "texto": "Entre Rios y Urquiza cerradas por obras de renovación integral",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
    "sev": "alta"
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras. Viernes y Sábado con horario extendido.",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte C",
    "texto": "Estación Lavalle cerrada por obras de renovación integral.",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte D",
-   "texto": "Hoy horario extendido hasta la 1 am. por partido en el Monumental.",
    "sev": "media"
   }
  ]
