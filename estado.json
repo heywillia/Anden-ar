@@ -1,45 +1,25 @@
 {
- "ts": 1792518626134,
+ "ts": 1792530594633,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
+   "linea": "Subte E",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
    "sev": "alta"
   },
   {
    "linea": "Subte B",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "sev": "media"
   },
   {
    "linea": "Subte C",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte D",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte E",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
+   "texto": "Estación Lavalle cerrada por obras de renovación integral.",
+   "sev": "media"
   },
   {
    "linea": "Subte H",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
-  },
-  {
-   "linea": "PM-Civico",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
-  },
-  {
-   "linea": "PM-Savio",
-   "texto": "Todas las líneas se encuentran interrumpidas por medida de fuerza gremial.",
-   "sev": "alta"
+   "texto": "Hoy servicio extendido hasta 1:30 am desde Caseros por el show de Iron Maiden.",
+   "sev": "media"
   }
  ]
 }
