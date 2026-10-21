@@ -1,5 +1,5 @@
 {
- "ts": 1792571244756,
+ "ts": 1792591290888,
  "alertas": [
   {
    "linea": "Subte E",
@@ -14,6 +14,11 @@
   {
    "linea": "Subte C",
    "texto": "Estación Lavalle cerrada por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte H",
+   "texto": "Hoy servicio extendido hasta 1:30 am desde Caseros por el show de Iron Maiden.",
    "sev": "media"
   }
  ]
