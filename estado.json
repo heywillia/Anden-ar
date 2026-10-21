@@ -1,5 +1,5 @@
 {
- "ts": 1792530594633,
+ "ts": 1792551611847,
  "alertas": [
   {
    "linea": "Subte E",
@@ -7,13 +7,18 @@
    "sev": "alta"
   },
   {
+   "linea": "Subte A",
+   "texto": "Servicio finalizado",
+   "sev": "media"
+  },
+  {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "texto": "Servicio finalizado",
    "sev": "media"
   },
   {
    "linea": "Subte C",
-   "texto": "Estación Lavalle cerrada por obras de renovación integral.",
+   "texto": "Servicio finalizado",
    "sev": "media"
   },
   {
