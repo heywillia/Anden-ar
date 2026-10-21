@@ -1,5 +1,5 @@
 {
- "ts": 1792551611847,
+ "ts": 1792571244756,
  "alertas": [
   {
    "linea": "Subte E",
@@ -7,23 +7,13 @@
    "sev": "alta"
   },
   {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
    "linea": "Subte B",
-   "texto": "Servicio finalizado",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte C",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte H",
-   "texto": "Hoy servicio extendido hasta 1:30 am desde Caseros por el show de Iron Maiden.",
+   "texto": "Estación Lavalle cerrada por obras de renovación integral.",
    "sev": "media"
   }
  ]
