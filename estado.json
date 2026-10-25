@@ -1,5 +1,5 @@
 {
- "ts": 1792769334362,
+ "ts": 1792908340638,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras. Viernes y Sábado con horario extendido.",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
    "sev": "media"
   },
   {
