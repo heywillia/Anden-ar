@@ -1,5 +1,5 @@
 {
- "ts": 1793379319168,
+ "ts": 1793428502476,
  "alertas": [
   {
    "linea": "Subte E",
@@ -13,7 +13,7 @@
   },
   {
    "linea": "Subte C",
-   "texto": "El 02/11 cierra Independencia por obras. Lavalle cerrada por obras de renovación.",
+   "texto": "Independencia y Lavalle cerradas por obras de renovación integral.",
    "sev": "media"
   }
  ]
