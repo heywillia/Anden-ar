@@ -1,6 +1,11 @@
 {
- "ts": 1793530823636,
+ "ts": 1793663143190,
  "alertas": [
+  {
+   "linea": "Subte C",
+   "texto": "Servicio limitado entre las estaciones Retiro y Av. de Mayo",
+   "sev": "alta"
+  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
@@ -9,11 +14,6 @@
   {
    "linea": "Subte B",
    "texto": "Estación Medrano cerrada por obras de renovación integral.",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte C",
-   "texto": "El 02/11 cierra Independencia por obras. Lavalle cerrada por obras de renovación.",
    "sev": "media"
   }
  ]
