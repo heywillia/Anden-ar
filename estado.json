@@ -1,19 +1,34 @@
 {
- "ts": 1794078863180,
+ "ts": 1794152638588,
  "alertas": [
   {
-   "linea": "Subte E",
-   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
-   "sev": "alta"
+   "linea": "Subte A",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV.",
+   "sev": "media"
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV.",
    "sev": "media"
   },
   {
    "linea": "Subte C",
-   "texto": "Independencia y Lavalle cerradas por obras de renovación integral.",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte D",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte E",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte H",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV.",
    "sev": "media"
   }
  ]
