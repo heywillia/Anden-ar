@@ -1,5 +1,5 @@
 {
- "ts": 1794152638588,
+ "ts": 1794192878350,
  "alertas": [
   {
    "linea": "Subte A",
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "Servicio especial por visita Apostólica del Papa León XIV",
+   "texto": "Servicio especial por visita Apostólica del Papa León XIV.",
    "sev": "media"
   },
   {
