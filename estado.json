@@ -1,6 +1,11 @@
 {
- "ts": 1794282136201,
+ "ts": 1794450714229,
  "alertas": [
+  {
+   "linea": "Subte D",
+   "texto": "Servicio limitado: C. Tucumán y Pueyrredón por incidente con persona en zona de vías",
+   "sev": "alta"
+  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
