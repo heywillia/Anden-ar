@@ -1,5 +1,5 @@
 {
- "ts": 1794478772175,
+ "ts": 1794617550460,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,12 +8,17 @@
   },
   {
    "linea": "Subte B",
-   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "texto": "Mañana extendido por la Noche de los Museos. Medrano cerrado por obras",
    "sev": "media"
   },
   {
    "linea": "Subte C",
    "texto": "Independencia y Lavalle cerradas por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte D",
+   "texto": "14-11 horario extendido por la Noche de los Museos",
    "sev": "media"
   }
  ]
