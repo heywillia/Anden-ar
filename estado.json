@@ -1,5 +1,5 @@
 {
- "ts": 1794617550460,
+ "ts": 1794640638460,
  "alertas": [
   {
    "linea": "Subte E",
@@ -8,7 +8,7 @@
   },
   {
    "linea": "Subte B",
-   "texto": "Mañana extendido por la Noche de los Museos. Medrano cerrado por obras",
+   "texto": "Hoy horario extendido. Medrano continúa cerrada por obras.",
    "sev": "media"
   },
   {
@@ -18,7 +18,7 @@
   },
   {
    "linea": "Subte D",
-   "texto": "14-11 horario extendido por la Noche de los Museos",
+   "texto": "Hoy horario extendido por La Noche de los Museos.",
    "sev": "media"
   }
  ]
