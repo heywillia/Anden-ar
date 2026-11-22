@@ -1,25 +1,20 @@
 {
- "ts": 1795312801821,
+ "ts": 1795340324319,
  "alertas": [
-  {
-   "linea": "Subte B",
-   "texto": "Los trenes no se detienen en la estación Carlos Pellegrini",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte C",
-   "texto": "Los trenes no se detienen en la estación Diagonal Norte",
-   "sev": "alta"
-  },
-  {
-   "linea": "Subte D",
-   "texto": "Los trenes no se detienen en la estacion 9 de Julio",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
    "sev": "alta"
+  },
+  {
+   "linea": "Subte B",
+   "texto": "Estación Medrano cerrada por obras de renovación integral.",
+   "sev": "media"
+  },
+  {
+   "linea": "Subte C",
+   "texto": "Independencia y Lavalle cerradas por obras de renovación integral.",
+   "sev": "media"
   }
  ]
 }
