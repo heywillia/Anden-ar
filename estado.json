@@ -1,9 +1,9 @@
 {
- "ts": 1795613592066,
+ "ts": 1795646796212,
  "alertas": [
   {
    "linea": "Subte A",
-   "texto": "Los trenes no se detienen en Congreso por operativo policial en vía pública",
+   "texto": "Ya se detienen en todas las estaciones.",
    "sev": "alta"
   },
   {
