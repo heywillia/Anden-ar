@@ -1,11 +1,6 @@
 {
- "ts": 1795646796212,
+ "ts": 1795667987337,
  "alertas": [
-  {
-   "linea": "Subte A",
-   "texto": "Ya se detienen en todas las estaciones.",
-   "sev": "alta"
-  },
   {
    "linea": "Subte E",
    "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
