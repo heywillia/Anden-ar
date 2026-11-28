@@ -1,10 +1,10 @@
 {
- "ts": 1795841519726,
+ "ts": 1795873785697,
  "alertas": [
   {
-   "linea": "Subte A",
-   "texto": "Servicio finalizado",
-   "sev": "media"
+   "linea": "Subte E",
+   "texto": "Entre Ríos y Urquiza cerradas por obras de renovación integral.",
+   "sev": "alta"
   },
   {
    "linea": "Subte B",
@@ -13,22 +13,12 @@
   },
   {
    "linea": "Subte C",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte D",
-   "texto": "Servicio finalizado",
-   "sev": "media"
-  },
-  {
-   "linea": "Subte E",
-   "texto": "Servicio finalizado",
+   "texto": "Independencia y Lavalle cerradas por obras de renovación integral.",
    "sev": "media"
   },
   {
    "linea": "Subte H",
-   "texto": "Servicio finalizado",
+   "texto": "Mañana horario extendido hasta las 1:30am desde Caseros por recital de Ed Sheeran",
    "sev": "media"
   }
  ]
